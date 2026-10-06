@@ -1,4 +1,4 @@
-/* Базові налаштування (Dark Mode) */
+
 body {
     margin: 0;
     padding: 0;
@@ -10,7 +10,6 @@ body {
     overflow: hidden;
 }
 
-/* Бокове меню (Sidebar) */
 .sidebar {
     width: 280px;
     background-color: #16181d;
@@ -70,7 +69,6 @@ body {
     border-bottom: 1px solid #2a2d35;
 }
 
-/* Контейнер для материнської плати */
 .motherboard-container {
     flex-grow: 1;
     margin-top: 20px;
@@ -91,7 +89,6 @@ body {
     z-index: 1;
 }
 
-/* Інтерактивний слот CPU */
 .slot-cpu {
     position: relative;
     width: 120px;
@@ -109,7 +106,6 @@ body {
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }
 
-/* Спливаюча підказка (Tooltip) */
 .tooltip {
     position: absolute;
     bottom: 110%;
@@ -132,4 +128,183 @@ body {
 .slot-cpu:hover .tooltip {
     opacity: 1;
     visibility: visible;
+}
+
+.back-button {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.back-button:hover { color: #60a5fa; }
+
+.telemetry-block {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: rgba(30, 33, 40, 0.5);
+    border-left: 3px solid #f97316; 
+    border-radius: 4px;
+}
+
+.telemetry-label {
+    font-size: 11px;
+    color: #6c7280;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.telemetry-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.telemetry-sub {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: normal;
+}
+
+.cpu-dashboard {
+    flex-grow: 1;
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+.center-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtitle {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.animation-container {
+    flex-grow: 1;
+    background-color: #16181d;
+    border: 1px solid #2a2d35;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 50px rgba(59, 130, 246, 0.05);
+}
+
+.timeline-container {
+    background-color: #16181d;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #2a2d35;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.controls button {
+    background: transparent;
+    border: 1px solid #3b82f6;
+    color: #3b82f6;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.controls button:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.timeline-slider {
+    width: 100%;
+    accent-color: #f97316;
+    cursor: pointer;
+}
+
+.timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: #6c7280;
+    font-size: 12px;
+}
+
+/* Права панель */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-card {
+    background-color: #16181d;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #2a2d35;
+}
+
+.info-text {
+    color: #9ca3af;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.specs-grid {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.spec-label {
+    font-size: 11px;
+    color: #6c7280;
+    text-transform: uppercase;
+}
+
+.spec-val {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.accessibility-box {
+    background-color: rgba(39, 42, 51, 0.5);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px dashed #6c7280;
+    margin-top: auto; /* Притискає блок до низу */
+}
+
+.acc-header {
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.acc-header::before {
+    content: "👁";
+    margin-right: 8px;
+}
+
+.acc-text {
+    color: #9ca3af;
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.6;
 }
