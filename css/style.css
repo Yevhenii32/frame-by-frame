@@ -414,3 +414,210 @@ body {
         font-size: 18px;
     }
 }
+
+
+/* --- СТИЛІ ДЛЯ СПЛИВАЮЧИХ ПІДКАЗОК (TOOLTIP) --- */
+.tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); 
+    background-color: rgba(15, 23, 42, 0.95); /* Темно-синій, майже непрозорий фон */
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-family: sans-serif;
+    font-size: 14px;
+    white-space: nowrap; /* Щоб текст не розбивався на кілька рядків */
+    pointer-events: none; /* Щоб курсор "не чіплявся" за підказку, коли вона з'являється */
+    
+    /* Приховуємо підказку за замовчуванням */
+    opacity: 0;
+    visibility: hidden;
+    
+    /* Плавна анімація появи */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Додаємо легку тінь та рамку для об'єму */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 10; /* Гарантуємо, що підказка буде поверх усіх інших зон */
+}
+
+/* --- МАГІЯ ПОЯВИ ПРИ НАВЕДЕННІ --- */
+.interactive-zone:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); 
+}
+
+/* Основна сітка сторінки CPU */
+.cpu-dashboard {
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+    margin-top: 20px;
+    color: #f8fafc;
+}
+
+/* Налаштування колонок */
+.sidebar { width: 250px; flex-shrink: 0; }
+.center-panel { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
+.right-panel { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
+
+/* Блоки телеметрії (зліва) */
+.telemetry-block {
+    background-color: #1e293b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #3b82f6;
+}
+.telemetry-label { color: #94a3b8; font-size: 14px; margin-bottom: 5px; }
+.telemetry-value { font-size: 24px; font-weight: bold; color: #10b981; }
+.telemetry-sub { font-size: 12px; color: #64748b; font-weight: normal; }
+
+/* Центральна панель та анімація */
+.header h2 { margin: 0; font-size: 24px; }
+.subtitle { color: #94a3b8; font-size: 14px; }
+.animation-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Таймлайн (повзунок) */
+.timeline-container {
+    background-color: #1e293b;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.controls { display: flex; gap: 10px; }
+.controls button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.timeline-slider { width: 100%; cursor: pointer; }
+.timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Права панель (Інфо та Транскрипт) */
+.info-card, .accessibility-box {
+    background-color: #1e293b;
+    padding: 20px;
+    border-radius: 8px;
+}
+.specs-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #334155;
+}
+.spec-label { color: #94a3b8; font-size: 12px; }
+.spec-val { font-size: 18px; font-weight: bold; }
+.acc-header { color: #cbd5e1; font-weight: bold; margin-bottom: 10px; }
+.acc-text { color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic; }
+
+
+/* --- СТИЛІ БОКОВОГО МЕНЮ (SIDEBAR) --- */
+.sidebar {
+    width: 260px;
+    background-color: #0f172a;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.menu-category {
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 15px 0 5px 0;
+}
+
+/* Обгортка посилання */
+.menu-link {
+    text-decoration: none;
+    color: #94a3b8;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Сам пункт меню */
+.menu-item {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Ефекти при наведенні */
+.menu-link:hover {
+    color: #ffffff;
+    background-color: #1e293b;
+}
+
+/* Активний пункт меню (поточна сторінка) */
+.menu-link.active {
+    color: #ffffff;
+    background-color: #1d4ed8;
+    font-weight: 600;
+}
+
+.menu-link.active .menu-item {
+    color: #ffffff;
+}
+
+/* Cooling — система охолодження */
+.slot-cooling {
+    top: 24%;
+    left: 56%;
+    width: 8%;
+    height: 11%;
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.18);
+}
+
+.slot-cooling:hover {
+    background-color: rgba(239, 68, 68, 0.38);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+/* Додай .slot-ram через кому: */
+.slot-ram,
+.slot-other {
+    top: 63%;
+    left: 50%;
+    width: 21%;
+    height: 10%;
+    border-color: #f97316;
+    background-color: rgba(249, 115, 22, 0.18);
+}
+
+.slot-ram:hover,
+.slot-other:hover {
+    background-color: rgba(249, 115, 22, 0.35);
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+}

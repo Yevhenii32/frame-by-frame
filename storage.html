@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Накопичувачі (SSD/HDD) - Frame by Frame</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .storage-dashboard { 
+            display: flex; 
+            gap: 30px; 
+            padding: 20px; 
+            color: #f8fafc; 
+            flex-grow: 1; 
+        }
+        
+        /* Стилі для візуалізації носія */
+        .drive-visualization { 
+            position: relative; 
+            width: 100%; 
+            aspect-ratio: 16/9; 
+            background-color: #0f172a; 
+            border-radius: 8px; 
+            border: 1px solid #334155; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            padding: 20px;
+        }
+        
+        /* Прогрес-бар копіювання */
+        .progress-container {
+            width: 80%; 
+            height: 24px; 
+            background-color: #1e293b; 
+            border-radius: 12px;
+            border: 1px solid #334155; 
+            overflow: hidden; 
+            margin-top: 30px; 
+            display: none;
+        }
+        .progress-bar {
+            height: 100%; 
+            width: 0%; 
+            background-color: #3b82f6; 
+            transition: width 0.1s linear;
+        }
+
+        /* Перемикач типу накопичувача */
+        .drive-selector { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .drive-btn {
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold;
+            background-color: #1e293b; 
+            color: #94a3b8; 
+            transition: all 0.3s ease;
+        }
+        .drive-btn.active-hdd { background-color: #f59e0b; color: #fff; }
+        .drive-btn.active-ssd { background-color: #10b981; color: #fff; }
+
+        .action-btn {
+            padding: 12px 30px; 
+            background-color: #3b82f6; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+            margin-top: 20px;
+        }
+        .action-btn:disabled { background-color: #475569; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <!-- Уніфіковане бокове меню -->
+    <div class="sidebar">
+        <div class="logo">
+            <span style="color: #3b82f6;">O</span> Frame by Frame
+        </div>
+
+        <div class="menu-category">Навігація</div>
+
+        <a href="index.html" class="menu-link">
+            <div class="menu-item">Головна плата</div>
+        </a>
+        <a href="cpu.html" class="menu-link">
+            <div class="menu-item">Центральний процесор (CPU)</div>
+        </a>
+        <a href="cooling.html" class="menu-link">
+            <div class="menu-item">Система охолодження</div>
+        </a>
+        <a href="gpu.html" class="menu-link">
+            <div class="menu-item">Відеокарта (GPU)</div>
+        </a>
+        <a href="ram.html" class="menu-link">
+            <div class="menu-item">Оперативна пам'ять (RAM)</div>
+        </a>
+        <a href="storage.html" class="menu-link active">
+            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+        </a>
+    </div>
+
+    <!-- Основний дашборд накопичувачів -->
+    <div class="storage-dashboard">
+        
+        <!-- Ліва панель: Інтерактив -->
+        <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
+            <div class="header">
+                <h2 style="margin: 0; font-size: 24px;">Еволюція зберігання даних</h2>
+                <div class="subtitle" style="color: #94a3b8;">Від механіки до чистого кремнію</div>
+            </div>
+
+            <!-- Вибір диска -->
+            <div class="drive-selector">
+                <button id="btn-hdd" class="drive-btn active-hdd">Механічний HDD (7200 RPM)</button>
+                <button id="btn-ssd" class="drive-btn">M.2 NVMe SSD (PCIe 4.0)</button>
+            </div>
+
+            <!-- Зона анімації та тесту -->
+            <div class="drive-visualization">
+                <div id="drive-graphic" style="color: #94a3b8; font-size: 18px;">
+                    Тут буде анімація: магнітна голка диска АБО спалахи чипів пам'яті
+                </div>
+                
+                <div class="progress-container" id="prog-container">
+                    <div class="progress-bar" id="prog-bar"></div>
+                </div>
+                <div id="transfer-status" style="margin-top: 10px; font-family: monospace; color: #cbd5e1; display: none;">
+                    Передача: 0% (0 MB/s)
+                </div>
+
+                <button id="start-transfer" class="action-btn">Запустити бенчмарк (Копіювання 10 GB)</button>
+            </div>
+        </div>
+
+        <!-- Права панель: Телеметрія та доступність -->
+        <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
+            
+            <div class="info-card" style="background-color: #1e293b; padding: 20px; border-radius: 8px; border-top: 4px solid #f59e0b;" id="telemetry-card">
+                <h3 style="margin-top: 0;" id="tech-title">Магнітний запис</h3>
+                
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="color: #94a3b8; font-size: 12px;">Швидкість читання</div>
+                    <div id="speed-val" style="font-size: 20px; font-weight: bold; color: #f59e0b;">~120 MB/s</div>
+                </div>
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
+                    <div style="color: #94a3b8; font-size: 12px;">Затримка (Latency)</div>
+                    <div id="latency-val" style="font-size: 20px; font-weight: bold; color: #fca5a5;">~15 ms</div>
+                </div>
+            </div>
+
+            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт стану:</div>
+                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
+                    "Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Аудіо для звукового дизайну -->
+    <audio id="audio-hdd" src="assets/audio/hdd-scratch.ogg"></audio>
+    <audio id="audio-ssd" src="assets/audio/ssd-digital.ogg"></audio>
+
+    <script>
+        const btnHdd = document.getElementById('btn-hdd');
+        const btnSsd = document.getElementById('btn-ssd');
+        const startBtn = document.getElementById('start-transfer');
+        
+        const progContainer = document.getElementById('prog-container');
+        const progBar = document.getElementById('prog-bar');
+        const transferStatus = document.getElementById('transfer-status');
+        
+        const techTitle = document.getElementById('tech-title');
+        const speedVal = document.getElementById('speed-val');
+        const latencyVal = document.getElementById('latency-val');
+        const telemetryCard = document.getElementById('telemetry-card');
+        const accText = document.getElementById('acc-text');
+        
+        const audioHdd = document.getElementById('audio-hdd');
+        const audioSsd = document.getElementById('audio-ssd');
+
+        let isSsdActive = false;
+        let isTransferring = false;
+
+        // Перемикання на HDD
+        btnHdd.addEventListener('click', () => {
+            if (isTransferring) return;
+            isSsdActive = false;
+            
+            btnHdd.className = "drive-btn active-hdd";
+            btnSsd.className = "drive-btn";
+            
+            techTitle.textContent = "Магнітний запис";
+            speedVal.textContent = "~120 MB/s";
+            speedVal.style.color = "#f59e0b";
+            latencyVal.textContent = "~15 ms";
+            latencyVal.style.color = "#fca5a5";
+            telemetryCard.style.borderTopColor = "#f59e0b";
+            
+            accText.textContent = '"Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."';
+            resetProgress();
+        });
+
+        // Перемикання на SSD
+        btnSsd.addEventListener('click', () => {
+            if (isTransferring) return;
+            isSsdActive = true;
+            
+            btnHdd.className = "drive-btn";
+            btnSsd.className = "drive-btn active-ssd";
+            
+            techTitle.textContent = "Флеш-пам'ять 3D NAND";
+            speedVal.textContent = "~7500 MB/s";
+            speedVal.style.color = "#10b981";
+            latencyVal.textContent = "~0.02 ms";
+            latencyVal.style.color = "#6ee7b7";
+            telemetryCard.style.borderTopColor = "#10b981";
+            
+            accText.textContent = '"Стан: NVMe SSD. Звук: абсолютна тиша (відсутні рухомі частини). Дані блискавично маршрутизуються через контролер пам\'яті без механічних затримок."';
+            resetProgress();
+        });
+
+        function resetProgress() {
+            progContainer.style.display = "none";
+            transferStatus.style.display = "none";
+            progBar.style.width = "0%";
+            progBar.style.backgroundColor = isSsdActive ? "#10b981" : "#f59e0b";
+        }
+
+        // Логіка бенчмарку
+        startBtn.addEventListener('click', () => {
+            if (isTransferring) return;
+            isTransferring = true;
+            
+            startBtn.disabled = true;
+            btnHdd.disabled = true;
+            btnSsd.disabled = true;
+            
+            progContainer.style.display = "block";
+            transferStatus.style.display = "block";
+            progBar.style.width = "0%";
+            progBar.style.backgroundColor = isSsdActive ? "#10b981" : "#f59e0b";
+            
+            const duration = isSsdActive ? 600 : 8000;
+            const speedText = isSsdActive ? "7240 MB/s" : "115 MB/s";
+            
+            try {
+                if (isSsdActive) {
+                    audioSsd.currentTime = 0; 
+                    audioSsd.play().catch(e => console.log('Аудіо недоступне'));
+                } else {
+                    audioHdd.currentTime = 0; 
+                    audioHdd.play().catch(e => console.log('Аудіо недоступне'));
+                }
+            } catch(e) {}
+
+            let start = null;
+            
+            function animateProgress(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                const percentage = Math.min((progress / duration) * 100, 100);
+                
+                progBar.style.width = percentage + "%";
+                transferStatus.textContent = `Передача: ${Math.floor(percentage)}% (${speedText})`;
+                
+                if (percentage < 100) {
+                    requestAnimationFrame(animateProgress);
+                } else {
+                    isTransferring = false;
+                    startBtn.disabled = false;
+                    btnHdd.disabled = false;
+                    btnSsd.disabled = false;
+                    startBtn.textContent = "Перезапустити бенчмарк";
+                    transferStatus.textContent = `Готово! 10 GB скопійовано.`;
+                    
+                    if (!isSsdActive) audioHdd.pause();
+                }
+            }
+            
+            requestAnimationFrame(animateProgress);
+        });
+    </script>
+
+</body>
+</html>

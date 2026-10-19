@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Системи охолодження - Frame by Frame</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Уніфіковане бокове меню -->
+    <div class="sidebar">
+        <div class="logo">
+            <span style="color: #3b82f6;">O</span> Frame by Frame
+        </div>
+
+        <div class="menu-category">Навігація</div>
+
+        <a href="index.html" class="menu-link">
+            <div class="menu-item">Головна плата</div>
+        </a>
+        <a href="cpu.html" class="menu-link">
+            <div class="menu-item">Центральний процесор (CPU)</div>
+        </a>
+        <a href="cooling.html" class="menu-link active">
+            <div class="menu-item">Система охолодження</div>
+        </a>
+        <a href="gpu.html" class="menu-link">
+            <div class="menu-item">Відеокарта (GPU)</div>
+        </a>
+        <a href="ram.html" class="menu-link">
+            <div class="menu-item">Оперативна пам'ять (RAM)</div>
+        </a>
+        <a href="storage.html" class="menu-link">
+            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+        </a>
+    </div>
+
+    <!-- Основна панель керування охолодженням -->
+    <div class="cooling-dashboard" style="display: flex; gap: 30px; padding: 20px; color: #f8fafc; flex-grow: 1;">
+        
+        <!-- Ліва панель: Анімація та управління -->
+        <div class="left-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
+            <div class="header">
+                <h2>Еволюція систем охолодження</h2>
+                <div class="subtitle">Порівняння теплових та звукових характеристик</div>
+            </div>
+
+            <!-- Вікно для анімації розподілу тепла -->
+            <div class="animation-container" id="heat-animation" style="width: 100%; aspect-ratio: 16/9; background-color: #0f172a; border: 2px solid #ef4444; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: border-color 0.5s ease;">
+                <span style="color: #64748b;">Тут буде анімація розподілу тепла</span>
+            </div>
+
+            <!-- Елементи управління (перемикання систем) -->
+            <div class="controls-panel" style="background-color: #1e293b; padding: 20px; border-radius: 8px; display: flex; gap: 15px; justify-content: center;">
+                <button id="btn-old" class="cooling-btn active-btn" style="padding: 12px 24px; background-color: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
+                    Вентилятор (1998 рік)
+                </button>
+                <button id="btn-new" class="cooling-btn" style="padding: 12px 24px; background-color: #334155; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
+                    Водяне охолодження (2024 рік)
+                </button>
+            </div>
+        </div>
+
+        <!-- Права панель: Телеметрія та Доступність -->
+        <div class="right-panel" style="width: 350px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Дані температури (дублювання цифрами для доступності) -->
+            <div class="telemetry-box" style="background-color: #1e293b; padding: 25px; border-radius: 8px; border-left: 4px solid #ef4444;" id="temp-box">
+                <div style="color: #94a3b8; font-size: 14px; margin-bottom: 10px;">Робоча температура:</div>
+                <div id="temp-value" style="font-size: 48px; font-weight: bold; color: #ef4444;">85°C</div>
+                <div id="temp-status" style="font-size: 16px; color: #cbd5e1; margin-top: 5px;">Критичне нагрівання. Високий рівень шуму.</div>
+            </div>
+
+            <!-- Блок доступності та обробки помилок -->
+            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
+                <div class="acc-header" style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт та статус:</div>
+                
+                <!-- Повідомлення про помилку аудіо (приховане за замовчуванням) -->
+                <div id="audio-error-msg" style="display: none; background-color: #7f1d1d; color: #fca5a5; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; border: 1px solid #b91c1c;">
+                    Аудіо недоступне. Прочитайте текстовий опис температурних змін.
+                </div>
+
+                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
+                    "Старий алюмінієвий радіатор з маленьким кулером ледве справляється з відведенням тепла. Звук: гучний, високочастотний гул вентилятора на максимальних обертах (близько 5000 RPM)."
+                </div>
+            </div>
+
+            <!-- Завершення сесії (Логічний місток до головної сторінки) -->
+            <button onclick="window.location.href='index.html'" style="margin-top: auto; padding: 15px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
+                Завершити вивчення
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Аудіо елементи -->
+    <audio id="audio-old" src="assets/audio/old-cooler.ogg" loop preload="auto"></audio>
+    <audio id="audio-new" src="assets/audio/water-cooling.ogg" loop preload="auto"></audio>
+
+    <!-- Скрипт логіки перемикання станів -->
+    <script>
+        const btnOld = document.getElementById('btn-old');
+        const btnNew = document.getElementById('btn-new');
+        
+        const audioOld = document.getElementById('audio-old');
+        const audioNew = document.getElementById('audio-new');
+        const errorMsg = document.getElementById('audio-error-msg');
+        
+        const tempValue = document.getElementById('temp-value');
+        const tempStatus = document.getElementById('temp-status');
+        const tempBox = document.getElementById('temp-box');
+        const heatAnimation = document.getElementById('heat-animation');
+        const accText = document.getElementById('acc-text');
+
+        // Дані для зміни станів
+        const states = {
+            old: {
+                temp: "85°C",
+                status: "Критичне нагрівання. Високий рівень шуму.",
+                color: "#ef4444",
+                btnColor: "#ef4444",
+                text: '"Старий алюмінієвий радіатор з маленьким кулером ледве справляється з відведенням тепла. Звук: гучний, високочастотний гул вентилятора на максимальних обертах."'
+            },
+            new: {
+                temp: "42°C",
+                status: "Стабільне охолодження. Безшумна робота.",
+                color: "#10b981",
+                btnColor: "#10b981",
+                text: '"Система рідинного охолодження ефективно розсіює тепло через мідний водоблок. Звук: ледь помітне шурхотіння помпи та тихий потік повітря крізь масивний радіатор."'
+            }
+        };
+
+        // Функція перемикання стану
+        function switchCooling(type) {
+            const data = states[type];
+
+            // Оновлюємо UI
+            tempValue.textContent = data.temp;
+            tempValue.style.color = data.color;
+            tempStatus.textContent = data.status;
+            tempBox.style.borderLeftColor = data.color;
+            heatAnimation.style.borderColor = data.color;
+            accText.textContent = data.text;
+
+            // Змінюємо вигляд кнопок
+            btnOld.style.backgroundColor = type === 'old' ? data.btnColor : "#334155";
+            btnNew.style.backgroundColor = type === 'new' ? data.btnColor : "#334155";
+
+            // Керуємо звуком
+            try {
+                if (type === 'old') {
+                    audioNew.pause();
+                    audioNew.currentTime = 0;
+                    audioOld.play().catch(handleAudioError);
+                } else {
+                    audioOld.pause();
+                    audioOld.currentTime = 0;
+                    audioNew.play().catch(handleAudioError);
+                }
+                errorMsg.style.display = "none";
+            } catch (e) {
+                handleAudioError();
+            }
+        }
+
+        // Обробка помилок аудіо
+        function handleAudioError() {
+            errorMsg.style.display = "block";
+        }
+
+        // Слухачі подій
+        btnOld.addEventListener('click', () => switchCooling('old'));
+        btnNew.addEventListener('click', () => switchCooling('new'));
+
+        audioOld.addEventListener('error', handleAudioError);
+        audioNew.addEventListener('error', handleAudioError);
+    </script>
+</body>
+</html>

@@ -8,33 +8,58 @@
 </head>
 <body>
 
+    <!-- Уніфіковане бокове меню -->
     <div class="sidebar">
-        <a href="index.html" class="back-button">← Назад до плати</a>
-        
-        <div class="menu-category" style="margin-top: 20px;">Телеметрія</div>
-        
+        <div class="logo">
+            <span style="color: #3b82f6;">O</span> Frame by Frame
+        </div>
+
+        <div class="menu-category">Навігація</div>
+
+        <a href="index.html" class="menu-link">
+            <div class="menu-item">Головна плата</div>
+        </a>
+        <a href="cpu.html" class="menu-link active">
+            <div class="menu-item">Центральний процесор (CPU)</div>
+        </a>
+        <a href="cooling.html" class="menu-link">
+            <div class="menu-item">Система охолодження</div>
+        </a>
+        <a href="gpu.html" class="menu-link">
+            <div class="menu-item">Відеокарта (GPU)</div>
+        </a>
+        <a href="ram.html" class="menu-link">
+            <div class="menu-item">Оперативна пам'ять (RAM)</div>
+        </a>
+        <a href="storage.html" class="menu-link">
+            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+        </a>
+
+        <div class="menu-category" style="margin-top: 20px;">Телеметрія CPU</div>
+
         <div class="telemetry-block">
             <div class="telemetry-label">Тактова частота (GHz)</div>
             <div class="telemetry-value">5.70 <span class="telemetry-sub">Boost</span></div>
         </div>
-        
+
         <div class="telemetry-block">
             <div class="telemetry-label">Кількість транзисторів</div>
             <div class="telemetry-value">26.0B <span class="telemetry-sub">Units</span></div>
         </div>
-        
+
         <div class="telemetry-block">
             <div class="telemetry-label">Техпроцес (nm)</div>
             <div class="telemetry-value">3 <span class="telemetry-sub">Node</span></div>
         </div>
     </div>
 
+    <!-- Основний контент дашборду -->
     <div class="cpu-dashboard">
-        
+
         <div class="center-panel">
             <div class="header">
                 <h2>The Engine of Modern Computing</h2>
-                <div class="subtitle">Еволюція процесорів (1990 - 2024)</div>
+                <div class="subtitle">Еволюція процесорів (1990 - 2026)</div>
             </div>
 
             <div class="animation-container">
@@ -52,16 +77,16 @@
                     <span>1999</span>
                     <span>2008</span>
                     <span>2017</span>
-                    <span>2026</span> 
+                    <span>2026</span>
                 </div>
             </div>
         </div>
-*
+
         <div class="right-panel">
             <div class="info-card">
                 <h3>Modern Chiplet Architecture</h3>
                 <p class="info-text">Спеціалізовані кремнієві блоки масштабують продуктивність, покращуючи ефективність та гнучкість дизайну.</p>
-                
+
                 <div class="specs-grid">
                     <div class="spec-item">
                         <div class="spec-label">Ядра / Потоки</div>
@@ -81,6 +106,53 @@
         </div>
 
     </div>
+
+    <!-- Скрипт інтерактивного повзунка -->
+    <script>
+        // База даних еволюції по роках
+        const cpuData = {
+            1990: { freq: "0.03", trans: "1.2M", node: "800", cores: "1 / 1T", tdp: "5 W", desc: "Епоха ранніх 32-бітних процесорів. Архітектура фокусується на базових обчисленнях без складної багатозадачності." },
+            1999: { freq: "0.50", trans: "9.5M", node: "250", cores: "1 / 1T", tdp: "28 W", desc: "Поява мультимедійних інструкцій та стрімке зростання тактових частот. Процесори отримують інтегровану кеш-пам'ять L2." },
+            2008: { freq: "2.66", trans: "731M", node: "45", cores: "4 / 4T", tdp: "95 W", desc: "Перехід до багатоядерності. Замість нарощування частоти виробники фокусуються на паралельних обчисленнях." },
+            2017: { freq: "3.60", trans: "4.8B", node: "14", cores: "8 / 16T", tdp: "95 W", desc: "Повернення конкуренції на ринку приносить стрибок кількості ядер. Розвиток технологій багатопотоковості." },
+            2026: { freq: "5.70", trans: "26.0B", node: "3", cores: "16 / 32T", tdp: "170 W", desc: "У 2026 році модульні чиплети дозволяють проєктувальникам комбінувати обчислювальні блоки та блоки вводу/виводу, забезпечуючи більше ядер без створення одного величезного кристала." }
+        };
+
+        // Отримуємо елементи DOM
+        const slider = document.querySelector('.timeline-slider');
+        const freqValue = document.querySelectorAll('.telemetry-value')[0];
+        const transValue = document.querySelectorAll('.telemetry-value')[1];
+        const nodeValue = document.querySelectorAll('.telemetry-value')[2];
+        const coresValue = document.querySelectorAll('.spec-val')[0];
+        const tdpValue = document.querySelectorAll('.spec-val')[1];
+        const transcriptText = document.querySelector('.acc-text');
+
+        // Функція оновлення інтерфейсу
+        function updateDashboard(year) {
+            const availableYears = Object.keys(cpuData).map(Number);
+            const closestYear = availableYears.reduce((prev, curr) => 
+                Math.abs(curr - year) < Math.abs(prev - year) ? curr : prev
+            );
+
+            const data = cpuData[closestYear];
+
+            // Оновлюємо значення на сторінці
+            freqValue.innerHTML = `${data.freq} <span class="telemetry-sub">Boost</span>`;
+            transValue.innerHTML = `${data.trans} <span class="telemetry-sub">Units</span>`;
+            nodeValue.innerHTML = `${data.node} <span class="telemetry-sub">Node</span>`;
+            coresValue.textContent = data.cores;
+            tdpValue.textContent = data.tdp;
+            transcriptText.textContent = `"${data.desc}"`;
+        }
+
+        // Слухаємо зміни повзунка
+        slider.addEventListener('input', (e) => {
+            updateDashboard(e.target.value);
+        });
+
+        // Ініціалізація стартових значень при завантаженні
+        updateDashboard(slider.value);
+    </script>
 
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -13,14 +12,38 @@
         <div class="logo">
             <span style="color: #3b82f6;">O</span> Frame by Frame
         </div>
-
-        <div class="menu-category">Компоненти</div>
-
-        <div class="menu-item">Центральний процесор (CPU)</div>
-        <div class="menu-item">Система охолодження</div>
-        <div class="menu-item">Відеокарта (GPU)</div>
-        <div class="menu-item">Оперативна пам'ять (RAM)</div>
-        <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+    
+        <div class="menu-category">Навігація</div>
+    
+        <!-- Головна / Плата -->
+        <a href="index.html" class="menu-link active">
+            <div class="menu-item">Головна плата</div>
+        </a>
+    
+        <!-- CPU -->
+        <a href="cpu.html" class="menu-link">
+            <div class="menu-item">Центральний процесор (CPU)</div>
+        </a>
+    
+        <!-- Cooling -->
+        <a href="cooling.html" class="menu-link">
+            <div class="menu-item">Система охолодження</div>
+        </a>
+    
+        <!-- GPU -->
+        <a href="gpu.html" class="menu-link">
+            <div class="menu-item">Відеокарта (GPU)</div>
+        </a>
+    
+        <!-- RAM -->
+        <a href="ram.html" class="menu-link">
+            <div class="menu-item">Оперативна пам'ять (RAM)</div>
+        </a>
+    
+        <!-- Storage -->
+        <a href="storage.html" class="menu-link">
+            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+        </a>
     </div>
 
     <div class="main-content">
@@ -31,27 +54,30 @@
 
         <div class="motherboard-container">
 
-            <!-- CPU -->
-            <a href="cpu.html"
-               class="interactive-zone slot-cpu"
-               style="text-decoration: none;">
-                <span class="tooltip">CPU: Анімована еволюція (Клікніть)</span>
+            <!-- 1. CPU (Процесор) -->
+            <a href="cpu.html" class="interactive-zone slot-cpu">
+                <span class="tooltip">Центральний процесор CPU (Клікніть)</span>
             </a>
 
-            <!-- SSD -->
-            <div class="interactive-zone slot-storage">
-                <span class="tooltip">Накопичувач SSD</span>
-            </div>
+            <!-- 2. Cooling (Система охолодження) -->
+            <a href="cooling.html" class="interactive-zone slot-cooling">
+                <span class="tooltip">Система охолодження (Клікніть)</span>
+            </a>
 
-            <!-- GPU -->
-            <div class="interactive-zone slot-gpu">
-                <span class="tooltip">Відеокарта GPU</span>
-            </div>
+            <!-- 3. GPU (Відеокарта) -->
+            <a href="gpu.html" class="interactive-zone slot-gpu">
+                <span class="tooltip">Відеокарта GPU (Клікніть)</span>
+            </a>
 
-            <!-- RAM -->
-            <div class="interactive-zone slot-other">
-                <span class="tooltip">Оперативна пам'ять RAM</span>
-            </div>
+            <!-- 4. RAM (Оперативна пам'ять) -->
+            <a href="ram.html" class="interactive-zone slot-ram slot-other">
+                <span class="tooltip">Оперативна пам'ять RAM (Клікніть)</span>
+            </a>
+
+            <!-- 5. SSD (Накопичувач) -->
+            <a href="storage.html" class="interactive-zone slot-storage">
+                <span class="tooltip">Накопичувач SSD/HDD (Клікніть)</span>
+            </a>
 
         </div>
     </div>

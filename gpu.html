@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Відеокарта (GPU) - Frame by Frame</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Стилі для сторінки GPU */
+        .gpu-dashboard { 
+            display: flex; 
+            gap: 30px; 
+            padding: 20px; 
+            color: #f8fafc; 
+            flex-grow: 1; 
+        }
+        .render-window { 
+            position: relative; 
+            width: 100%; 
+            aspect-ratio: 16/9; 
+            background-color: #0f172a; 
+            border-radius: 8px; 
+            border: 1px solid #334155; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .rtx-toggle-container { 
+            background-color: #1e293b; 
+            padding: 20px; 
+            border-radius: 8px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 20px; 
+        }
+        
+        /* Стиль для перемикача RTX */
+        .switch { 
+            position: relative; 
+            display: inline-block; 
+            width: 60px; 
+            height: 34px; 
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { 
+            position: absolute; 
+            cursor: pointer; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background-color: #475569; 
+            transition: .4s; 
+            border-radius: 34px; 
+        }
+        .slider:before { 
+            position: absolute; 
+            content: ""; 
+            height: 26px; 
+            width: 26px; 
+            left: 4px; 
+            bottom: 4px; 
+            background-color: white; 
+            transition: .4s; 
+            border-radius: 50%; 
+        }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+
+    <!-- Уніфіковане бокове меню -->
+    <div class="sidebar">
+        <div class="logo">
+            <span style="color: #3b82f6;">O</span> Frame by Frame
+        </div>
+
+        <div class="menu-category">Навігація</div>
+
+        <a href="index.html" class="menu-link">
+            <div class="menu-item">Головна плата</div>
+        </a>
+        <a href="cpu.html" class="menu-link">
+            <div class="menu-item">Центральний процесор (CPU)</div>
+        </a>
+        <a href="cooling.html" class="menu-link">
+            <div class="menu-item">Система охолодження</div>
+        </a>
+        <a href="gpu.html" class="menu-link active">
+            <div class="menu-item">Відеокарта (GPU)</div>
+        </a>
+        <a href="ram.html" class="menu-link">
+            <div class="menu-item">Оперативна пам'ять (RAM)</div>
+        </a>
+        <a href="storage.html" class="menu-link">
+            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+        </a>
+
+        <div class="menu-category" style="margin-top: 20px;">Телеметрія GPU</div>
+        <div class="telemetry-block" style="background-color: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #10b981;">
+            <div style="color: #94a3b8; font-size: 14px;">Відеопам'ять (VRAM)</div>
+            <div id="vram-val" style="font-size: 24px; font-weight: bold; color: #10b981;">24 GB <span style="font-size: 12px; color: #64748b;">GDDR6X</span></div>
+        </div>
+        <div class="telemetry-block" style="background-color: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #3b82f6;">
+            <div style="color: #94a3b8; font-size: 14px;">CUDA Ядра</div>
+            <div id="cuda-val" style="font-size: 24px; font-weight: bold; color: #3b82f6;">16384</div>
+        </div>
+    </div>
+
+    <!-- Основна панель дашборду GPU -->
+    <div class="gpu-dashboard">
+        
+        <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
+            <div class="header">
+                <h2 style="margin: 0; font-size: 24px;">Графічний процесор (GPU)</h2>
+                <div class="subtitle" style="color: #94a3b8;">Генерація світів: Кадр за кадром</div>
+            </div>
+
+            <!-- Вікно для порівняння графіки -->
+            <div class="render-window" id="graphics-window">
+                <span id="render-text" style="color: #94a3b8; font-size: 18px; z-index: 2;">Тут буде 2D-анімація порівняння графіки</span>
+                <!-- Заглушки для фонових зображень -->
+                <div id="bg-raster" style="position: absolute; inset: 0; background: linear-gradient(45deg, #1e293b, #0f172a); transition: opacity 0.5s; opacity: 1;"></div>
+                <div id="bg-rtx" style="position: absolute; inset: 0; background: linear-gradient(45deg, #020617, #1d4ed8); transition: opacity 0.5s; opacity: 0;"></div>
+            </div>
+
+            <!-- Інтерактивний блок перемикання -->
+            <div class="rtx-toggle-container">
+                <span style="font-weight: bold; color: #cbd5e1;">Базова растеризація</span>
+                <label class="switch">
+                    <input type="checkbox" id="rtx-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight: bold; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">Трасування променів (RTX ON)</span>
+            </div>
+        </div>
+
+        <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
+            <div class="info-card" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
+                <h3 style="margin-top: 0;">Обчислення світла</h3>
+                <p style="color: #94a3b8; font-size: 14px; line-height: 1.5;">Сучасні відеокарти не просто малюють текстури, вони фізично вираховують поведінку кожного променя світла, відбиття та тіні у реальному часі.</p>
+                
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
+                    <div style="color: #94a3b8; font-size: 12px;">Продуктивність (TFLOPS)</div>
+                    <div id="tflops-val" style="font-size: 20px; font-weight: bold; color: #ef4444;">82.6</div>
+                </div>
+            </div>
+
+            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт стану:</div>
+                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
+                    "Режим растеризації: Тіні статичні, відбиття на поверхнях імітуються програмно. Навантаження на GPU середнє."
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Інтерактивний скрипт перемикання режимів -->
+    <script>
+        const rtxToggle = document.getElementById('rtx-toggle');
+        const bgRaster = document.getElementById('bg-raster');
+        const bgRtx = document.getElementById('bg-rtx');
+        const accText = document.getElementById('acc-text');
+        const tflopsVal = document.getElementById('tflops-val');
+
+        rtxToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                // Увімкнено Ray Tracing
+                bgRaster.style.opacity = '0';
+                bgRtx.style.opacity = '1';
+                accText.textContent = '"Режим трасування променів: Світло фізично коректно відбивається від води та металу. З\'являються м\'які, реалістичні тіні. Навантаження на GPU максимальне."';
+                tflopsVal.textContent = "120.4 (з тензорними ядрами)";
+                tflopsVal.style.color = "#10b981";
+            } else {
+                // Базова растеризація
+                bgRaster.style.opacity = '1';
+                bgRtx.style.opacity = '0';
+                accText.textContent = '"Режим растеризації: Тіні статичні, відбиття на поверхнях імітуються програмно. Навантаження на GPU середнє."';
+                tflopsVal.textContent = "82.6";
+                tflopsVal.style.color = "#ef4444";
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оперативна пам'ять (RAM) - Frame by Frame</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .ram-dashboard { 
+            display: flex; 
+            gap: 30px; 
+            padding: 20px; 
+            color: #f8fafc; 
+            flex-grow: 1; 
+        }
+        
+        /* Візуалізація шини даних */
+        .bus-visualization {
+            position: relative; 
+            width: 100%; 
+            aspect-ratio: 16/9; 
+            background-color: #0f172a;
+            border-radius: 8px; 
+            border: 1px solid #334155; 
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            padding: 0 40px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Анімація пакетів даних */
+        .data-track {
+            width: 100%; 
+            height: 4px; 
+            background-color: #1e293b; 
+            position: relative; 
+            margin: 15px 0; 
+            overflow: hidden;
+        }
+        .data-packet {
+            position: absolute; 
+            top: -3px; 
+            left: -20px; 
+            width: 10px; 
+            height: 10px;
+            background-color: #3b82f6; 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px #3b82f6;
+            opacity: 0;
+        }
+
+        /* Швидкості для різних поколінь DDR */
+        .ddr3-speed { animation: moveData 2s linear infinite; }
+        .ddr4-speed { animation: moveData 1s linear infinite; }
+        .ddr5-speed { animation: moveData 0.4s linear infinite; }
+        
+        @keyframes moveData {
+            0% { left: 0; opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        /* Кнопки поколінь */
+        .gen-selector { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .gen-btn {
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold;
+            background-color: #1e293b; 
+            color: #94a3b8; 
+            transition: all 0.3s;
+        }
+        .gen-btn.active { background-color: #3b82f6; color: white; }
+
+        /* Кнопка живлення (Енергозалежність) */
+        .power-btn {
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 2px solid #ef4444; 
+            background: transparent;
+            color: #ef4444; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.3s;
+        }
+        .power-btn.off { background-color: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- Уніфіковане бокове меню -->
+    <div class="sidebar">
+        <div class="logo">
+            <span style="color: #3b82f6;">O</span> Frame by Frame
+        </div>
+
+        <div class="menu-category">Навігація</div>
+
+        <a href="index.html" class="menu-link">
+            <div class="menu-item">Головна плата</div>
+        </a>
+        <a href="cpu.html" class="menu-link">
+            <div class="menu-item">Центральний процесор (CPU)</div>
+        </a>
+        <a href="cooling.html" class="menu-link">
+            <div class="menu-item">Система охолодження</div>
+        </a>
+        <a href="gpu.html" class="menu-link">
+            <div class="menu-item">Відеокарта (GPU)</div>
+        </a>
+        <a href="ram.html" class="menu-link active">
+            <div class="menu-item">Оперативна пам'ять (RAM)</div>
+        </a>
+        <a href="storage.html" class="menu-link">
+            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+        </a>
+    </div>
+
+    <!-- Основний дашборд RAM -->
+    <div class="ram-dashboard">
+        
+        <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
+            <div class="header">
+                <h2 style="margin: 0; font-size: 24px;">Оперативна пам'ять (DDR)</h2>
+                <div class="subtitle" style="color: #94a3b8;">Пропускна здатність та енергозалежність</div>
+            </div>
+
+            <!-- Вибір покоління DDR -->
+            <div class="gen-selector">
+                <button id="btn-ddr3" class="gen-btn">DDR3 (2007)</button>
+                <button id="btn-ddr4" class="gen-btn">DDR4 (2014)</button>
+                <button id="btn-ddr5" class="gen-btn active">DDR5 (2020)</button>
+            </div>
+
+            <!-- Візуалізація шини даних -->
+            <div class="bus-visualization" id="bus-vis">
+                <div style="position: absolute; top: 20px; left: 40px; color: #64748b;">Процесор (CPU)</div>
+                <div style="position: absolute; top: 20px; right: 40px; color: #64748b;">Пам'ять (RAM)</div>
+                
+                <!-- Доріжки для пакетів даних -->
+                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0s;"></div></div>
+                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.1s;"></div></div>
+                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.2s;"></div></div>
+                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.3s;"></div></div>
+            </div>
+            
+            <button id="power-toggle" class="power-btn">Симулювати знеструмлення (Power Off)</button>
+        </div>
+
+        <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
+            <div class="info-card" style="background-color: #1e293b; padding: 20px; border-radius: 8px; border-top: 4px solid #3b82f6;" id="ram-card">
+                <h3 style="margin-top: 0;" id="ram-title">DDR5 SDRAM</h3>
+                
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="color: #94a3b8; font-size: 12px;">Пропускна здатність</div>
+                    <div id="speed-val" style="font-size: 20px; font-weight: bold; color: #3b82f6;">51.2 GB/s</div>
+                </div>
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
+                    <div style="color: #94a3b8; font-size: 12px;">Робоча напруга</div>
+                    <div id="voltage-val" style="font-size: 20px; font-weight: bold; color: #10b981;">1.1 V</div>
+                </div>
+            </div>
+
+            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт стану:</div>
+                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
+                    "Стан: DDR5. Пакети даних передаються надзвичайно швидко. Пам'ять працює стабільно, постійно обмінюючись даними з процесором."
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Аудіоефекти -->
+    <audio id="audio-poweroff" src="assets/audio/power-down.ogg"></audio>
+
+    <script>
+        const btnDdr3 = document.getElementById('btn-ddr3');
+        const btnDdr4 = document.getElementById('btn-ddr4');
+        const btnDdr5 = document.getElementById('btn-ddr5');
+        const powerToggle = document.getElementById('power-toggle');
+        const packets = document.querySelectorAll('.data-packet');
+        const busVis = document.getElementById('bus-vis');
+        
+        const ramTitle = document.getElementById('ram-title');
+        const speedVal = document.getElementById('speed-val');
+        const voltageVal = document.getElementById('voltage-val');
+        const accText = document.getElementById('acc-text');
+        const audioPowerOff = document.getElementById('audio-poweroff');
+        
+        let isPowerOn = true;
+
+        function setGeneration(gen) {
+            if (!isPowerOn) return;
+
+            btnDdr3.className = "gen-btn"; 
+            btnDdr4.className = "gen-btn"; 
+            btnDdr5.className = "gen-btn";
+            
+            packets.forEach(packet => {
+                packet.classList.remove('ddr3-speed', 'ddr4-speed', 'ddr5-speed');
+                packet.classList.add(`${gen}-speed`);
+            });
+
+            if (gen === 'ddr3') {
+                btnDdr3.className = "gen-btn active";
+                ramTitle.textContent = "DDR3 SDRAM"; 
+                speedVal.textContent = "17.0 GB/s"; 
+                voltageVal.textContent = "1.5 V";
+                accText.textContent = '"Стан: DDR3. Пакети даних передаються з базовою швидкістю. Стандарт минулих років."';
+            } else if (gen === 'ddr4') {
+                btnDdr4.className = "gen-btn active";
+                ramTitle.textContent = "DDR4 SDRAM"; 
+                speedVal.textContent = "25.6 GB/s"; 
+                voltageVal.textContent = "1.2 V";
+                accText.textContent = '"Стан: DDR4. Швидкість передачі візуально зросла. Напруга знизилась, що покращило енергоефективність."';
+            } else {
+                btnDdr5.className = "gen-btn active";
+                ramTitle.textContent = "DDR5 SDRAM"; 
+                speedVal.textContent = "51.2 GB/s"; 
+                voltageVal.textContent = "1.1 V";
+                accText.textContent = '"Стан: DDR5. Пакети даних передаються надзвичайно швидко. Сучасний стандарт обміну даними."';
+            }
+        }
+
+        btnDdr3.addEventListener('click', () => setGeneration('ddr3'));
+        btnDdr4.addEventListener('click', () => setGeneration('ddr4'));
+        btnDdr5.addEventListener('click', () => setGeneration('ddr5'));
+
+        // Логіка знеструмлення (Енергозалежність)
+        powerToggle.addEventListener('click', () => {
+            isPowerOn = !isPowerOn;
+            
+            if (!isPowerOn) {
+                powerToggle.textContent = "Увімкнути живлення (Power On)";
+                powerToggle.className = "power-btn off";
+                busVis.style.opacity = "0.2";
+                packets.forEach(packet => packet.style.display = "none");
+                
+                accText.textContent = '"Живлення вимкнено. Усі дані з оперативної пам\'яті миттєво стерто (енергозалежність). Передача даних зупинена."';
+                
+                try {
+                    audioPowerOff.currentTime = 0;
+                    audioPowerOff.play();
+                } catch(e) {}
+                
+            } else {
+                powerToggle.textContent = "Симулювати знеструмлення (Power Off)";
+                powerToggle.className = "power-btn";
+                busVis.style.opacity = "1";
+                packets.forEach(packet => packet.style.display = "block");
+                setGeneration('ddr5');
+            }
+        });
+    </script>
+
+</body>
+</html>
