@@ -38,56 +38,68 @@
     <div class="main-content">
         <div class="header">
             <h2>Інтерактивна карта материнської плати</h2>
-            <button id="sound-toggle-btn" type="button" class="audio-toggle" style="color: #e2e8f0; cursor: pointer;">🔊 Звук: Увімк.</button>
+            <span style="font-size: 13px; color: #94a3b8;">Наведіть або натисніть на вузол плати для переходу</span>
         </div>
 
         <div class="motherboard-container" id="mb-container">
-            <a href="cpu.html" class="interactive-zone slot-cpu" aria-label="Центральний процесор CPU">
-                <span class="tooltip">Центральний процесор CPU (Клікніть)</span>
+            <a href="cpu.html" class="interactive-zone slot-cpu"
+               data-title="Сокет CPU (LGA / AM5)"
+               data-desc="Центральний процесор: до 26 млрд транзисторів, 3 нм техпроцес. Клікніть для переходу до еволюції архітектур.">
+                <span class="hotspot-tag">CPU</span>
             </a>
 
-            <a href="cooling.html" class="interactive-zone slot-cooling" aria-label="Система охолодження">
-                <span class="tooltip">Система охолодження (Клікніть)</span>
+            <a href="cooling.html" class="interactive-zone slot-cooling"
+               data-title="Зона VRM та система охолодження"
+               data-desc="Відведення тепла від процесора та ланцюгів живлення. Порівняння повітряного кулера (85°C) та СРО (42°C).">
+                <span class="hotspot-tag">Охолодження</span>
             </a>
 
-            <a href="gpu.html" class="interactive-zone slot-gpu" aria-label="Відеокарта GPU">
-                <span class="tooltip">Відеокарта GPU (Клікніть)</span>
+            <a href="gpu.html" class="interactive-zone slot-gpu"
+               data-title="Слот PCIe 5.0 ×16 (Відеокарта)"
+               data-desc="Високошвидкісна шина для графічного прискорювача. Інтерактивне порівняння растеризації та Ray Tracing.">
+                <span class="hotspot-tag">GPU (PCIe)</span>
             </a>
 
-            <a href="ram.html" class="interactive-zone slot-ram slot-other" aria-label="Оперативна пам'ять RAM">
-                <span class="tooltip">Оперативна пам'ять RAM (Клікніть)</span>
+            <a href="ram.html" class="interactive-zone slot-ram"
+               data-title="Слоти DDR5 SDRAM"
+               data-desc="Оперативна пам'ять із пропускною здатністю до 51.2 GB/s. Симуляція енергозалежності та заповнення комірок.">
+                <span class="hotspot-tag">RAM (DDR5)</span>
             </a>
 
-            <a href="storage.html" class="interactive-zone slot-storage" aria-label="Накопичувач SSD/HDD">
-                <span class="tooltip">Накопичувач SSD/HDD (Клікніть)</span>
+            <a href="storage.html" class="interactive-zone slot-storage"
+               data-title="Інтерфейс M.2 NVMe / SATA"
+               data-desc="Постійна пам'ять. Бенчмарк швидкості читання та затримок між механічним HDD і твердотільним SSD.">
+                <span class="hotspot-tag">SSD / HDD</span>
             </a>
+
+            <div class="component-hud" id="component-hud">
+                <div class="component-hud-title" id="hud-title">Архітектура X990</div>
+                <div class="component-hud-desc" id="hud-desc">Оберіть будь-який пульсуючий індикатор на материнській платі, щоб відкрити інтерактивну симуляцію компонента.</div>
+            </div>
         </div>
     </div>
 
     <script src="audio-engine.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const soundBtn = document.getElementById('sound-toggle-btn');
-            if (soundBtn) {
-                const updateBtn = () => {
-                    soundBtn.textContent = SoundEngine.getMuted() ? '🔇 Звук: Вимк.' : '🔊 Звук: Увімк.';
-                };
-                updateBtn();
-                soundBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    SoundEngine.setMuted(!SoundEngine.getMuted());
-                    if (!SoundEngine.getMuted()) SoundEngine.playAmbient();
-                    updateBtn();
-                });
-            }
-
             document.body.addEventListener('click', () => {
                 if (!SoundEngine.getMuted()) SoundEngine.playAmbient();
             }, { once: true });
 
-            // Zoom-in камери на обрану деталь перед переходом до наступної сцени
             const mbContainer = document.getElementById('mb-container');
+            const hudTitle = document.getElementById('hud-title');
+            const hudDesc = document.getElementById('hud-desc');
+
             document.querySelectorAll('.interactive-zone').forEach(zone => {
+                // Оновлення HUD-картки при наведенні або фокусі з клавіатури
+                const showInfo = () => {
+                    hudTitle.textContent = zone.dataset.title;
+                    hudDesc.textContent = zone.dataset.desc;
+                };
+                zone.addEventListener('mouseenter', showInfo);
+                zone.addEventListener('focus', showInfo);
+
+                // Плавний Zoom-in перехід при кліку
                 zone.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetUrl = zone.getAttribute('href');

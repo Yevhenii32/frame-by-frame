@@ -150,17 +150,23 @@
 
     </div>
 
-    <script>
+<script>
         const rtxToggle = document.getElementById('rtx-toggle');
         const switchLabel = document.querySelector('.switch');
         const accText = document.getElementById('acc-text');
         const tflopsVal = document.getElementById('tflops-val');
         const graphicsWindow = document.getElementById('graphics-window');
 
-        rtxToggle.addEventListener('change', (e) => {
-            switchLabel.setAttribute('aria-checked', String(e.target.checked));
-            if (e.target.checked) {
-                accText.textContent = '"Режим трасування променів: Світло фізично коректно відбивається від дзеркальної поверхні. З\'являються м\'які тіні та вторинні відблиски. Навантаження на GPU максимальне."';
+        let splitRatio = 0.5;      // Поточна позиція шторки (0..1)
+        let targetRatio = 0.5;     // Цільова позиція при кліку на тумблер
+        let isDragging = false;
+
+        function updateTelemetryUI(rtxActive) {
+            rtxToggle.checked = rtxActive;
+            switchLabel.setAttribute('aria-checked', String(rtxActive));
+
+            if (rtxActive) {
+                accText.textContent = '"Режим трасування променів (RTX ON): Світло фізично коректно відбивається від дзеркальної поверхні. З\'являються м\'які тіні, кольорова каустика та вторинні відблиски."';
                 tflopsVal.textContent = "120.4 (RT Cores)";
                 tflopsVal.style.color = "#10b981";
                 graphicsWindow.style.borderColor = "#10b981";
@@ -170,13 +176,19 @@
                 tflopsVal.style.color = "#ef4444";
                 graphicsWindow.style.borderColor = "#334155";
             }
+        }
+
+        rtxToggle.addEventListener('change', (e) => {
+            targetRatio = e.target.checked ? 0.88 : 0.12;
+            updateTelemetryUI(e.target.checked);
         });
 
         switchLabel.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                rtxToggle.checked = !rtxToggle.checked;
-                rtxToggle.dispatchEvent(new Event('change'));
+                const nextState = !rtxToggle.checked;
+                targetRatio = nextState ? 0.88 : 0.12;
+                updateTelemetryUI(nextState);
             }
         });
 
@@ -184,6 +196,7 @@
             const canvas = document.getElementById('gpuCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
+            canvas.style.cursor = 'ew-resize';
 
             let phase = 0;
 
@@ -197,82 +210,91 @@
             resize();
             setTimeout(() => document.getElementById('gpu-loader')?.classList.add('hidden'), 250);
 
-            canvas.addEventListener('click', () => {
-                rtxToggle.checked = !rtxToggle.checked;
-                rtxToggle.dispatchEvent(new Event('change'));
+            function setSplitFromClientX(clientX) {
+                const rect = canvas.getBoundingClientRect();
+                const raw = (clientX - rect.left) / rect.width;
+                splitRatio = Math.max(0.05, Math.min(0.95, raw));
+                targetRatio = splitRatio;
+                updateTelemetryUI(splitRatio > 0.5);
+            }
+
+            canvas.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                canvas.setPointerCapture(e.pointerId);
+                setSplitFromClientX(e.clientX);
             });
 
-            function draw() {
-                phase += 0.03;
-                const w = canvas.clientWidth;
-                const h = canvas.clientHeight;
-                ctx.clearRect(0, 0, w, h);
+            canvas.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                setSplitFromClientX(e.clientX);
+            });
 
-                const rtxOn = rtxToggle.checked;
-                const lightX = w * 0.2;
-                const lightY = 45;
+            canvas.addEventListener('pointerup', (e) => {
+                isDragging = false;
+                canvas.releasePointerCapture(e.pointerId);
+            });
+
+            // Спільна функція малювання самої сцени у двох режимах: isRtx = false / true
+            function renderScene(w, h, isRtx) {
+                const lightX = w * 0.22;
+                const lightY = 48;
                 const sphereX = w * 0.48;
                 const sphereY = h * 0.56;
-                const floorY = h - 35;
+                const radius = Math.min(w, h) * 0.11;
+                const floorY = h - 38;
                 const mirrorX = w * 0.78;
 
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(30, floorY, w - 60, 8);
-                ctx.fillStyle = rtxOn ? '#38bdf8' : '#475569';
-                ctx.fillRect(mirrorX, 40, 8, floorY - 40);
-
-                ctx.fillStyle = '#fbbf24';
-                ctx.beginPath();
-                ctx.arc(lightX, lightY, 10, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#e2e8f0';
-                ctx.font = '11px system-ui, sans-serif';
-                ctx.fillText('Джерело світла', lightX - 35, lightY - 15);
-
-                if (!rtxOn) {
-                    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-                    ctx.beginPath();
-                    ctx.ellipse(sphereX + 25, floorY, 45, 6, 0, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
-                    ctx.setLineDash([5, 5]);
-                    ctx.beginPath();
-                    ctx.moveTo(lightX, lightY);
-                    ctx.lineTo(sphereX, sphereY - 30);
-                    ctx.moveTo(lightX, lightY);
-                    ctx.lineTo(sphereX, sphereY + 30);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-
-                    ctx.fillStyle = '#3b82f6';
-                    ctx.beginPath();
-                    ctx.arc(sphereX, sphereY, 32, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#94a3b8';
-                    ctx.font = '12px system-ui, sans-serif';
-                    ctx.fillText('Відбиття у дзеркалі відсутнє (тільки Z-буфер)', mirrorX - 250, 65);
+                // Фон сцени
+                const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+                if (isRtx) {
+                    bgGrad.addColorStop(0, '#091526');
+                    bgGrad.addColorStop(1, '#0b1e2d');
                 } else {
-                    const grad = ctx.createRadialGradient(sphereX + 30, floorY, 5, sphereX + 30, floorY, 60);
-                    grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
-                    grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
-                    ctx.fillStyle = grad;
+                    bgGrad.addColorStop(0, '#0f172a');
+                    bgGrad.addColorStop(1, '#0f172a');
+                }
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, w, h);
+
+                // Підлога
+                ctx.fillStyle = isRtx ? '#16283d' : '#1e293b';
+                ctx.fillRect(28, floorY, w - 56, 10);
+
+                // Дзеркальна панель
+                ctx.fillStyle = isRtx ? '#38bdf8' : '#475569';
+                ctx.fillRect(mirrorX, 38, 8, floorY - 38);
+
+                if (isRtx) {
+                    // М'яке глобальне освітлення від джерела
+                    const ambientGlow = ctx.createRadialGradient(lightX, lightY, 6, lightX, lightY, w * 0.55);
+                    ambientGlow.addColorStop(0, 'rgba(251, 191, 36, 0.28)');
+                    ambientGlow.addColorStop(0.5, 'rgba(16, 185, 129, 0.08)');
+                    ambientGlow.addColorStop(1, 'rgba(15, 23, 42, 0)');
+                    ctx.fillStyle = ambientGlow;
+                    ctx.fillRect(0, 0, w, h);
+
+                    // М'яка тінь + зелена каустика на підлозі
+                    const shadowGrad = ctx.createRadialGradient(sphereX + 28, floorY, 4, sphereX + 28, floorY, radius * 2.1);
+                    shadowGrad.addColorStop(0, 'rgba(2, 6, 23, 0.85)');
+                    shadowGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.25)');
+                    shadowGrad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+                    ctx.fillStyle = shadowGrad;
                     ctx.beginPath();
-                    ctx.ellipse(sphereX + 30, floorY, 60, 9, 0, 0, Math.PI * 2);
+                    ctx.ellipse(sphereX + 28, floorY, radius * 2.1, 11, 0, 0, Math.PI * 2);
                     ctx.fill();
 
+                    // Трасування фотонних променів
                     const rays = [
-                        [[lightX, lightY], [sphereX - 18, sphereY - 25], [mirrorX, sphereY - 45], [w * 0.92, sphereY - 20]],
-                        [[lightX, lightY], [sphereX + 18, sphereY + 10], [mirrorX, sphereY + 18], [sphereX + 32, sphereY + 10]],
-                        [[lightX, lightY], [mirrorX, floorY - 25], [sphereX + 25, floorY]]
+                        [[lightX, lightY], [sphereX - radius * 0.5, sphereY - radius * 0.7], [mirrorX, sphereY - radius * 1.3], [w * 0.93, sphereY - radius * 0.6]],
+                        [[lightX, lightY], [sphereX + radius * 0.4, sphereY + radius * 0.2], [mirrorX, sphereY + radius * 0.4], [sphereX + radius, sphereY + radius * 0.2]],
+                        [[lightX, lightY], [mirrorX, floorY - 22], [sphereX + radius * 0.8, floorY]]
                     ];
 
                     rays.forEach(path => {
                         ctx.strokeStyle = '#10b981';
                         ctx.lineWidth = 2;
                         ctx.setLineDash([8, 6]);
-                        ctx.lineDashOffset = -phase * 35;
+                        ctx.lineDashOffset = -phase * 38;
                         ctx.beginPath();
                         ctx.moveTo(path[0][0], path[0][1]);
                         for (let i = 1; i < path.length; i++) ctx.lineTo(path[i][0], path[i][1]);
@@ -280,28 +302,130 @@
                         ctx.setLineDash([]);
                     });
 
-                    const sGrad = ctx.createRadialGradient(sphereX - 10, sphereY - 10, 4, sphereX, sphereY, 34);
-                    sGrad.addColorStop(0, '#6ee7b7');
-                    sGrad.addColorStop(0.6, '#2563eb');
+                    // Сфера з градієнтним затіненням та відблиском
+                    const sGrad = ctx.createRadialGradient(
+                        sphereX - radius * 0.35, sphereY - radius * 0.35, radius * 0.1,
+                        sphereX, sphereY, radius * 1.05
+                    );
+                    sGrad.addColorStop(0, '#a7f3d0');
+                    sGrad.addColorStop(0.45, '#3b82f6');
+                    sGrad.addColorStop(0.85, '#1d4ed8');
                     sGrad.addColorStop(1, '#10b981');
                     ctx.fillStyle = sGrad;
                     ctx.beginPath();
-                    ctx.arc(sphereX, sphereY, 32, 0, Math.PI * 2);
+                    ctx.arc(sphereX, sphereY, radius, 0, Math.PI * 2);
                     ctx.fill();
 
-                    ctx.fillStyle = 'rgba(52, 211, 153, 0.35)';
+                    // Реальне віддзеркалення сфери за дзеркалом
+                    const mirrorDist = mirrorX - sphereX;
+                    const reflX = mirrorX + mirrorDist * 0.55;
+                    const reflGrad = ctx.createRadialGradient(reflX, sphereY, 2, reflX, sphereY, radius * 0.85);
+                    reflGrad.addColorStop(0, 'rgba(52, 211, 153, 0.55)');
+                    reflGrad.addColorStop(1, 'rgba(59, 130, 246, 0.08)');
+                    ctx.fillStyle = reflGrad;
                     ctx.beginPath();
-                    ctx.arc(mirrorX + 24, sphereY, 24, Math.PI * 0.5, Math.PI * 1.5);
+                    ctx.arc(reflX, sphereY, radius * 0.82, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Плоска статична тінь (растеризація)
+                    ctx.fillStyle = 'rgba(2, 6, 23, 0.85)';
+                    ctx.beginPath();
+                    ctx.ellipse(sphereX + 22, floorY, radius * 1.25, 6, 0, 0, Math.PI * 2);
                     ctx.fill();
 
-                    ctx.fillStyle = '#10b981';
-                    ctx.font = '12px system-ui, sans-serif';
-                    ctx.fillText('RTX ON: прорахунок відбиттів та глобального освітлення', mirrorX - 310, 65);
+                    // Пунктир прямої видимості Z-буфера
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(lightX, lightY);
+                    ctx.lineTo(sphereX, sphereY - radius * 0.85);
+                    ctx.moveTo(lightX, lightY);
+                    ctx.lineTo(sphereX, sphereY + radius * 0.85);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Плоска однотонна сфера без відблисків
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.beginPath();
+                    ctx.arc(sphereX, sphereY, radius, 0, Math.PI * 2);
+                    ctx.fill();
                 }
+
+                // Джерело світла
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.arc(lightX, lightY, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '11px system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Джерело світла', lightX, lightY - 16);
+            }
+
+            function draw() {
+                phase += 0.03;
+                if (!isDragging) {
+                    splitRatio += (targetRatio - splitRatio) * 0.12;
+                }
+
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                const splitX = w * splitRatio;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // 1. Ліва частина: Базова растеризація
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(0, 0, splitX, h);
+                ctx.clip();
+                renderScene(w, h, false);
+                ctx.restore();
+
+                // 2. Права частина: Трасування променів (RTX ON)
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(splitX, 0, w - splitX, h);
+                ctx.clip();
+                renderScene(w, h, true);
+                ctx.restore();
+
+                // 3. Підписи режимів у верхніх кутах
+                ctx.font = 'bold 11px system-ui, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.9)';
+                ctx.fillText('РАСТЕРИЗАЦІЯ (OFF)', 16, 24);
+
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#10b981';
+                ctx.fillText('RAY TRACING (RTX ON)', w - 16, 24);
+
+                // 4. Вертикальна лінія-шторка та маркер перетягування
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(splitX, 0);
+                ctx.lineTo(splitX, h);
+                ctx.stroke();
+
+                const handleY = h / 2;
+                ctx.fillStyle = '#0f172a';
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(splitX, handleY, 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 12px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('◄►', splitX, handleY + 4);
 
                 requestAnimationFrame(draw);
             }
 
+            updateTelemetryUI(false);
             draw();
         })();
     </script>

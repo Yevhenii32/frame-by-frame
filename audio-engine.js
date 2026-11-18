@@ -1,179 +1,201 @@
 const SoundEngine = (() => {
     let ctx = null;
-    let activeNodes = [];
+    let masterGain = null;
+    let ambientOsc = null;
+    let coolingOsc = null;
+    let coolingGain = null;
+    let lastCoolingType = null;
     let isMuted = localStorage.getItem('fbf_muted') === 'true';
 
     function init() {
         if (!ctx) {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) ctx = new AudioCtx();
+            if (!AudioCtx) return false;
+            ctx = new AudioCtx();
+            masterGain = ctx.createGain();
+            masterGain.gain.value = isMuted ? 0 : 1;
+            masterGain.connect(ctx.destination);
         }
-        if (ctx && ctx.state === 'suspended') {
-            ctx.resume();
+        if (ctx && ctx.state === 'suspended' && !isMuted) {
+            ctx.resume().catch(() => {});
         }
-        return ctx;
+        return Boolean(ctx);
     }
 
-    function stopAll() {
-        activeNodes.forEach(node => {
-            try { node.stop(); } catch (e) {}
-            try { node.disconnect(); } catch (e) {}
-        });
-        activeNodes = [];
+    function stopCooling() {
+        if (coolingOsc) {
+            try { coolingOsc.stop(); } catch (e) {}
+            coolingOsc = null;
+            coolingGain = null;
+        }
     }
 
-    function setMuted(mute) {
-        isMuted = mute;
-        localStorage.setItem('fbf_muted', String(mute));
-        if (isMuted) stopAll();
+    function setMuted(muteState) {
+        isMuted = Boolean(muteState);
+        localStorage.setItem('fbf_muted', String(isMuted));
+
+        if (masterGain && ctx) {
+            masterGain.gain.setValueAtTime(isMuted ? 0 : 1, ctx.currentTime);
+        }
+        if (isMuted) {
+            if (ambientOsc) {
+                try { ambientOsc.stop(); } catch (e) {}
+                ambientOsc = null;
+            }
+            stopCooling();
+        } else if (lastCoolingType) {
+            playCooling(lastCoolingType);
+        }
+
+        window.dispatchEvent(new CustomEvent('fbf-mute-changed', { detail: { muted: isMuted } }));
         return isMuted;
+    }
+
+    function toggleMute() {
+        init();
+        const state = setMuted(!isMuted);
+        if (!state) playClick();
+        return state;
     }
 
     function getMuted() {
         return isMuted;
     }
 
-    function createNoiseBuffer(duration = 2) {
-        const bufferSize = ctx.sampleRate * duration;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        let b0 = 0, b1 = 0, b2 = 0;
-        for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            b0 = 0.99765 * b0 + white * 0.0990460;
-            b1 = 0.96300 * b1 + white * 0.2965164;
-            b2 = 0.57000 * b2 + white * 1.0526913;
-            data[i] = (b0 + b1 + b2 + white * 0.1848) * 0.05;
-        }
-        return buffer;
-    }
-
-    // 1. Головна сторінка: легкий фоновий ембієнт системного блока
     function playAmbient() {
-        stopAll();
-        if (isMuted) return true;
-        if (!init()) return false;
+        if (isMuted) return;
+        init();
+        if (!ctx || ambientOsc) return;
 
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.value = 62;
-        gain.gain.value = 0.03;
+        osc.frequency.setValueAtTime(58, ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.025, ctx.currentTime + 1.2);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(masterGain);
         osc.start();
-        activeNodes.push(osc, gain);
-        return true;
+        ambientOsc = osc;
     }
 
-    // 2. Охолодження: кулер 1998 ('old'/'1998') або водянка 2024 ('new'/'2024')
-    function playCooling(mode) {
-        stopAll();
-        if (isMuted) return true;
-        if (!init()) return false;
+    function playClick() {
+        if (isMuted) return;
+        init();
+        if (!ctx) return;
 
-        if (mode === 'old' || mode === '1998') {
-            const osc1 = ctx.createOscillator();
-            const osc2 = ctx.createOscillator();
-            const oscGain = ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(620, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.045);
 
-            osc1.type = 'sawtooth';
-            osc1.frequency.value = 166;
-            osc2.type = 'triangle';
-            osc2.frequency.value = 334;
-            oscGain.gain.value = 0.035;
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
 
-            const noise = ctx.createBufferSource();
-            noise.buffer = createNoiseBuffer();
-            noise.loop = true;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 950;
-            filter.Q.value = 1.2;
-
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.value = 0.18;
-
-            osc1.connect(oscGain);
-            osc2.connect(oscGain);
-            oscGain.connect(ctx.destination);
-
-            noise.connect(filter);
-            filter.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
-
-            osc1.start();
-            osc2.start();
-            noise.start();
-            activeNodes.push(osc1, osc2, oscGain, noise, filter, noiseGain);
-        } else {
-            const pump = ctx.createOscillator();
-            const pumpGain = ctx.createGain();
-            pump.type = 'sine';
-            pump.frequency.value = 88;
-            pumpGain.gain.value = 0.015;
-
-            const noise = ctx.createBufferSource();
-            noise.buffer = createNoiseBuffer();
-            noise.loop = true;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 280;
-
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.value = 0.04;
-
-            pump.connect(pumpGain);
-            pumpGain.connect(ctx.destination);
-            noise.connect(filter);
-            filter.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
-
-            pump.start();
-            noise.start();
-            activeNodes.push(pump, pumpGain, noise, filter, noiseGain);
-        }
-        return true;
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.05);
     }
 
-    // 3. Накопичувачі: потріскування магнітної голки HDD
     function playHddClick() {
-        if (isMuted || !init()) return;
+        if (isMuted) return;
+        init();
+        if (!ctx) return;
+
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(140 + Math.random() * 180, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.025);
+        osc.frequency.setValueAtTime(1400 + Math.random() * 500, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.022);
 
-        gain.gain.setValueAtTime(0.06, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+        gain.gain.setValueAtTime(0.045, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.022);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(masterGain);
         osc.start();
-        osc.stop(ctx.currentTime + 0.03);
+        osc.stop(ctx.currentTime + 0.025);
     }
 
-    // 4. Оперативна пам'ять: звук знеструмлення системи
     function playPowerDown() {
-        if (isMuted || !init()) return;
+        if (isMuted) return;
+        init();
+        if (!ctx) return;
+
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(38, ctx.currentTime + 0.45);
+        osc.frequency.setValueAtTime(240, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(38, ctx.currentTime + 0.55);
 
-        gain.gain.setValueAtTime(0.07, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(masterGain);
         osc.start();
-        osc.stop(ctx.currentTime + 0.46);
+        osc.stop(ctx.currentTime + 0.56);
     }
 
-    return { playAmbient, playCooling, playHddClick, playPowerDown, stopAll, setMuted, getMuted };
+    function playCooling(type) {
+        lastCoolingType = type;
+        if (isMuted) {
+            stopCooling();
+            return true;
+        }
+        if (!init() || !ctx) return false;
+
+        stopCooling();
+
+        const osc = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        if (type === 'old') {
+            // Гучний високочастотний гул старого кулера (5000 RPM)
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(165, ctx.currentTime);
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(620, ctx.currentTime);
+            gain.gain.setValueAtTime(0.075, ctx.currentTime);
+        } else {
+            // Тихе м'яке шурхотіння помпи та СРО
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(68, ctx.currentTime);
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(180, ctx.currentTime);
+            gain.gain.setValueAtTime(0.028, ctx.currentTime);
+        }
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+
+        coolingOsc = osc;
+        coolingGain = gain;
+        return true;
+    }
+
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('button, a') && !e.target.closest('#global-mute-btn')) {
+            playClick();
+        }
+    });
+
+    return {
+        init,
+        setMuted,
+        toggleMute,
+        getMuted,
+        playAmbient,
+        playClick,
+        playHddClick,
+        playPowerDown,
+        playCooling
+    };
 })();

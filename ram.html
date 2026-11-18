@@ -24,7 +24,7 @@
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
-            padding: 0 40px;
+            padding: 45px 40px 25px 40px;
             transition: opacity 0.5s ease;
         }
         .data-track {
@@ -32,7 +32,7 @@
             height: 4px; 
             background-color: #1e293b; 
             position: relative; 
-            margin: 15px 0; 
+            margin: 12px 0; 
             overflow: hidden;
         }
         .data-packet {
@@ -55,10 +55,37 @@
             90% { opacity: 1; }
             100% { left: 100%; opacity: 0; }
         }
+        .memory-cells {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px dashed #334155;
+        }
+        .mem-cell {
+            height: 28px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-family: monospace;
+            color: #64748b;
+            transition: all 0.25s ease;
+        }
+        .mem-cell.filled {
+            background-color: rgba(59, 130, 246, 0.28);
+            border-color: #3b82f6;
+            color: #93c5fd;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.35);
+        }
         .gen-selector { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; }
         .gen-btn {
             padding: 10px 20px; 
-            border: none; 
+            border: 1px solid #334155; 
             border-radius: 6px; 
             cursor: pointer; 
             font-weight: bold;
@@ -66,7 +93,8 @@
             color: #94a3b8; 
             transition: all 0.3s;
         }
-        .gen-btn.active { background-color: #3b82f6; color: white; }
+        .gen-btn:hover { border-color: #3b82f6; color: #f8fafc; }
+        .gen-btn.active { background-color: #3b82f6; border-color: #3b82f6; color: white; }
         .power-btn {
             padding: 15px; 
             border-radius: 8px; 
@@ -125,13 +153,29 @@
             </div>
 
             <div class="bus-visualization" id="bus-vis">
-                <div style="position: absolute; top: 20px; left: 40px; color: #64748b;">Процесор (CPU)</div>
-                <div style="position: absolute; top: 20px; right: 40px; color: #64748b;">Пам'ять (RAM)</div>
+                <div style="position: absolute; top: 18px; left: 40px; color: #64748b; font-size: 13px;">Процесор (CPU)</div>
+                <div style="position: absolute; top: 18px; right: 40px; color: #64748b; font-size: 13px;">Пам'ять (RAM)</div>
                 
                 <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0s;"></div></div>
                 <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.1s;"></div></div>
                 <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.2s;"></div></div>
                 <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.3s;"></div></div>
+
+                <div class="memory-cells" id="memory-cells">
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                    <div class="mem-cell">4 GB</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button type="button" id="load-game" class="gen-btn">+ Запустити 3D-гру (14 GB)</button>
+                <button type="button" id="load-ide" class="gen-btn">+ Відкрити IDE та Docker (10 GB)</button>
             </div>
             
             <button type="button" id="power-toggle" class="power-btn">Симулювати знеструмлення (Power Off)</button>
@@ -148,6 +192,10 @@
                 <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
                     <div style="color: #94a3b8; font-size: 12px;">Робоча напруга</div>
                     <div id="voltage-val" style="font-size: 20px; font-weight: bold; color: #10b981;">1.1 V</div>
+                </div>
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
+                    <div style="color: #94a3b8; font-size: 12px;">Зайнято пам'яті</div>
+                    <div id="used-ram-val" style="font-size: 20px; font-weight: bold; color: #f59e0b;">0 / 32 GB</div>
                 </div>
             </div>
 
@@ -169,13 +217,42 @@
         const powerToggle = document.getElementById('power-toggle');
         const packets = document.querySelectorAll('.data-packet');
         const busVis = document.getElementById('bus-vis');
+        const memCells = document.querySelectorAll('.mem-cell');
         
         const ramTitle = document.getElementById('ram-title');
         const speedVal = document.getElementById('speed-val');
         const voltageVal = document.getElementById('voltage-val');
         const accText = document.getElementById('acc-text');
+        const usedRamVal = document.getElementById('used-ram-val');
         
         let isPowerOn = true;
+        let usedRam = 0;
+
+        function updateMemoryUI() {
+            usedRamVal.textContent = `${usedRam} / 32 GB`;
+            const activeCells = Math.ceil(usedRam / 4);
+            memCells.forEach((cell, idx) => {
+                if (idx < activeCells) {
+                    cell.classList.add('filled');
+                } else {
+                    cell.classList.remove('filled');
+                }
+            });
+        }
+
+        document.getElementById('load-game').addEventListener('click', () => {
+            if (!isPowerOn) return;
+            usedRam = Math.min(32, usedRam + 14);
+            updateMemoryUI();
+            accText.textContent = `"Запущено 3D-гру. Зайнято ${usedRam} ГБ із 32 ГБ. Дані утримуються в комірках, поки подається живлення."`;
+        });
+
+        document.getElementById('load-ide').addEventListener('click', () => {
+            if (!isPowerOn) return;
+            usedRam = Math.min(32, usedRam + 10);
+            updateMemoryUI();
+            accText.textContent = `"Відкрито середовище розробки та контейнери. Зайнято ${usedRam} ГБ із 32 ГБ оперативної пам'яті."`;
+        });
 
         function setGeneration(gen) {
             if (!isPowerOn) return;
@@ -220,10 +297,11 @@
             if (!isPowerOn) {
                 powerToggle.textContent = "Увімкнути живлення (Power On)";
                 powerToggle.className = "power-btn off";
-                busVis.style.opacity = "0.2";
+                busVis.style.opacity = "0.25";
                 packets.forEach(packet => packet.style.display = "none");
-                
-                accText.textContent = '"Живлення вимкнено. Усі дані з оперативної пам\'яті миттєво стерто (енергозалежність). Передача даних зупинена."';
+                usedRam = 0;
+                updateMemoryUI();
+                accText.textContent = '"Живлення вимкнено. Усі дані з оперативної пам\'яті миттєво стерто (енергозалежність). Комірки очищено до 0 ГБ."';
                 if (typeof SoundEngine !== 'undefined') SoundEngine.playPowerDown();
             } else {
                 powerToggle.textContent = "Симулювати знеструмлення (Power Off)";
@@ -234,6 +312,6 @@
             }
         });
     </script>
-<script src="tour-engine.js"></script>
+    <script src="tour-engine.js"></script>
 </body>
 </html>

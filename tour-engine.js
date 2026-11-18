@@ -153,13 +153,43 @@ const TourEngine = (() => {
                     <span style="color:#38bdf8; font-weight:bold; text-transform:uppercase; margin-right:8px;">${currentScene.step}</span>
                     ${currentScene.title}
                 </div>
-                <a href="${currentScene.next}" class="scenario-next-btn">${currentScene.nextLabel}</a>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button type="button" id="global-mute-btn" style="background:#1e293b; border:1px solid #334155; color:#e2e8f0; padding:7px 12px; border-radius:6px; cursor:pointer; font-size:12px; transition:0.2s;">
+                        🔊 Звук: Увімк.
+                    </button>
+                    <a href="${currentScene.next}" class="scenario-next-btn">${currentScene.nextLabel}</a>
+                </div>
             `;
             if (container.classList.contains('main-content')) {
                 container.insertBefore(bar, container.firstChild);
             } else {
                 const center = container.querySelector('.center-panel, .left-panel');
                 if (center) center.insertBefore(bar, center.firstChild);
+            }
+
+            const gMute = bar.querySelector('#global-mute-btn');
+            if (gMute) {
+                const updateMuteButton = () => {
+                    const isMuted = (typeof SoundEngine !== 'undefined')
+                        ? SoundEngine.getMuted()
+                        : localStorage.getItem('fbf_muted') === 'true';
+                    gMute.textContent = isMuted ? '🔇 Звук: Вимк.' : '🔊 Звук: Увімк.';
+                    gMute.style.borderColor = isMuted ? '#ef4444' : '#334155';
+                    gMute.style.color = isMuted ? '#fca5a5' : '#e2e8f0';
+                };
+                updateMuteButton();
+
+                gMute.onclick = (e) => {
+                    e.stopPropagation();
+                    if (typeof SoundEngine !== 'undefined') {
+                        SoundEngine.toggleMute();
+                    } else {
+                        const next = !(localStorage.getItem('fbf_muted') === 'true');
+                        localStorage.setItem('fbf_muted', String(next));
+                        window.dispatchEvent(new CustomEvent('fbf-mute-changed', { detail: { muted: next } }));
+                    }
+                    updateMuteButton();
+                };
             }
         }
 
@@ -180,17 +210,17 @@ const TourEngine = (() => {
                     <div class="role-box">
                         <div style="font-weight:bold; color:#38bdf8; margin-bottom:6px;">Євгеній Коваленко</div>
                         <div style="font-size:12px; color:#cbd5e1; line-height:1.4;">
-                            • Архітектура вебдодатка та верстка<br>
-                            • Інтерактивні симуляції (JS / Canvas)<br>
-                            • Web Audio API та інклюзивність (WCAG)
+                            - Архітектура вебдодатка та верстка<br>
+                            - Інтерактивні симуляції (JS / Canvas)<br>
+                            - Web Audio API та інклюзивність (WCAG)
                         </div>
                     </div>
                     <div class="role-box" style="border-top-color:#10b981;">
                         <div style="font-weight:bold; color:#10b981; margin-bottom:6px;">Василь Апостолов</div>
                         <div style="font-size:12px; color:#cbd5e1; line-height:1.4;">
-                            • Візуальний дизайн та графіка компонентів<br>
-                            • Моушн-анімація та відеомонтаж<br>
-                            • Звуковий супровід та саунд-дизайн
+                            - Візуальний дизайн та графіка компонентів<br>
+                            - Моушн-анімація та відеомонтаж<br>
+                            - Звуковий супровід та саунд-дизайн
                         </div>
                     </div>
                 </div>
