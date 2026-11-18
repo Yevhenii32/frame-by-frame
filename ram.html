@@ -110,104 +110,198 @@
     </style>
 </head>
 <body>
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <span class="brand-mark">[ ]</span>
+            <span class="brand-name">Frame <span>by</span> Frame</span>
+        </a>
 
-    <div class="sidebar">
-        <div class="logo">
-            <span style="color: #3b82f6;">O</span> Frame by Frame
+        <div class="sidebar-caption">ІНТЕРАКТИВНИЙ ДОВІДНИК</div>
+
+        <nav class="chapter-nav" aria-label="Розділи проєкту">
+            <div class="menu-category">РОЗДІЛИ / 06</div>
+
+            <a href="index.html" class="menu-link">
+                <span class="chapter-number">01</span>
+                <span class="menu-item">Материнська плата</span>
+            </a>
+            <a href="cpu.html" class="menu-link">
+                <span class="chapter-number">02</span>
+                <span class="menu-item">Процесор</span>
+            </a>
+            <a href="cooling.html" class="menu-link">
+                <span class="chapter-number">03</span>
+                <span class="menu-item">Охолодження</span>
+            </a>
+            <a href="gpu.html" class="menu-link">
+                <span class="chapter-number">04</span>
+                <span class="menu-item">Відеокарта</span>
+            </a>
+            <a href="ram.html" class="menu-link active" aria-current="page">
+                <span class="chapter-number">05</span>
+                <span class="menu-item">Оперативна пам'ять</span>
+            </a>
+            <a href="storage.html" class="menu-link">
+                <span class="chapter-number">06</span>
+                <span class="menu-item">Накопичувачі</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="sidebar-footer-line"></span>
+            <span>FRAME BY FRAME</span>
+            <span>Мультимедійний проєкт</span>
+        </div>
+    </aside>
+
+    <main class="ram-dashboard ram-page">
+        <div class="center-panel">
+
+            <header class="ram-header">
+                <div class="eyebrow">РОЗДІЛ 05 / ПАМ'ЯТЬ КОМП'ЮТЕРА</div>
+                <h1>Оперативна пам'ять</h1>
+                <p class="ram-lead">
+                    Дані, потрібні процесору просто зараз, зберігаються
+                    в оперативній пам'яті. Порівняйте покоління DDR
+                    і подивіться, що відбувається після вимкнення живлення.
+                </p>
+            </header>
+
+            <section class="ram-workspace">
+                <div class="ram-section-heading">
+                    <span>01 / ПОКОЛІННЯ ПАМ'ЯТІ</span>
+                    <span>ОБЕРІТЬ СТАНДАРТ</span>
+                </div>
+
+                <div class="gen-selector">
+                    <button type="button" id="btn-ddr3" class="gen-btn">
+                        DDR3 <span>2007</span>
+                    </button>
+                    <button type="button" id="btn-ddr4" class="gen-btn">
+                        DDR4 <span>2014</span>
+                    </button>
+                    <button type="button" id="btn-ddr5" class="gen-btn active">
+                        DDR5 <span>2020</span>
+                    </button>
+                </div>
+
+                <div class="ram-section-heading">
+                    <span>02 / ПЕРЕДАВАННЯ ДАНИХ</span>
+                    <span>СХЕМАТИЧНА АНІМАЦІЯ</span>
+                </div>
+
+                <div class="bus-visualization" id="bus-vis">
+                    <div class="bus-labels">
+                        <span>CPU <small>ПРОЦЕСОР</small></span>
+                        <span>RAM <small>ПАМ'ЯТЬ</small></span>
+                    </div>
+
+                    <div class="bus-tracks">
+                        <div class="data-track">
+                            <div class="data-packet ddr5-speed" style="animation-delay: 0s;"></div>
+                        </div>
+                        <div class="data-track">
+                            <div class="data-packet ddr5-speed" style="animation-delay: 0.1s;"></div>
+                        </div>
+                        <div class="data-track">
+                            <div class="data-packet ddr5-speed" style="animation-delay: 0.2s;"></div>
+                        </div>
+                        <div class="data-track">
+                            <div class="data-packet ddr5-speed" style="animation-delay: 0.3s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="memory-heading">
+                        <span>КОМІРКИ ПАМ'ЯТІ</span>
+                        <span>32 GB / 8 БЛОКІВ</span>
+                    </div>
+
+                    <div class="memory-cells" id="memory-cells">
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                        <div class="mem-cell">4 GB</div>
+                    </div>
+                </div>
+
+                <div class="ram-section-heading">
+                    <span>03 / НАВАНТАЖЕННЯ СИСТЕМИ</span>
+                    <span>ДОДАЙТЕ ПРОЦЕС</span>
+                </div>
+
+                <div class="ram-actions">
+                    <button type="button" id="load-game" class="gen-btn">
+                        <span class="action-plus">+</span>
+                        <span>Запустити 3D-гру <small>14 GB</small></span>
+                    </button>
+
+                    <button type="button" id="load-ide" class="gen-btn">
+                        <span class="action-plus">+</span>
+                        <span>Відкрити IDE та Docker <small>10 GB</small></span>
+                    </button>
+                </div>
+
+                <div class="ram-power-area">
+                    <div>
+                        <strong>Енергозалежність RAM</strong>
+                        <p>Вимкніть живлення, щоб побачити, що станеться з даними.</p>
+                    </div>
+
+                    <button type="button" id="power-toggle" class="power-btn">
+                        Вимкнути живлення
+                    </button>
+                </div>
+            </section>
         </div>
 
-        <div class="menu-category">Навігація</div>
+        <aside class="right-panel ram-side-panel">
+            <section class="info-card" id="ram-card">
+                <div class="panel-kicker">ХАРАКТЕРИСТИКИ</div>
+                <h3 id="ram-title">DDR5 SDRAM</h3>
+                <p class="ram-card-description">
+                    Порівняння основних параметрів різних поколінь пам'яті.
+                </p>
 
-        <a href="index.html" class="menu-link">
-            <div class="menu-item">Головна плата</div>
-        </a>
-        <a href="cpu.html" class="menu-link">
-            <div class="menu-item">Центральний процесор (CPU)</div>
-        </a>
-        <a href="cooling.html" class="menu-link">
-            <div class="menu-item">Система охолодження</div>
-        </a>
-        <a href="gpu.html" class="menu-link">
-            <div class="menu-item">Відеокарта (GPU)</div>
-        </a>
-        <a href="ram.html" class="menu-link active">
-            <div class="menu-item">Оперативна пам'ять (RAM)</div>
-        </a>
-        <a href="storage.html" class="menu-link">
-            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
-        </a>
-    </div>
-
-    <div class="ram-dashboard">
-        
-        <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
-            <div class="header">
-                <h2>Оперативна пам'ять (DDR)</h2>
-                <div class="subtitle">Пропускна здатність та енергозалежність</div>
-            </div>
-
-            <div class="gen-selector">
-                <button type="button" id="btn-ddr3" class="gen-btn">DDR3 (2007)</button>
-                <button type="button" id="btn-ddr4" class="gen-btn">DDR4 (2014)</button>
-                <button type="button" id="btn-ddr5" class="gen-btn active">DDR5 (2020)</button>
-            </div>
-
-            <div class="bus-visualization" id="bus-vis">
-                <div style="position: absolute; top: 18px; left: 40px; color: #64748b; font-size: 13px;">Процесор (CPU)</div>
-                <div style="position: absolute; top: 18px; right: 40px; color: #64748b; font-size: 13px;">Пам'ять (RAM)</div>
-                
-                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0s;"></div></div>
-                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.1s;"></div></div>
-                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.2s;"></div></div>
-                <div class="data-track"><div class="data-packet ddr5-speed" style="animation-delay: 0.3s;"></div></div>
-
-                <div class="memory-cells" id="memory-cells">
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
-                    <div class="mem-cell">4 GB</div>
+                <div class="ram-stat">
+                    <span>Пропускна здатність</span>
+                    <strong id="speed-val">51.2 GB/s</strong>
                 </div>
-            </div>
 
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                <button type="button" id="load-game" class="gen-btn">+ Запустити 3D-гру (14 GB)</button>
-                <button type="button" id="load-ide" class="gen-btn">+ Відкрити IDE та Docker (10 GB)</button>
-            </div>
-            
-            <button type="button" id="power-toggle" class="power-btn">Симулювати знеструмлення (Power Off)</button>
-        </div>
+                <div class="ram-stat">
+                    <span>Робоча напруга</span>
+                    <strong id="voltage-val">1.1 V</strong>
+                </div>
 
-        <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
-            <div class="info-card" style="border-top: 4px solid #3b82f6;" id="ram-card">
-                <h3 style="margin-top: 0;" id="ram-title">DDR5 SDRAM</h3>
-                
-                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="color: #94a3b8; font-size: 12px;">Пропускна здатність</div>
-                    <div id="speed-val" style="font-size: 20px; font-weight: bold; color: #3b82f6;">51.2 GB/s</div>
+                <div class="ram-stat">
+                    <span>Зайнято пам'яті</span>
+                    <strong id="used-ram-val">0 / 32 GB</strong>
                 </div>
-                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
-                    <div style="color: #94a3b8; font-size: 12px;">Робоча напруга</div>
-                    <div id="voltage-val" style="font-size: 20px; font-weight: bold; color: #10b981;">1.1 V</div>
-                </div>
-                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
-                    <div style="color: #94a3b8; font-size: 12px;">Зайнято пам'яті</div>
-                    <div id="used-ram-val" style="font-size: 20px; font-weight: bold; color: #f59e0b;">0 / 32 GB</div>
-                </div>
-            </div>
+            </section>
 
-            <div class="accessibility-box">
-                <div class="acc-header">Текстовий транскрипт стану:</div>
-                <div id="acc-text" class="acc-text">
-                    "Стан: DDR5. Пакети даних передаються надзвичайно швидко. Пам'ять працює стабільно, постійно обмінюючись даними з процесором."
+            <section class="accessibility-box">
+                <div class="panel-kicker">ЩО ВІДБУВАЄТЬСЯ?</div>
+                <div class="acc-text" id="acc-text" aria-live="polite">
+                    Стан: DDR5. Пакети даних передаються надзвичайно швидко.
+                    Пам'ять працює стабільно, постійно обмінюючись
+                    даними з процесором.
                 </div>
-            </div>
-        </div>
+            </section>
 
-    </div>
+            <div class="ram-note">
+                <span>ПРИМІТКА</span>
+                <p>
+                    Рух пакетів — умовна візуалізація.
+                    Реальна швидкість залежить від конфігурації пам'яті.
+                </p>
+            </div>
+        </aside>
+    </main>
+
+
 
     <script src="audio-engine.js"></script>
     <script>
@@ -295,7 +389,7 @@
             isPowerOn = !isPowerOn;
             
             if (!isPowerOn) {
-                powerToggle.textContent = "Увімкнути живлення (Power On)";
+                powerToggle.textContent = "Увімкнути живлення";
                 powerToggle.className = "power-btn off";
                 busVis.style.opacity = "0.25";
                 packets.forEach(packet => packet.style.display = "none");

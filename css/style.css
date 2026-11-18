@@ -1,3 +1,26 @@
+/* =====================================
+   Frame by Frame — Base & Theme Tokens
+   ===================================== */
+
+:root {
+    --bg-main: #0d1016;
+    --bg-sidebar: #111722;
+    --bg-canvas: #101722;
+    --bg-surface: #171d28;
+    --bg-hover: #202a39;
+
+    --text-primary: #e9edf4;
+    --text-heading: #f1f5f9;
+    --text-secondary: #9ba8bb;
+    --text-muted: #8190a5;
+    --text-dim: #64748b;
+
+    --accent: #4d91e8;
+    --accent-light: #6ca9f2;
+    --border: #2b3544;
+    --border-strong: #344153;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -5,9 +28,9 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0f1115;
-    color: #e0e0e0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
     display: flex;
     min-height: 100vh;
 }
@@ -21,11 +44,14 @@ input:focus-visible,
     outline-offset: 3px;
 }
 
-/* Бічна панель */
+/* =====================================
+   Sidebar & Navigation
+   ===================================== */
+
 .sidebar {
     width: 260px;
-    background-color: #0f172a;
-    border-right: 1px solid #1e293b;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -34,8 +60,9 @@ input:focus-visible,
 }
 
 .logo {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
     color: #ffffff;
     margin-bottom: 24px;
     display: flex;
@@ -43,46 +70,144 @@ input:focus-visible,
     gap: 10px;
 }
 
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text-heading);
+    margin: 4px 0 8px;
+}
+
+.brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    color: var(--accent-light);
+    font: 700 18px Consolas, monospace;
+    letter-spacing: -4px;
+    padding-right: 4px;
+}
+
+.brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.7px;
+}
+
+.brand-name span {
+    font-weight: 400;
+    color: #8d9bad;
+}
+
+.sidebar-caption {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.8px;
+    margin-bottom: 35px;
+}
+
 .menu-category {
-    color: #64748b;
+    color: var(--text-dim);
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin: 15px 0 5px 0;
+    margin: 15px 0 5px;
 }
 
 .menu-link {
     text-decoration: none;
-    color: #94a3b8;
+    color: var(--text-secondary);
     display: block;
     width: 100%;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.menu-link:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.menu-link.active {
+    background-color: rgba(77, 145, 232, 0.10);
+    border-left-color: var(--accent);
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .menu-item {
-    padding: 10px 14px;
+    padding: 12px 14px;
     font-size: 14px;
     border-radius: 6px;
     cursor: pointer;
 }
 
-.menu-link:hover {
-    color: #ffffff;
-    background-color: #1e293b;
+.chapter-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.menu-link.active {
-    color: #ffffff;
-    background-color: #1d4ed8;
-    font-weight: 600;
+.chapter-nav .menu-category {
+    margin: 0 0 12px;
+    letter-spacing: 1.6px;
 }
 
-.menu-link.active .menu-item {
-    color: #ffffff;
+.chapter-nav .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 10px;
+    border-left-width: 2px;
 }
 
-/* Головна робоча зона */
+.chapter-nav .menu-link.active {
+    background: rgba(77, 145, 232, 0.08);
+}
+
+.chapter-number {
+    font: 11px Consolas, monospace;
+    color: var(--text-dim);
+}
+
+.chapter-nav .menu-link.active .chapter-number {
+    color: var(--accent-light);
+}
+
+.chapter-nav .menu-item {
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+}
+
+.sidebar-footer-line {
+    width: 100%;
+    height: 1px;
+    background: #293343;
+    margin-bottom: 10px;
+}
+
+/* =====================================
+   Shared Layout & Components (All Pages)
+   ===================================== */
+
 .main-content {
     flex: 1;
     min-width: 0;
@@ -92,6 +217,53 @@ input:focus-visible,
     position: relative;
 }
 
+.cpu-dashboard,
+.cpu-page,
+.ram-page,
+.gpu-page,
+.cooling-page,
+.storage-page {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    min-height: 100vh;
+    padding: 34px 38px;
+    gap: 28px;
+    background: var(--bg-main);
+    color: var(--text-primary);
+}
+
+.center-panel,
+.cooling-page .left-panel {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cpu-page .center-panel {
+    gap: 14px;
+}
+
+.right-panel,
+.ram-page .ram-side-panel,
+.gpu-page .gpu-side-panel,
+.cooling-page .cooling-side-panel,
+.storage-page .storage-side-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 305px;
+    width: 305px;
+    gap: 14px;
+    padding-top: 120px;
+}
+
+.cpu-page .right-panel {
+    padding-top: 108px;
+}
+
+/* Заголовки сторінок */
 .header {
     display: flex;
     justify-content: space-between;
@@ -103,52 +275,444 @@ input:focus-visible,
 
 .header h2 {
     margin: 0;
-    font-size: 22px;
+    font-size: 25px;
+    font-weight: 650;
+    letter-spacing: -0.6px;
+    line-height: 1.3;
 }
 
-.audio-toggle {
-    white-space: nowrap;
-    background-color: #1e293b;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid #334155;
+.subtitle {
+    color: var(--text-secondary);
     font-size: 14px;
-    user-select: none;
-    transition: border-color 0.2s, background-color 0.2s;
 }
 
-.audio-toggle:hover {
-    border-color: #3b82f6;
-    background-color: #273244;
+.eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--accent-light);
+    margin-bottom: 12px;
 }
 
-/* Карта материнської плати */
+.ram-header,
+.cooling-header,
+.storage-header {
+    margin-bottom: 10px;
+}
+
+.gpu-header {
+    margin-bottom: 14px;
+}
+
+.cpu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    min-height: 94px;
+}
+
+.cpu-header .eyebrow {
+    margin-bottom: 10px;
+}
+
+.cpu-header h1,
+.ram-header h1,
+.gpu-header h1,
+.cooling-header h1,
+.storage-header h1 {
+    margin: 0;
+    font-size: clamp(28px, 2.8vw, 39px);
+    line-height: 1.15;
+    letter-spacing: -1.2px;
+    font-weight: 650;
+    color: var(--text-heading);
+}
+
+.gpu-header h1 {
+    max-width: 700px;
+}
+
+.cpu-lead,
+.ram-lead,
+.gpu-lead,
+.cooling-lead,
+.storage-lead {
+    max-width: 640px;
+    margin: 14px 0 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.cpu-lead {
+    max-width: 590px;
+    margin-top: 10px;
+    line-height: 1.65;
+}
+
+/* Робочі області та підзаголовки секцій */
+.ram-workspace,
+.gpu-workspace,
+.cooling-workspace,
+.storage-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cpu-stage-label,
+.ram-section-heading,
+.gpu-section-heading,
+.cooling-section-heading,
+.storage-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font: 10px Consolas, monospace;
+    letter-spacing: 1.2px;
+}
+
+.ram-section-heading span:last-child,
+.gpu-section-heading span:last-child,
+.cooling-section-heading span:last-child,
+.storage-section-heading span:last-child {
+    color: var(--text-dim);
+}
+
+/* Картки, блоки телеметрії та доступності */
+.info-card,
+.accessibility-box,
+.telemetry-block,
+.timeline-container,
+.cooling-page .cooling-temperature,
+.cooling-page .cooling-description {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 18px;
+}
+
+.cooling-page .cooling-temperature,
+.cooling-page .cooling-description,
+.storage-page .info-card,
+.storage-page .accessibility-box {
+    padding: 20px;
+}
+
+.panel-kicker {
+    font: 10px Consolas, monospace;
+    letter-spacing: 1.5px;
+    color: #7caeea;
+    margin-bottom: 12px;
+}
+
+.info-card h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.info-text {
+    color: #aeb9c9;
+    font-size: 13px;
+    line-height: 1.65;
+    margin: 0 0 12px;
+}
+
+.acc-header {
+    color: #cbd5e1;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.acc-text {
+    color: #acb9ca;
+    font-size: 13px;
+    line-height: 1.65;
+    font-style: normal;
+}
+
+.telemetry-value,
+.spec-val {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Нижні примітки та факти в панелях */
+.ram-note,
+.gpu-bottom-note,
+.gpu-observation,
+.cooling-explanation,
+.cooling-fact,
+.storage-bottom-note,
+.storage-fact {
+    padding: 10px 2px;
+}
+
+.ram-note span,
+.gpu-bottom-note > span,
+.cooling-explanation > span,
+.storage-bottom-note > span {
+    font: 10px Consolas, monospace;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+}
+
+.ram-note p,
+.gpu-bottom-note p,
+.gpu-observation p,
+.cooling-explanation p,
+.cooling-fact p,
+.storage-bottom-note p,
+.storage-fact p {
+    margin: 9px 0 0;
+    max-width: 640px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.ram-note p,
+.gpu-bottom-note p,
+.storage-bottom-note p {
+    color: var(--text-muted);
+}
+
+.gpu-observation p,
+.cooling-fact p,
+.storage-fact p {
+    margin-top: 0;
+}
+
+/* Посилання повернення в сайдбар-колонці */
+.cooling-back-link,
+.storage-back-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 14px 0;
+    color: #9fc2ee;
+    text-decoration: none;
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.cooling-back-link:hover,
+.storage-back-link:hover {
+    color: var(--text-primary);
+}
+
+/* Телеметрія в меню (CPU / GPU) */
+.cpu-telemetry,
+.gpu-telemetry {
+    margin-top: 22px;
+}
+
+.cpu-telemetry .menu-category,
+.gpu-telemetry .menu-category {
+    margin-bottom: 12px;
+}
+
+.cpu-telemetry .telemetry-block,
+.gpu-telemetry .telemetry-block {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    padding: 10px 0 12px;
+    margin: 0;
+}
+
+.cpu-telemetry .telemetry-label,
+.gpu-telemetry .telemetry-label {
+    font-size: 11px;
+    color: #93a2b7;
+}
+
+.cpu-telemetry .telemetry-value,
+.gpu-telemetry .telemetry-value {
+    font: 600 22px Consolas, monospace;
+    color: var(--text-primary);
+}
+
+.cpu-telemetry .telemetry-sub,
+.gpu-telemetry .telemetry-sub {
+    font: 11px 'Segoe UI', sans-serif;
+    color: #7e8da1;
+}
+
+/* Індикатор завантаження мікросхеми */
+.chip-loader {
+    position: absolute;
+    inset: 0;
+    background: #0b0f19;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5;
+    transition: opacity 0.35s ease;
+}
+
+.chip-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.chip-pulse {
+    width: 46px;
+    height: 46px;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    position: relative;
+    animation: chipPulse 1.2s infinite ease-in-out;
+}
+
+.loader-caption {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+@keyframes chipPulse {
+    0%, 100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px 4px rgba(59, 130, 246, 0.25);
+    }
+}
+
+/* =====================================
+   Home Page & Motherboard Hotspots
+   ===================================== */
+
+.home-page {
+    padding: 42px 48px 28px;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 32px;
+}
+
+.home-header .eyebrow {
+    margin-bottom: 18px;
+}
+
+.home-header h1 {
+    margin: 0;
+    font-size: clamp(30px, 3vw, 46px);
+    line-height: 1.12;
+    font-weight: 650;
+    letter-spacing: -1.8px;
+    color: var(--text-heading);
+}
+
+.home-intro {
+    max-width: 580px;
+    margin: 18px 0 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.chapter-indicator {
+    display: flex;
+    align-items: baseline;
+    white-space: nowrap;
+    font-family: Consolas, monospace;
+}
+
+.chapter-indicator-current {
+    font-size: 44px;
+    color: var(--text-heading);
+    font-weight: 600;
+}
+
+.chapter-indicator-total {
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-left: 5px;
+}
+
+.board-section {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.board-toolbar,
+.board-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    font: 10px Consolas, monospace;
+    letter-spacing: 1.2px;
+}
+
+.board-toolbar {
+    margin-bottom: 12px;
+}
+
+.board-toolbar-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #cbd5e1;
+}
+
+.board-toolbar-hint {
+    color: #7d8ba0;
+    letter-spacing: 0;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+}
+
+.live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #27b894;
+}
+
 .motherboard-container {
     flex: 1;
-    min-height: 480px;
+    min-height: 420px;
     min-width: 0;
     width: 100%;
-    margin-top: 20px;
     position: relative;
-
-    background-color: #16181d;
-    background-image: url('../assets/img/motherboard-bg.jpg');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-
-    border: 1px dashed #3b404d;
-    border-radius: 12px;
+    background: #16181d url('../assets/img/motherboard-bg.jpg') no-repeat center / contain;
+    border: 1px solid var(--border);
+    border-radius: 5px;
     overflow: hidden;
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
 }
 
-/* Ефект Zoom-in при переході на компонент */
 .motherboard-container.zooming {
     transform: scale(2.2);
     opacity: 0.15;
 }
-/* Інтерактивні маячки (Hotspots) на материнській платі */
+
+.board-bottom {
+    margin-top: 12px;
+    color: var(--text-dim);
+}
+
+/* Інтерактивні маячки */
 .interactive-zone {
     position: absolute;
     width: 28px;
@@ -198,207 +762,109 @@ input:focus-visible,
     z-index: 12;
 }
 
-/* Точні координати роз'ємів на motherboard-bg.jpg */
-.slot-cpu {
-    top: 47%;
-    left: 60.5%;
-    border-color: #38bdf8;
-}
+.slot-cpu { top: 47%; left: 60.5%; border-color: #38bdf8; }
 
-.slot-cooling {
-    top: 29%;
-    left: 60.5%;
-    border-color: #f97316;
-}
+.slot-cooling { top: 29%; left: 60.5%; border-color: #f97316; }
 .slot-cooling::before { background: #f97316; }
 .slot-cooling::after { border-color: #f97316; }
 
-.slot-gpu {
-    top: 45%;
-    left: 44.5%;
-    border-color: #a855f7;
-}
+.slot-gpu { top: 45%; left: 44.5%; border-color: #a855f7; }
 .slot-gpu::before { background: #a855f7; }
 .slot-gpu::after { border-color: #a855f7; }
 
 .slot-ram,
-.slot-other {
-    top: 71.5%;
-    left: 61%;
-    border-color: #eab308;
-}
-.slot-ram::before { background: #eab308; }
-.slot-ram::after { border-color: #eab308; }
+.slot-other { top: 71.5%; left: 61%; border-color: #eab308; }
+.slot-ram::before, .slot-other::before { background: #eab308; }
+.slot-ram::after, .slot-other::after { border-color: #eab308; }
 
-.slot-storage {
-    top: 32%;
-    left: 38.5%;
-    border-color: #10b981;
-}
+.slot-storage { top: 32%; left: 38.5%; border-color: #10b981; }
 .slot-storage::before { background: #10b981; }
 .slot-storage::after { border-color: #10b981; }
 
-/* Постійна міні-бірка біля кожного маячка */
 .hotspot-tag {
     position: absolute;
     left: 36px;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(15, 23, 42, 0.92);
-    border: 1px solid #334155;
+    background: rgba(13, 17, 24, 0.95);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
     color: #f8fafc;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
     white-space: nowrap;
     pointer-events: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
     transition: border-color 0.2s, background-color 0.2s;
 }
 
 .interactive-zone:hover .hotspot-tag,
 .interactive-zone:focus-visible .hotspot-tag {
-    border-color: #38bdf8;
     background: #1e293b;
+    border-color: var(--accent-light);
 }
 
-/* Картка швидкого огляду вузла при наведенні (HUD) */
 .component-hud {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    width: 310px;
-    background: rgba(15, 23, 42, 0.94);
-    backdrop-filter: blur(8px);
-    border: 1px solid #334155;
-    border-left: 4px solid #38bdf8;
-    border-radius: 10px;
-    padding: 14px 16px;
+    width: 300px;
+    background: rgba(13, 17, 24, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-strong);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    padding: 18px;
     z-index: 8;
     pointer-events: none;
     transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
+.hud-overline {
+    font: 10px Consolas, monospace;
+    letter-spacing: 1.5px;
+    color: var(--accent-light);
+    margin-bottom: 10px;
+}
+
 .component-hud-title {
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 700;
+    letter-spacing: -0.3px;
     color: #f8fafc;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .component-hud-desc {
     font-size: 12px;
-    color: #94a3b8;
-    line-height: 1.45;
+    color: #a3afc0;
+    line-height: 1.65;
 }
 
-/* Пульсуючий індикатор завантаження мікросхеми (Design Document) */
-.chip-loader {
-    position: absolute;
-    inset: 0;
-    background: #0b0f19;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    z-index: 5;
-    transition: opacity 0.35s ease;
-}
+/* =====================================
+   CPU Scene Specifics
+   ===================================== */
 
-.chip-loader.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.chip-pulse {
-    width: 46px;
-    height: 46px;
-    border: 2px solid #3b82f6;
-    border-radius: 8px;
-    position: relative;
-    animation: chipPulse 1.2s infinite ease-in-out;
-}
-
-@keyframes chipPulse {
-    0%, 100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
-    }
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 18px 4px rgba(59, 130, 246, 0.25);
-    }
-}
-
-/* Телеметрія */
-.telemetry-block {
-    background-color: #1e293b;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    border-left: 4px solid #3b82f6;
-}
-.telemetry-label {
-    color: #94a3b8;
-    font-size: 13px;
-    margin-bottom: 5px;
-}
-.telemetry-value {
-    font-size: 24px;
-    font-weight: bold;
-    color: #10b981;
-}
-.telemetry-sub {
-    font-size: 12px;
-    color: #64748b;
-    font-weight: normal;
-}
-
-/* Сторінка CPU */
-.cpu-dashboard {
-    flex: 1;
-    display: flex;
-    gap: 24px;
-    padding: 20px;
-    color: #f8fafc;
-}
-
-.center-panel {
-    flex: 2;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.right-panel {
-    width: 320px;
+.duration-badge {
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.subtitle {
-    color: #94a3b8;
-    font-size: 14px;
+    font: 11px Consolas, monospace;
+    color: var(--text-secondary);
+    padding: 8px 0;
 }
 
 .animation-container {
     position: relative;
     width: 100%;
-    background-color: #0b0f19;
-    border: 1px solid #334155;
-    border-radius: 12px;
+    padding: 12px;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border);
+    border-radius: 5px;
     overflow: hidden;
 }
 
 .timeline-container {
-    background-color: #1e293b;
-    padding: 18px;
-    border-radius: 8px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -411,17 +877,40 @@ input:focus-visible,
 }
 
 .controls button {
-    background-color: #3b82f6;
+    background-color: #285fba;
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .controls button:hover {
-    background-color: #2563eb;
+    background-color: #3475d8;
+}
+
+.controls .pause-btn {
+    background: transparent;
+    color: #c5cfdd;
+    border: 1px solid #3b4657;
+}
+
+.controls .pause-btn:hover {
+    background: #263142;
+}
+
+.year-readout {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.year-readout strong {
+    color: var(--text-primary);
+    font: 600 17px Consolas, monospace;
 }
 
 .timeline-slider {
@@ -433,21 +922,8 @@ input:focus-visible,
 .timeline-labels {
     display: flex;
     justify-content: space-between;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 12px;
-}
-
-.info-card,
-.accessibility-box {
-    background-color: #1e293b;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-.info-text {
-    color: #94a3b8;
-    font-size: 14px;
-    line-height: 1.5;
 }
 
 .specs-grid {
@@ -459,41 +935,995 @@ input:focus-visible,
 }
 
 .spec-label {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 12px;
 }
 
 .spec-val {
-    font-size: 18px;
-    font-weight: bold;
+    font: 700 18px Consolas, monospace;
+    color: var(--text-primary);
     margin-top: 4px;
 }
 
-.acc-header {
-    color: #cbd5e1;
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 14px;
+.cpu-page .spec-item:last-child .spec-val {
+    color: #eaa347;
 }
 
-.acc-text {
-    color: #94a3b8;
-    font-size: 14px;
+.quiz-question {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #dbe3ee;
+    margin-bottom: 12px;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quiz-opt {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--bg-canvas);
+    color: #cbd5e1;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
     line-height: 1.5;
-    font-style: italic;
+}
+
+.quiz-opt:hover {
+    border-color: #6b91bd;
+    background: #1d2939;
+}
+
+.quiz-feedback {
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =====================================
+   RAM Scene Specifics
+   ===================================== */
+
+.ram-page .gen-selector {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 10px;
+}
+
+.ram-page .gen-btn {
+    padding: 13px 15px;
+    background: var(--bg-surface);
+    color: #c3cedc;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.ram-page .gen-btn span {
+    margin-left: 7px;
+    color: #8391a5;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.ram-page .gen-btn:hover {
+    background: var(--bg-hover);
+    border-color: #6489b5;
+    color: var(--text-heading);
+}
+
+.ram-page .gen-btn.active {
+    background: rgba(77, 145, 232, 0.12);
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.ram-page .gen-btn.active span {
+    color: #a9c9f2;
+}
+
+.ram-page .bus-visualization {
+    min-height: 315px;
+    padding: 24px 26px;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 22px;
+}
+
+.bus-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.bus-labels > span {
+    color: #e4ebf5;
+    font: 600 17px Consolas, monospace;
+}
+
+.bus-labels small {
+    display: block;
+    margin-top: 5px;
+    font: 10px 'Segoe UI', sans-serif;
+    color: #8291a6;
+    letter-spacing: 1px;
+}
+
+.bus-labels > span:last-child {
+    text-align: right;
+}
+
+.bus-tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 8px 0;
+}
+
+.ram-page .data-track {
+    height: 2px;
+    margin: 0;
+    background: #293548;
+    overflow: visible;
+}
+
+.ram-page .data-packet {
+    top: -4px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent-light);
+    box-shadow: 0 0 8px rgba(108, 169, 242, 0.4);
+}
+
+.memory-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font: 10px Consolas, monospace;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.ram-page .memory-cells {
+    margin-top: -8px;
+    padding-top: 16px;
+    border-top: 1px solid #293548;
+    gap: 7px;
+}
+
+.ram-page .mem-cell {
+    height: 34px;
+    background: #1b2432;
+    border: 1px solid #334155;
+    border-radius: 3px;
+    font-size: 10px;
+    color: #8391a5;
+    box-shadow: none;
+}
+
+.ram-page .mem-cell.filled {
+    background: rgba(77, 145, 232, 0.22);
+    border-color: #5a96e3;
+    color: #c1dbff;
+}
+
+.ram-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.ram-page .ram-actions .gen-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    min-height: 65px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.ram-page .ram-actions .action-plus {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 25px;
+    height: 25px;
+    border: 1px solid #52647c;
+    border-radius: 4px;
+    font: 18px Consolas, monospace;
+    color: #a7c7f1;
+}
+
+.ram-page .ram-actions small {
+    display: block;
+    margin-top: 3px;
+    color: #8291a6;
+    font-size: 11px;
+}
+
+.ram-power-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 6px;
+    padding: 18px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
+}
+
+.ram-power-area strong {
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.ram-power-area p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.ram-page .power-btn {
+    flex-shrink: 0;
+    padding: 11px 14px;
+    border: 1px solid #b96b6b;
+    border-radius: 4px;
+    color: #e6a3a3;
+    background: transparent;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.ram-page .power-btn:hover {
+    background: rgba(185, 107, 107, 0.12);
+}
+
+.ram-page .power-btn.off {
+    background: #a94444;
+    border-color: #a94444;
+    color: white;
+}
+
+.ram-page .info-card h3 {
+    margin: 0;
+    font-size: 21px;
+    letter-spacing: -0.5px;
+}
+
+.ram-card-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 10px 0 18px;
+}
+
+.ram-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    padding: 15px 0;
+}
+
+.ram-stat span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.ram-stat strong {
+    font: 600 17px Consolas, monospace;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+/* =====================================
+   GPU Scene Specifics
+   ===================================== */
+
+.gpu-page .render-window {
+    aspect-ratio: 16 / 9;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    min-height: 300px;
+}
+
+.gpu-page .render-window canvas {
+    cursor: ew-resize;
+    touch-action: none;
+}
+
+.gpu-canvas-hint {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font: 10px Consolas, monospace;
+    letter-spacing: 0.4px;
+}
+
+.gpu-canvas-hint span:nth-child(2) {
+    color: #a5b3c5;
+    font: 12px 'Segoe UI', sans-serif;
+    letter-spacing: 0;
+    text-align: center;
+}
+
+.gpu-page .rtx-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    gap: 24px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+}
+
+.gpu-mode-description strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.gpu-mode-description p {
+    margin: 6px 0 0;
+    max-width: 440px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.gpu-switch-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    font: 11px Consolas, monospace;
+    color: var(--text-secondary);
+}
+
+.gpu-page .switch {
+    width: 52px;
+    height: 29px;
+}
+
+.gpu-page .slider {
+    border-radius: 20px;
+    background: #38465a;
+}
+
+.gpu-page .slider::before {
+    width: 21px;
+    height: 21px;
+    left: 4px;
+    bottom: 4px;
+}
+
+.gpu-page input:checked + .slider {
+    background: #347e6d;
+}
+
+.gpu-page input:checked + .slider::before {
+    transform: translateX(23px);
+}
+
+.gpu-page .switch:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 4px;
+    border-radius: 20px;
+}
+
+.gpu-performance {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.gpu-performance > span {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.gpu-performance strong {
+    font: 600 24px Consolas, monospace;
+    color: var(--text-primary);
+}
+
+.gpu-performance small {
+    font-size: 10px;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+/* =====================================
+   Cooling Scene Specifics
+   ===================================== */
+
+.cooling-page .cooling-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 300px;
+    overflow: hidden;
+    background: var(--bg-canvas);
+    border: 1px solid #ef4444;
+    border-radius: 5px;
+    transition: border-color 0.5s ease;
+}
+
+.cooling-page .cooling-visual canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.cooling-visual-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-muted);
+    font: 10px Consolas, monospace;
+    letter-spacing: 0.8px;
+}
+
+.cooling-page .cooling-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.cooling-page .cooling-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    min-height: 82px;
+    padding: 16px;
+    background: var(--bg-surface);
+    color: #dbe3ee;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.cooling-page .cooling-btn:hover {
+    border-color: #647b98;
+    background: var(--bg-hover);
+}
+
+.cooling-page .cooling-btn:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 3px;
+}
+
+.cooling-page .cooling-option-number {
+    flex-shrink: 0;
+    font: 600 19px Consolas, monospace;
+    color: var(--text-muted);
+}
+
+.cooling-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cooling-option-content strong {
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 600;
+}
+
+.cooling-option-content small {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+
+.cooling-page .cooling-temperature {
+    border-left: 2px solid #ef4444;
+}
+
+.cooling-temperature-reading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 15px 0 20px;
+}
+
+.cooling-page #temp-value {
+    font: 600 52px Consolas, monospace;
+    letter-spacing: -2px;
+    color: #ef4444;
+}
+
+.cooling-temperature-reading > span {
+    font: 10px Consolas, monospace;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.cooling-temp-scale {
+    width: 100%;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.cooling-temp-scale-fill {
+    width: 85%;
+    height: 100%;
+    background: #ef4444;
+    border-radius: inherit;
+    transition: width 0.4s, background 0.4s;
+}
+
+.cooling-temp-status {
+    margin-top: 18px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #dbe3ee;
+}
+
+.cooling-metric-note {
+    margin-top: 12px;
+    font-size: 10px;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.cooling-audio-error {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: rgba(185, 70, 70, 0.12);
+    border: 1px solid #8b4444;
+    border-radius: 4px;
+    color: #e6a3a3;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =====================================
+   Storage Scene Specifics
+   ===================================== */
+
+.storage-page .drive-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 10px;
+}
+
+.storage-page .drive-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    min-height: 80px;
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: #cbd5e1;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.storage-page .drive-btn:hover {
+    background: var(--bg-hover);
+    border-color: #647b98;
+}
+
+.storage-page .drive-btn.active-hdd {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: #d99a35;
+    color: var(--text-heading);
+}
+
+.storage-page .drive-btn.active-ssd {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: #28a985;
+    color: var(--text-heading);
+}
+
+.storage-page .drive-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.drive-option-number {
+    flex-shrink: 0;
+    font: 600 20px Consolas, monospace;
+    color: var(--text-muted);
+}
+
+.drive-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.drive-option-content strong {
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.drive-option-content small {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+
+.storage-page .drive-visualization {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    min-height: 355px;
+    padding: 24px;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.storage-page #storageCanvas {
+    flex-shrink: 0;
+    height: 210px;
+}
+
+.storage-transfer-panel {
+    padding-top: 18px;
+    border-top: 1px solid #293548;
+}
+
+.storage-transfer-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font: 10px Consolas, monospace;
+    letter-spacing: 1px;
+}
+
+.storage-transfer-heading strong {
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.storage-page .progress-container {
+    width: 100%;
+    height: 7px;
+    margin: 14px 0 10px;
+    background: #263244;
+    border: 0;
+    border-radius: 3px;
+}
+
+.storage-page .progress-bar {
+    height: 100%;
+    background: #f59e0b;
+    border-radius: inherit;
+    transition: width 0.1s linear;
+}
+
+.storage-transfer-status {
+    min-height: 20px;
+    font: 11px Consolas, monospace;
+    line-height: 1.6;
+    color: #a9b7c9;
+}
+
+.storage-page .action-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 13px 18px;
+    background: #315d91;
+    color: var(--text-heading);
+    border: 1px solid #4779b3;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.storage-page .action-btn:hover {
+    background: #3b70aa;
+}
+
+.storage-page .action-btn:disabled {
+    background: #273345;
+    border-color: var(--border-strong);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.storage-comparison {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.storage-comparison-item {
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+}
+
+.storage-comparison-item > span {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--text-secondary);
+    font: 11px Consolas, monospace;
+}
+
+.storage-comparison-item > strong {
+    display: block;
+    margin-bottom: 14px;
+    color: var(--text-primary);
+    font: 600 20px Consolas, monospace;
+}
+
+.storage-comparison-track {
+    height: 5px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #293548;
+}
+
+.storage-comparison-fill {
+    height: 100%;
+    border-radius: inherit;
+}
+
+.hdd-fill { width: 1.6%; background: #d99a35; }
+.ssd-fill { width: 100%; background: #28a985; }
+
+.storage-page #telemetry-card {
+    border-top: 2px solid #f59e0b;
+}
+
+.storage-page .info-card h3 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.storage-card-description {
+    margin: 10px 0 18px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.storage-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 0;
+    border-top: 1px solid var(--border);
+}
+
+.storage-stat span {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.storage-stat strong {
+    color: var(--text-primary);
+    font: 600 16px Consolas, monospace;
+    text-align: right;
+}
+
+.storage-page #speed-val { color: #f59e0b; }
+.storage-page #latency-val { color: #e6a3a3; }
+
+/* =====================================
+   Responsive Breakpoints
+   ===================================== */
+
+@media (max-width: 1150px) {
+    .home-page {
+        padding: 30px;
+    }
+
+    .home-header h1 {
+        font-size: 34px;
+    }
+
+    .cpu-dashboard,
+    .cpu-page,
+    .ram-page,
+    .gpu-page,
+    .cooling-page,
+    .storage-page {
+        flex-direction: column;
+    }
+
+    .right-panel,
+    .ram-page .ram-side-panel,
+    .gpu-page .gpu-side-panel,
+    .cooling-page .cooling-side-panel,
+    .storage-page .storage-side-panel {
+        width: 100%;
+        flex: none;
+        padding-top: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cpu-page .quiz-card,
+    .ram-note,
+    .gpu-observation,
+    .cooling-fact,
+    .cooling-back-link,
+    .storage-fact,
+    .storage-back-link {
+        grid-column: 1 / -1;
+    }
 }
 
 @media (max-width: 960px) {
     body {
         flex-direction: column;
     }
+
     .sidebar {
         width: 100%;
     }
-    .cpu-dashboard {
-        flex-direction: column;
+}
+
+@media (max-width: 700px) {
+    .home-page {
+        padding: 24px 16px;
     }
-    .right-panel {
+
+    .home-header,
+    .cpu-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .chapter-indicator,
+    .board-toolbar-hint,
+    .board-bottom span:last-child,
+    .gpu-canvas-hint span:nth-child(2),
+    .cooling-visual-footer span:last-child,
+    .cooling-section-heading span:last-child,
+    .storage-section-heading span:last-child {
+        display: none;
+    }
+
+    .home-page .motherboard-container {
+        min-height: 440px;
+    }
+
+    .home-page .component-hud {
+        width: min(300px, calc(100% - 24px));
+        left: 12px;
+        bottom: 12px;
+    }
+
+    .cpu-dashboard,
+    .cpu-page,
+    .ram-page,
+    .gpu-page,
+    .cooling-page,
+    .storage-page {
+        padding: 22px 16px;
+    }
+
+    .right-panel,
+    .ram-page .ram-side-panel,
+    .gpu-page .gpu-side-panel,
+    .cooling-page .cooling-side-panel,
+    .storage-page .storage-side-panel {
+        display: flex;
+    }
+
+    .cpu-page .controls {
+        flex-wrap: wrap;
+    }
+
+    .year-readout {
         width: 100%;
+        margin-left: 0;
+    }
+
+    .duration-badge {
+        padding: 0;
+    }
+
+    .ram-page .bus-visualization {
+        padding: 18px 14px;
+    }
+
+    .ram-page .memory-cells {
+        gap: 3px;
+    }
+
+    .ram-page .mem-cell {
+        font-size: 8px;
+    }
+
+    .ram-actions,
+    .cooling-page .cooling-controls,
+    .storage-page .drive-selector,
+    .storage-comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .ram-power-area,
+    .gpu-page .rtx-toggle-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ram-power-area {
+        align-items: stretch;
+    }
+
+    .ram-page .gen-selector {
+        gap: 5px;
+    }
+
+    .ram-page .gen-selector .gen-btn {
+        padding: 10px 5px;
+        font-size: 12px;
+    }
+
+    .gpu-page .render-window,
+    .cooling-page .cooling-visual {
+        min-height: 230px;
+    }
+
+    .cooling-page #temp-value {
+        font-size: 44px;
+    }
+
+    .storage-page .drive-visualization {
+        padding: 15px;
+        min-height: 310px;
+    }
+
+    .storage-page #storageCanvas {
+        height: 190px;
     }
 }

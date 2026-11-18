@@ -64,91 +64,183 @@
         input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
+
 <body>
-
-    <div class="sidebar">
-        <div class="logo">
-            <span style="color: #3b82f6;">O</span> Frame by Frame
-        </div>
-
-        <div class="menu-category">Навігація</div>
-
-        <a href="index.html" class="menu-link">
-            <div class="menu-item">Головна плата</div>
-        </a>
-        <a href="cpu.html" class="menu-link">
-            <div class="menu-item">Центральний процесор (CPU)</div>
-        </a>
-        <a href="cooling.html" class="menu-link">
-            <div class="menu-item">Система охолодження</div>
-        </a>
-        <a href="gpu.html" class="menu-link active">
-            <div class="menu-item">Відеокарта (GPU)</div>
-        </a>
-        <a href="ram.html" class="menu-link">
-            <div class="menu-item">Оперативна пам'ять (RAM)</div>
-        </a>
-        <a href="storage.html" class="menu-link">
-            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <span class="brand-mark">[ ]</span>
+            <span class="brand-name">Frame <span>by</span> Frame</span>
         </a>
 
-        <div class="menu-category" style="margin-top: 20px;">Телеметрія GPU</div>
-        <div class="telemetry-block" style="border-left: 4px solid #10b981;">
-            <div class="telemetry-label">Відеопам'ять (VRAM)</div>
-            <div id="vram-val" class="telemetry-value">24 GB <span class="telemetry-sub">GDDR6X</span></div>
-        </div>
-        <div class="telemetry-block" style="border-left: 4px solid #3b82f6;">
-            <div class="telemetry-label">CUDA Ядра</div>
-            <div id="cuda-val" class="telemetry-value" style="color: #3b82f6;">16384</div>
-        </div>
-    </div>
+        <div class="sidebar-caption">ІНТЕРАКТИВНИЙ ДОВІДНИК</div>
 
-    <div class="gpu-dashboard">
-        
-        <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
-            <div class="header">
-                <h2>Графічний процесор (GPU)</h2>
-                <div class="subtitle">Генерація світів: Кадр за кадром</div>
-            </div>
+        <nav class="chapter-nav" aria-label="Розділи проєкту">
+            <div class="menu-category">РОЗДІЛИ / 06</div>
 
-            <div class="render-window" id="graphics-window">
-                <div class="chip-loader" id="gpu-loader">
-                    <div class="chip-pulse"></div>
-                    <span style="font-size: 12px; color: #94a3b8;">Компіляція шейдерів...</span>
-                </div>
-                <canvas id="gpuCanvas" style="width: 100%; height: 100%; display: block; border-radius: 8px;"></canvas>
-            </div>
+            <a href="index.html" class="menu-link">
+                <span class="chapter-number">01</span>
+                <span class="menu-item">Материнська плата</span>
+            </a>
+            <a href="cpu.html" class="menu-link">
+                <span class="chapter-number">02</span>
+                <span class="menu-item">Процесор</span>
+            </a>
+            <a href="cooling.html" class="menu-link">
+                <span class="chapter-number">03</span>
+                <span class="menu-item">Охолодження</span>
+            </a>
+            <a href="gpu.html" class="menu-link active" aria-current="page">
+                <span class="chapter-number">04</span>
+                <span class="menu-item">Відеокарта</span>
+            </a>
+            <a href="ram.html" class="menu-link">
+                <span class="chapter-number">05</span>
+                <span class="menu-item">Оперативна пам'ять</span>
+            </a>
+            <a href="storage.html" class="menu-link">
+                <span class="chapter-number">06</span>
+                <span class="menu-item">Накопичувачі</span>
+            </a>
+        </nav>
 
-            <div class="rtx-toggle-container">
-                <span style="font-weight: bold; color: #cbd5e1;">Базова растеризація</span>
-                <label class="switch" tabindex="0" role="switch" aria-checked="false" aria-label="Увімкнути трасування променів RTX ON">
-                    <input type="checkbox" id="rtx-toggle">
-                    <span class="slider"></span>
-                </label>
-                <span style="font-weight: bold; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">Трасування променів (RTX ON)</span>
-            </div>
-        </div>
+        <section class="gpu-telemetry">
+            <div class="menu-category">ПОКАЗНИКИ GPU</div>
 
-        <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
-            <div class="info-card">
-                <h3 style="margin-top: 0;">Обчислення світла</h3>
-                <p class="info-text">Сучасні відеокарти не просто малюють текстури, вони фізично вираховують поведінку кожного променя світла, відбиття та тіні у реальному часі.</p>
-                
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
-                    <div style="color: #94a3b8; font-size: 12px;">Продуктивність (TFLOPS)</div>
-                    <div id="tflops-val" style="font-size: 20px; font-weight: bold; color: #ef4444;">82.6</div>
+            <div class="telemetry-block">
+                <div class="telemetry-label">Відеопам'ять</div>
+                <div id="vram-val" class="telemetry-value">
+                    24 GB <span class="telemetry-sub">GDDR6X</span>
                 </div>
             </div>
 
-            <div class="accessibility-box" style="border-left: 4px solid #3b82f6;">
-                <div class="acc-header">Текстовий транскрипт стану:</div>
-                <div id="acc-text" class="acc-text">
-                    "Режим растеризації: Тіні статичні, відбиття на поверхнях імітуються програмно. Навантаження на GPU середнє."
-                </div>
+            <div class="telemetry-block">
+                <div class="telemetry-label">CUDA-ядра</div>
+                <div id="cuda-val" class="telemetry-value">16384</div>
             </div>
+        </section>
+
+        <div class="sidebar-footer">
+            <span class="sidebar-footer-line"></span>
+            <span>FRAME BY FRAME</span>
+            <span>Мультимедійний проєкт</span>
+        </div>
+    </aside>
+
+    <main class="gpu-dashboard gpu-page">
+        <div class="center-panel">
+            <header class="gpu-header">
+                <div class="eyebrow">РОЗДІЛ 04 / КОМП'ЮТЕРНА ГРАФІКА</div>
+                <h1>Як відеокарта створює зображення</h1>
+                <p class="gpu-lead">
+                    Одну й ту саму сцену можна відобразити різними
+                    способами. Порівняйте звичайну растеризацію
+                    з трасуванням променів і простежте, як змінюються
+                    освітлення, тіні та відбиття.
+                </p>
+            </header>
+
+            <section class="gpu-workspace">
+                <div class="gpu-section-heading">
+                    <span>01 / ПОРІВНЯННЯ РЕНДЕРИНГУ</span>
+                    <span>ІНТЕРАКТИВНА СЦЕНА</span>
+                </div>
+
+                <div class="render-window" id="graphics-window">
+                    <div class="chip-loader" id="gpu-loader">
+                        <div class="chip-pulse"></div>
+                        <span class="loader-caption">
+                            Підготовка графічної сцени...
+                        </span>
+                    </div>
+
+                    <canvas id="gpuCanvas"
+                            style="width:100%; height:100%; display:block;">
+                    </canvas>
+                </div>
+
+                <div class="gpu-canvas-hint">
+                    <span>РАСТЕРИЗАЦІЯ</span>
+                    <span>Перетягуйте роздільник для порівняння</span>
+                    <span>RAY TRACING</span>
+                </div>
+
+                <div class="gpu-section-heading">
+                    <span>02 / РЕЖИМ ВІЗУАЛІЗАЦІЇ</span>
+                    <span>ПЕРЕМИКАЧ RTX</span>
+                </div>
+
+                <div class="rtx-toggle-container">
+                    <div class="gpu-mode-description">
+                        <strong>Трасування променів</strong>
+                        <p>
+                            Увімкніть режим, щоб збільшити видиму
+                            частину сцени з відбиттями та м'якими тінями.
+                        </p>
+                    </div>
+
+                    <div class="gpu-switch-group">
+                        <span>OFF</span>
+                        <label class="switch" tabindex="0"
+                               role="switch"
+                               aria-checked="false"
+                               aria-label="Увімкнути трасування променів">
+                            <input type="checkbox" id="rtx-toggle">
+                            <span class="slider"></span>
+                        </label>
+                        <span>ON</span>
+                    </div>
+                </div>
+
+                <div class="gpu-bottom-note">
+                    <span>ПРО СИМУЛЯЦІЮ</span>
+                    <p>
+                        Це навчальна Canvas-візуалізація двох підходів
+                        до рендерингу, а не реальне вимірювання
+                        продуктивності відеокарти.
+                    </p>
+                </div>
+            </section>
         </div>
 
-    </div>
+        <aside class="right-panel gpu-side-panel">
+            <section class="info-card">
+                <div class="panel-kicker">ЯК ЦЕ ПРАЦЮЄ</div>
+                <h3>Від полігонів до променів</h3>
+                <p class="info-text">
+                    Растеризація перетворює геометрію сцени на пікселі.
+                    Освітлення та відбиття можуть імітуватися
+                    додатковими алгоритмами.
+                </p>
+                <p class="info-text">
+                    Трасування променів моделює проходження світла
+                    крізь сцену, дозволяючи точніше обчислювати
+                    відбиття й тіні.
+                </p>
+
+                <div class="gpu-performance">
+                    <span>Умовний показник обчислень</span>
+                    <strong id="tflops-val">82.6</strong>
+                    <small>Демонстраційне значення, не бенчмарк</small>
+                </div>
+            </section>
+
+            <section class="accessibility-box">
+                <div class="panel-kicker">ПОЯСНЕННЯ ПОТОЧНОГО РЕЖИМУ</div>
+                <div id="acc-text" class="acc-text" aria-live="polite">
+                    Режим растеризації: тіні статичні, відбиття
+                    на поверхнях спрощені.
+                </div>
+            </section>
+
+            <section class="gpu-observation">
+                <div class="panel-kicker">НА ЩО ЗВЕРНУТИ УВАГУ</div>
+                <p>
+                    Порівняйте вигляд сфери, тінь на підлозі
+                    та дзеркальну поверхню праворуч.
+                </p>
+            </section>
+        </aside>
+    </main>
 
 <script>
         const rtxToggle = document.getElementById('rtx-toggle');

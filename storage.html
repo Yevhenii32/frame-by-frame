@@ -71,94 +71,248 @@
         .action-btn:disabled { background-color: #475569; cursor: not-allowed; }
     </style>
 </head>
+
 <body>
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <span class="brand-mark">[ ]</span>
+            <span class="brand-name">Frame <span>by</span> Frame</span>
+        </a>
 
-    <div class="sidebar">
-        <div class="logo">
-            <span style="color: #3b82f6;">O</span> Frame by Frame
+        <div class="sidebar-caption">ІНТЕРАКТИВНИЙ ДОВІДНИК</div>
+
+        <nav class="chapter-nav" aria-label="Розділи проєкту">
+            <div class="menu-category">РОЗДІЛИ / 06</div>
+
+            <a href="index.html" class="menu-link">
+                <span class="chapter-number">01</span>
+                <span class="menu-item">Материнська плата</span>
+            </a>
+
+            <a href="cpu.html" class="menu-link">
+                <span class="chapter-number">02</span>
+                <span class="menu-item">Процесор</span>
+            </a>
+
+            <a href="cooling.html" class="menu-link">
+                <span class="chapter-number">03</span>
+                <span class="menu-item">Охолодження</span>
+            </a>
+
+            <a href="gpu.html" class="menu-link">
+                <span class="chapter-number">04</span>
+                <span class="menu-item">Відеокарта</span>
+            </a>
+
+            <a href="ram.html" class="menu-link">
+                <span class="chapter-number">05</span>
+                <span class="menu-item">Оперативна пам'ять</span>
+            </a>
+
+            <a href="storage.html" class="menu-link active" aria-current="page">
+                <span class="chapter-number">06</span>
+                <span class="menu-item">Накопичувачі</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="sidebar-footer-line"></span>
+            <span>FRAME BY FRAME</span>
+            <span>Мультимедійний проєкт</span>
+        </div>
+    </aside>
+
+    <main class="storage-dashboard storage-page">
+        <div class="center-panel">
+
+            <header class="storage-header">
+                <div class="eyebrow">
+                    РОЗДІЛ 06 / ЗБЕРІГАННЯ ДАНИХ
+                </div>
+
+                <h1>Від магнітного диска до NVMe</h1>
+
+                <p class="storage-lead">
+                    Як змінилося зберігання даних за останні
+                    десятиліття? Порівняйте механічний HDD
+                    із сучасним SSD та запустіть симуляцію
+                    копіювання файлу обсягом 10 GB.
+                </p>
+            </header>
+
+            <section class="storage-workspace">
+
+                <div class="storage-section-heading">
+                    <span>01 / ТИП НАКОПИЧУВАЧА</span>
+                    <span>ОБЕРІТЬ ТЕХНОЛОГІЮ</span>
+                </div>
+
+                <div class="drive-selector">
+                    <button type="button"
+                            id="btn-hdd"
+                            class="drive-btn active-hdd">
+
+                        <span class="drive-option-number">01</span>
+
+                        <span class="drive-option-content">
+                            <strong>Механічний HDD</strong>
+                            <small>Магнітні пластини · 7200 RPM</small>
+                        </span>
+                    </button>
+
+                    <button type="button"
+                            id="btn-ssd"
+                            class="drive-btn">
+
+                        <span class="drive-option-number">02</span>
+
+                        <span class="drive-option-content">
+                            <strong>NVMe SSD</strong>
+                            <small>Флеш-пам'ять · PCIe 4.0</small>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="storage-section-heading">
+                    <span>02 / БУДОВА НАКОПИЧУВАЧА</span>
+                    <span>ІНТЕРАКТИВНА АНІМАЦІЯ</span>
+                </div>
+
+                <div class="drive-visualization">
+
+                    <div class="chip-loader" id="storage-loader">
+                        <div class="chip-pulse"></div>
+                        <span class="loader-caption">
+                            Підготовка носія...
+                        </span>
+                    </div>
+
+                    <canvas id="storageCanvas"
+                            style="width:100%; height:210px; display:block;">
+                    </canvas>
+
+                    <div class="storage-transfer-panel">
+
+                        <div class="storage-transfer-heading">
+                            <span>КОПІЮВАННЯ ФАЙЛУ</span>
+                            <strong>10 GB</strong>
+                        </div>
+
+                        <div class="progress-container"
+                             id="prog-container">
+                            <div class="progress-bar"
+                                 id="prog-bar"></div>
+                        </div>
+
+                        <div id="transfer-status"
+                             class="storage-transfer-status"
+                             aria-live="polite">
+                            Готово до тесту (Копіювання 10 GB)
+                        </div>
+
+                        <button type="button"
+                                id="start-transfer"
+                                class="action-btn">
+                            ▶ Запустити тест копіювання
+                        </button>
+                    </div>
+                </div>
+
+                <div class="storage-section-heading">
+                    <span>03 / ПОРІВНЯННЯ ШВИДКОСТІ</span>
+                    <span>ДЕМОНСТРАЦІЙНИЙ ТЕСТ</span>
+                </div>
+
+                <div class="storage-comparison">
+                    <div class="storage-comparison-item">
+                        <span>HDD / 7200 RPM</span>
+                        <strong>~120 MB/s</strong>
+                        <div class="storage-comparison-track">
+                            <div class="storage-comparison-fill hdd-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="storage-comparison-item">
+                        <span>NVMe / PCIe 4.0</span>
+                        <strong>~7500 MB/s</strong>
+                        <div class="storage-comparison-track">
+                            <div class="storage-comparison-fill ssd-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="storage-bottom-note">
+                    <span>ПРО СИМУЛЯЦІЮ</span>
+                    <p>
+                        Час виконання тесту прискорений для наочності.
+                        Показані швидкості — умовні приклади,
+                        а не результати вимірювання вашого комп'ютера.
+                    </p>
+                </div>
+
+            </section>
         </div>
 
-        <div class="menu-category">Навігація</div>
+        <aside class="right-panel storage-side-panel">
 
-        <a href="index.html" class="menu-link">
-            <div class="menu-item">Головна плата</div>
-        </a>
-        <a href="cpu.html" class="menu-link">
-            <div class="menu-item">Центральний процесор (CPU)</div>
-        </a>
-        <a href="cooling.html" class="menu-link">
-            <div class="menu-item">Система охолодження</div>
-        </a>
-        <a href="gpu.html" class="menu-link">
-            <div class="menu-item">Відеокарта (GPU)</div>
-        </a>
-        <a href="ram.html" class="menu-link">
-            <div class="menu-item">Оперативна пам'ять (RAM)</div>
-        </a>
-        <a href="storage.html" class="menu-link active">
-            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
-        </a>
-    </div>
+            <section class="info-card"
+                     id="telemetry-card">
 
-    <div class="storage-dashboard">
-        
-        <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
-            <div class="header">
-                <h2>Еволюція зберігання даних</h2>
-                <div class="subtitle">Від механіки до чистого кремнію</div>
-            </div>
+                <div class="panel-kicker">ТЕХНОЛОГІЯ ЗАПИСУ</div>
 
-            <div class="drive-selector">
-                <button type="button" id="btn-hdd" class="drive-btn active-hdd">Механічний HDD (7200 RPM)</button>
-                <button type="button" id="btn-ssd" class="drive-btn">M.2 NVMe SSD (PCIe 4.0)</button>
-            </div>
+                <h3 id="tech-title">Магнітний запис</h3>
 
-            <div class="drive-visualization">
-                <div class="chip-loader" id="storage-loader">
-                    <div class="chip-pulse"></div>
-                    <span style="font-size: 12px; color: #94a3b8;">Підготовка носія...</span>
-                </div>
-                <canvas id="storageCanvas" style="width: 100%; height: 190px; display: block; border-radius: 6px;"></canvas>
-                
-                <div class="progress-container" id="prog-container">
-                    <div class="progress-bar" id="prog-bar"></div>
-                </div>
-                <div id="transfer-status" style="margin-top: 6px; font-family: monospace; font-size: 13px; color: #cbd5e1;">
-                    Готово до тесту (Копіювання 10 GB)
+                <p class="storage-card-description">
+                    Основні характеристики вибраного накопичувача.
+                </p>
+
+                <div class="storage-stat">
+                    <span>Швидкість читання</span>
+                    <strong id="speed-val">~120 MB/s</strong>
                 </div>
 
-                <button type="button" id="start-transfer" class="action-btn">▶ Запустити бенчмарк (Копіювання 10 GB)</button>
-            </div>
-        </div>
-
-        <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
-            
-            <div class="info-card" style="border-top: 4px solid #f59e0b;" id="telemetry-card">
-                <h3 style="margin-top: 0;" id="tech-title">Магнітний запис</h3>
-                
-                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="color: #94a3b8; font-size: 12px;">Швидкість читання</div>
-                    <div id="speed-val" style="font-size: 20px; font-weight: bold; color: #f59e0b;">~120 MB/s</div>
+                <div class="storage-stat">
+                    <span>Затримка доступу</span>
+                    <strong id="latency-val">~15 ms</strong>
                 </div>
-                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 15px;">
-                    <div style="color: #94a3b8; font-size: 12px;">Затримка (Latency)</div>
-                    <div id="latency-val" style="font-size: 20px; font-weight: bold; color: #fca5a5;">~15 ms</div>
+
+                <div class="storage-stat">
+                    <span>Рухомі частини</span>
+                    <strong id="moving-parts-val">Так</strong>
                 </div>
-            </div>
+            </section>
 
-            <div class="accessibility-box">
-                <div class="acc-header">Текстовий транскрипт стану:</div>
-                <div id="acc-text" class="acc-text">
-                    "Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."
+            <section class="accessibility-box">
+                <div class="panel-kicker">
+                    ЩО ВІДБУВАЄТЬСЯ?
                 </div>
-            </div>
 
-            <button type="button" onclick="window.location.href='index.html'" style="margin-top: auto; padding: 12px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
-                Головна плата
-            </button>
-        </div>
+                <div id="acc-text"
+                     class="acc-text"
+                     aria-live="polite">
+                    Механічний жорсткий диск обертає магнітні
+                    пластини, а головка переміщується для
+                    зчитування даних. Під час роботи можна
+                    почути гул шпинделя та клацання механізму.
+                </div>
+            </section>
 
-    </div>
+            <section class="storage-fact">
+                <div class="panel-kicker">ЦІКАВИЙ ФАКТ</div>
+                <p>
+                    SSD не має механічної головки чи дисків,
+                    що обертаються. Завдяки цьому час доступу
+                    до даних зазвичай значно менший, ніж у HDD.
+                </p>
+            </section>
+
+            <a href="index.html" class="storage-back-link">
+                <span>←</span>
+                Повернутися до материнської плати
+            </a>
+
+        </aside>
+    </main>
 
     <script src="audio-engine.js"></script>
     <script>
