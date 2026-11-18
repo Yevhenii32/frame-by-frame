@@ -49,11 +49,11 @@
     <div class="main-content">
         <div class="header">
             <h2>Інтерактивна карта материнської плати</h2>
-            <div class="audio-toggle">🔊 Звук: Увімк.</div>
+            <!-- Додано ID для коректної роботи JS-скрипта -->
+            <div id="sound-toggle-btn" class="audio-toggle" style="cursor: pointer;">🔊 Звук: Увімк.</div>
         </div>
 
         <div class="motherboard-container">
-
             <!-- 1. CPU (Процесор) -->
             <a href="cpu.html" class="interactive-zone slot-cpu">
                 <span class="tooltip">Центральний процесор CPU (Клікніть)</span>
@@ -78,9 +78,29 @@
             <a href="storage.html" class="interactive-zone slot-storage">
                 <span class="tooltip">Накопичувач SSD/HDD (Клікніть)</span>
             </a>
-
         </div>
     </div>
 
+    <!-- Підключення скриптів аудіо та логіки кнопки -->
+    <script src="audio-engine.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const soundBtn = document.getElementById('sound-toggle-btn');
+            if (soundBtn) {
+                const updateBtn = () => {
+                    soundBtn.textContent = SoundEngine.getMuted() ? '🔇 Звук: Вимк.' : '🔊 Звук: Увімк.';
+                };
+                updateBtn();
+                soundBtn.addEventListener('click', () => {
+                    SoundEngine.setMuted(!SoundEngine.getMuted());
+                    if (!SoundEngine.getMuted()) SoundEngine.playAmbient();
+                    updateBtn();
+                });
+            }
+            document.body.addEventListener('click', () => {
+                if (!SoundEngine.getMuted()) SoundEngine.playAmbient();
+            }, { once: true });
+        });
+    </script>
 </body>
 </html>

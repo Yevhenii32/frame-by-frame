@@ -116,12 +116,9 @@
                 <div class="subtitle" style="color: #94a3b8;">Генерація світів: Кадр за кадром</div>
             </div>
 
-            <!-- Вікно для порівняння графіки -->
+            <!-- Вікно для інтерактивної Canvas-анімації порівняння графіки -->
             <div class="render-window" id="graphics-window">
-                <span id="render-text" style="color: #94a3b8; font-size: 18px; z-index: 2;">Тут буде 2D-анімація порівняння графіки</span>
-                <!-- Заглушки для фонових зображень -->
-                <div id="bg-raster" style="position: absolute; inset: 0; background: linear-gradient(45deg, #1e293b, #0f172a); transition: opacity 0.5s; opacity: 1;"></div>
-                <div id="bg-rtx" style="position: absolute; inset: 0; background: linear-gradient(45deg, #020617, #1d4ed8); transition: opacity 0.5s; opacity: 0;"></div>
+                <canvas id="gpuCanvas" style="width: 100%; height: 100%; display: block; border-radius: 8px;"></canvas>
             </div>
 
             <!-- Інтерактивний блок перемикання -->
@@ -156,32 +153,162 @@
 
     </div>
 
-    <!-- Інтерактивний скрипт перемикання режимів -->
+    <!-- Комплексний інтерактивний скрипт (Тумблер + Canvas Рендеринг) -->
     <script>
         const rtxToggle = document.getElementById('rtx-toggle');
-        const bgRaster = document.getElementById('bg-raster');
-        const bgRtx = document.getElementById('bg-rtx');
         const accText = document.getElementById('acc-text');
         const tflopsVal = document.getElementById('tflops-val');
+        const graphicsWindow = document.getElementById('graphics-window');
 
+        // Оноврення телеметрії та транскрипту при перемиканні тумблера
         rtxToggle.addEventListener('change', (e) => {
             if (e.target.checked) {
-                // Увімкнено Ray Tracing
-                bgRaster.style.opacity = '0';
-                bgRtx.style.opacity = '1';
-                accText.textContent = '"Режим трасування променів: Світло фізично коректно відбивається від води та металу. З\'являються м\'які, реалістичні тіні. Навантаження на GPU максимальне."';
-                tflopsVal.textContent = "120.4 (з тензорними ядрами)";
+                accText.textContent = '"Режим трасування променів: Світло фізично коректно відбивається від дзеркальної поверхні. З\'являються м\'які тіні та вторинні відблиски. Навантаження на GPU максимальне."';
+                tflopsVal.textContent = "120.4 (RT Cores)";
                 tflopsVal.style.color = "#10b981";
+                graphicsWindow.style.borderColor = "#10b981";
             } else {
-                // Базова растеризація
-                bgRaster.style.opacity = '1';
-                bgRtx.style.opacity = '0';
-                accText.textContent = '"Режим растеризації: Тіні статичні, відбиття на поверхнях імітуються програмно. Навантаження на GPU середнє."';
+                accText.textContent = '"Режим растеризації: Тіні статичні, відбиття у дзеркалі відсутні (використовується лише Z-буфер). Навантаження на GPU стандартне."';
                 tflopsVal.textContent = "82.6";
                 tflopsVal.style.color = "#ef4444";
+                graphicsWindow.style.borderColor = "#334155";
             }
         });
-    </script>
 
+        // Двигунок Canvas-анімації трасування променів
+        (() => {
+            const canvas = document.getElementById('gpuCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let phase = 0;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Клік по Canvas також може перемикати тумблер RTX для інтерактивності
+            canvas.addEventListener('click', () => {
+                rtxToggle.checked = !rtxToggle.checked;
+                rtxToggle.dispatchEvent(new Event('change'));
+            });
+
+            function draw() {
+                phase += 0.03;
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                ctx.clearRect(0, 0, w, h);
+
+                const rtxOn = rtxToggle.checked;
+                const lightX = w * 0.2;
+                const lightY = 45;
+                const sphereX = w * 0.48;
+                const sphereY = h * 0.56;
+                const floorY = h - 35;
+                const mirrorX = w * 0.78;
+
+                // Підлога та дзеркальна стіна справа
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(30, floorY, w - 60, 8);
+                ctx.fillStyle = rtxOn ? '#38bdf8' : '#475569';
+                ctx.fillRect(mirrorX, 40, 8, floorY - 40);
+
+                // Джерело світла
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.arc(lightX, lightY, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '11px system-ui, sans-serif';
+                ctx.fillText('Джерело світла', lightX - 35, lightY - 15);
+
+                if (!rtxOn) {
+                    // Режим базової растеризації: пласка тінь без відбиттів
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                    ctx.beginPath();
+                    ctx.ellipse(sphereX + 25, floorY, 45, 6, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Проста полігональна сітка-проекція
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(lightX, lightY);
+                    ctx.lineTo(sphereX, sphereY - 30);
+                    ctx.moveTo(lightX, lightY);
+                    ctx.lineTo(sphereX, sphereY + 30);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Сфера без відблиску від дзеркала
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.beginPath();
+                    ctx.arc(sphereX, sphereY, 32, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '12px system-ui, sans-serif';
+                    ctx.fillText('Відбиття у дзеркалі відсутнє (тільки Z-буфер)', mirrorX - 250, 65);
+                } else {
+                    // Режим RTX ON: фізичні промені, відбиття від дзеркала та м'яка тінь
+                    const grad = ctx.createRadialGradient(sphereX + 30, floorY, 5, sphereX + 30, floorY, 60);
+                    grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+                    grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.ellipse(sphereX + 30, floorY, 60, 9, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Анімовані траєкторії променів
+                    const rays = [
+                        [[lightX, lightY], [sphereX - 18, sphereY - 25], [mirrorX, sphereY - 45], [w * 0.92, sphereY - 20]],
+                        [[lightX, lightY], [sphereX + 18, sphereY + 10], [mirrorX, sphereY + 18], [sphereX + 32, sphereY + 10]],
+                        [[lightX, lightY], [mirrorX, floorY - 25], [sphereX + 25, floorY]]
+                    ];
+
+                    rays.forEach(path => {
+                        ctx.strokeStyle = '#10b981';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([8, 6]);
+                        ctx.lineDashOffset = -phase * 35;
+                        ctx.beginPath();
+                        ctx.moveTo(path[0][0], path[0][1]);
+                        for (let i = 1; i < path.length; i++) ctx.lineTo(path[i][0], path[i][1]);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    });
+
+                    // Сфера з реальним освітленням та вторинним відблиском
+                    const sGrad = ctx.createRadialGradient(sphereX - 10, sphereY - 10, 4, sphereX, sphereY, 34);
+                    sGrad.addColorStop(0, '#6ee7b7');
+                    sGrad.addColorStop(0.6, '#2563eb');
+                    sGrad.addColorStop(1, '#10b981');
+                    ctx.fillStyle = sGrad;
+                    ctx.beginPath();
+                    ctx.arc(sphereX, sphereY, 32, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Відбиття сфери у дзеркальній поверхні
+                    ctx.fillStyle = 'rgba(52, 211, 153, 0.35)';
+                    ctx.beginPath();
+                    ctx.arc(mirrorX + 24, sphereY, 24, Math.PI * 0.5, Math.PI * 1.5);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#10b981';
+                    ctx.font = '12px system-ui, sans-serif';
+                    ctx.fillText('RTX ON: прорахунок відбиттів та глобального освітлення', mirrorX - 310, 65);
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+        })();
+    </script>
 </body>
 </html>

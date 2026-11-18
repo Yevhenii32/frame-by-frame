@@ -27,19 +27,18 @@
             align-items: center; 
             justify-content: center; 
             overflow: hidden; 
-            padding: 20px;
+            padding: 15px;
         }
         
         /* Прогрес-бар копіювання */
         .progress-container {
             width: 80%; 
-            height: 24px; 
+            height: 18px; 
             background-color: #1e293b; 
-            border-radius: 12px;
+            border-radius: 9px;
             border: 1px solid #334155; 
             overflow: hidden; 
-            margin-top: 30px; 
-            display: none;
+            margin-top: 15px; 
         }
         .progress-bar {
             height: 100%; 
@@ -72,8 +71,10 @@
             cursor: pointer; 
             font-size: 16px; 
             font-weight: bold; 
-            margin-top: 20px;
+            margin-top: 15px;
+            transition: background-color 0.2s;
         }
+        .action-btn:hover { background-color: #2563eb; }
         .action-btn:disabled { background-color: #475569; cursor: not-allowed; }
     </style>
 </head>
@@ -123,20 +124,18 @@
                 <button id="btn-ssd" class="drive-btn">M.2 NVMe SSD (PCIe 4.0)</button>
             </div>
 
-            <!-- Зона анімації та тесту -->
+            <!-- Зона Canvas-анімації та тесту -->
             <div class="drive-visualization">
-                <div id="drive-graphic" style="color: #94a3b8; font-size: 18px;">
-                    Тут буде анімація: магнітна голка диска АБО спалахи чипів пам'яті
-                </div>
+                <canvas id="storageCanvas" style="width: 100%; height: 190px; display: block; border-radius: 6px;"></canvas>
                 
                 <div class="progress-container" id="prog-container">
                     <div class="progress-bar" id="prog-bar"></div>
                 </div>
-                <div id="transfer-status" style="margin-top: 10px; font-family: monospace; color: #cbd5e1; display: none;">
-                    Передача: 0% (0 MB/s)
+                <div id="transfer-status" style="margin-top: 6px; font-family: monospace; font-size: 13px; color: #cbd5e1;">
+                    Готово до тесту (Копіювання 10 GB)
                 </div>
 
-                <button id="start-transfer" class="action-btn">Запустити бенчмарк (Копіювання 10 GB)</button>
+                <button id="start-transfer" class="action-btn">▶ Запустити бенчмарк</button>
             </div>
         </div>
 
@@ -162,20 +161,25 @@
                     "Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."
                 </div>
             </div>
+
+            <!-- Кнопка повернення -->
+            <button onclick="window.location.href='index.html'" style="margin-top: auto; padding: 12px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
+                Головна плата
+            </button>
         </div>
 
     </div>
 
     <!-- Аудіо для звукового дизайну -->
-    <audio id="audio-hdd" src="assets/audio/hdd-scratch.ogg"></audio>
-    <audio id="audio-ssd" src="assets/audio/ssd-digital.ogg"></audio>
+    <audio id="audio-hdd" src="assets/audio/hdd-scratch.ogg" loop></audio>
+    <audio id="audio-ssd" src="assets/audio/ssd-digital.ogg" loop></audio>
 
+    <!-- Скрипт логіки управління та Canvas-візуалізації -->
     <script>
         const btnHdd = document.getElementById('btn-hdd');
         const btnSsd = document.getElementById('btn-ssd');
         const startBtn = document.getElementById('start-transfer');
         
-        const progContainer = document.getElementById('prog-container');
         const progBar = document.getElementById('prog-bar');
         const transferStatus = document.getElementById('transfer-status');
         
@@ -190,14 +194,19 @@
 
         let isSsdActive = false;
         let isTransferring = false;
+        let progress = 0;
 
         // Перемикання на HDD
         btnHdd.addEventListener('click', () => {
             if (isTransferring) return;
             isSsdActive = false;
+            progress = 0;
+            progBar.style.width = "0%";
+            transferStatus.textContent = "Готово до тесту (Копіювання 10 GB)";
             
             btnHdd.className = "drive-btn active-hdd";
             btnSsd.className = "drive-btn";
+            progBar.style.backgroundColor = "#f59e0b";
             
             techTitle.textContent = "Магнітний запис";
             speedVal.textContent = "~120 MB/s";
@@ -207,16 +216,19 @@
             telemetryCard.style.borderTopColor = "#f59e0b";
             
             accText.textContent = '"Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."';
-            resetProgress();
         });
 
         // Перемикання на SSD
         btnSsd.addEventListener('click', () => {
             if (isTransferring) return;
             isSsdActive = true;
+            progress = 0;
+            progBar.style.width = "0%";
+            transferStatus.textContent = "Готово до тесту (Копіювання 10 GB)";
             
             btnHdd.className = "drive-btn";
             btnSsd.className = "drive-btn active-ssd";
+            progBar.style.backgroundColor = "#10b981";
             
             techTitle.textContent = "Флеш-пам'ять 3D NAND";
             speedVal.textContent = "~7500 MB/s";
@@ -226,70 +238,173 @@
             telemetryCard.style.borderTopColor = "#10b981";
             
             accText.textContent = '"Стан: NVMe SSD. Звук: абсолютна тиша (відсутні рухомі частини). Дані блискавично маршрутизуються через контролер пам\'яті без механічних затримок."';
-            resetProgress();
         });
-
-        function resetProgress() {
-            progContainer.style.display = "none";
-            transferStatus.style.display = "none";
-            progBar.style.width = "0%";
-            progBar.style.backgroundColor = isSsdActive ? "#10b981" : "#f59e0b";
-        }
 
         // Логіка бенчмарку
         startBtn.addEventListener('click', () => {
             if (isTransferring) return;
             isTransferring = true;
+            progress = 0;
             
             startBtn.disabled = true;
             btnHdd.disabled = true;
             btnSsd.disabled = true;
             
-            progContainer.style.display = "block";
-            transferStatus.style.display = "block";
-            progBar.style.width = "0%";
-            progBar.style.backgroundColor = isSsdActive ? "#10b981" : "#f59e0b";
-            
-            const duration = isSsdActive ? 600 : 8000;
-            const speedText = isSsdActive ? "7240 MB/s" : "115 MB/s";
+            const duration = isSsdActive ? 600 : 7500; // Час симуляції
+            const speedText = isSsdActive ? "7400 MB/s" : "120 MB/s";
             
             try {
                 if (isSsdActive) {
+                    audioHdd.pause();
                     audioSsd.currentTime = 0; 
-                    audioSsd.play().catch(e => console.log('Аудіо недоступне'));
+                    audioSsd.play().catch(e => {});
                 } else {
+                    audioSsd.pause();
                     audioHdd.currentTime = 0; 
-                    audioHdd.play().catch(e => console.log('Аудіо недоступне'));
+                    audioHdd.play().catch(e => {});
                 }
             } catch(e) {}
 
             let start = null;
             
-            function animateProgress(timestamp) {
+            function animateBenchmark(timestamp) {
                 if (!start) start = timestamp;
-                const progress = timestamp - start;
-                const percentage = Math.min((progress / duration) * 100, 100);
+                const elapsed = timestamp - start;
+                progress = Math.min((elapsed / duration) * 100, 100);
                 
-                progBar.style.width = percentage + "%";
-                transferStatus.textContent = `Передача: ${Math.floor(percentage)}% (${speedText})`;
+                progBar.style.width = progress + "%";
+                const copiedGB = ((progress / 100) * 10).toFixed(1);
+                transferStatus.textContent = `Передача: ${Math.floor(progress)}% (${copiedGB} / 10 GB) — ${speedText}`;
                 
-                if (percentage < 100) {
-                    requestAnimationFrame(animateProgress);
+                if (progress < 100) {
+                    requestAnimationFrame(animateBenchmark);
                 } else {
                     isTransferring = false;
                     startBtn.disabled = false;
                     btnHdd.disabled = false;
                     btnSsd.disabled = false;
-                    startBtn.textContent = "Перезапустити бенчмарк";
-                    transferStatus.textContent = `Готово! 10 GB скопійовано.`;
+                    transferStatus.textContent = `Готово! 10 GB успішно скопійовано.`;
                     
-                    if (!isSsdActive) audioHdd.pause();
+                    audioHdd.pause();
+                    audioSsd.pause();
                 }
             }
             
-            requestAnimationFrame(animateProgress);
+            requestAnimationFrame(animateBenchmark);
         });
-    </script>
 
+        // Двигунок Canvas-анімації HDD / NVMe SSD
+        (() => {
+            const canvas = document.getElementById('storageCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let diskAngle = 0;
+            let armAngle = 0.35;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function draw(now) {
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                ctx.clearRect(0, 0, w, h);
+
+                if (!isSsdActive) {
+                    // Анімація HDD: обертання пластини та рух зчитувальної голки
+                    diskAngle += isTransferring ? 0.22 : 0.03;
+                    const cx = w * 0.45;
+                    const cy = h * 0.5;
+                    const r = 68;
+
+                    ctx.fillStyle = '#1e293b';
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Магнітні доріжки
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+                    [22, 38, 54].forEach(tr => {
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, tr, 0, Math.PI * 2);
+                        ctx.stroke();
+                    });
+
+                    // Індикатор обертання пластини
+                    ctx.strokeStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(cx + Math.cos(diskAngle) * r, cy + Math.sin(diskAngle) * r);
+                    ctx.stroke();
+
+                    // Зчитувальна голка
+                    if (isTransferring) {
+                        armAngle = 0.25 + Math.abs(Math.sin(now * 0.018)) * 0.45;
+                    }
+                    const pivotX = cx + 85;
+                    const pivotY = cy + 40;
+                    const headX = pivotX - Math.cos(armAngle) * 75;
+                    const headY = pivotY - Math.sin(armAngle) * 75;
+
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(pivotX, pivotY);
+                    ctx.lineTo(headX, headY);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(headX, headY, 4, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else {
+                    // Анімація NVMe SSD: плата з чіпами NAND, що пульсують при копіюванні
+                    const startX = w * 0.18;
+                    const y = h * 0.28;
+                    const cardW = w * 0.64;
+                    const cardH = 75;
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.strokeStyle = '#10b981';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(startX, y, cardW, cardH, 6);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Контролер + 4 чіпи NAND
+                    const chipW = (cardW - 55) / 5;
+                    for (let i = 0; i < 5; i++) {
+                        const cx = startX + 10 + i * (chipW + 8);
+                        const isCtrl = i === 0;
+                        const active = isTransferring && Math.sin(now * 0.05 + i * 1.5) > -0.2;
+
+                        ctx.fillStyle = isCtrl ? '#1d4ed8' : (active ? '#34d399' : '#1e293b');
+                        ctx.fillRect(cx, y + 12, chipW, cardH - 24);
+
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 9px monospace';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(isCtrl ? 'CTRL' : `NAND ${i}`, cx + chipW / 2, y + cardH / 2 + 3);
+                    }
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            requestAnimationFrame(draw);
+        })();
+    </script>
+    <script src="audio-engine.js"></script>
 </body>
 </html>

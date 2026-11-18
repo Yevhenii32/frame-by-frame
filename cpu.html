@@ -62,8 +62,9 @@
                 <div class="subtitle">Еволюція процесорів (1990 - 2026)</div>
             </div>
 
-            <div class="animation-container">
-                <div class="placeholder-text">Тут буде Lottie-анімація чипа</div>
+            <!-- Інтерактивний Canvas-віджет на місці звичайного текстового контейнера -->
+            <div class="animation-container" style="background: #0b0f19; padding: 12px; border-radius: 12px; border: 1px solid #1e293b;">
+                <canvas id="cpuCanvas" style="width:100%; height:320px; display:block; border-radius:8px;"></canvas>
             </div>
 
             <div class="timeline-container">
@@ -107,9 +108,9 @@
 
     </div>
 
-    <!-- Скрипт інтерактивного повзунка -->
+    <!-- Об'єднаний скрипт телеметрії та Canvas-анімації -->
     <script>
-        // База даних еволюції по роках
+        // 1. База даних еволюції по роках
         const cpuData = {
             1990: { freq: "0.03", trans: "1.2M", node: "800", cores: "1 / 1T", tdp: "5 W", desc: "Епоха ранніх 32-бітних процесорів. Архітектура фокусується на базових обчисленнях без складної багатозадачності." },
             1999: { freq: "0.50", trans: "9.5M", node: "250", cores: "1 / 1T", tdp: "28 W", desc: "Поява мультимедійних інструкцій та стрімке зростання тактових частот. Процесори отримують інтегровану кеш-пам'ять L2." },
@@ -118,7 +119,6 @@
             2026: { freq: "5.70", trans: "26.0B", node: "3", cores: "16 / 32T", tdp: "170 W", desc: "У 2026 році модульні чиплети дозволяють проєктувальникам комбінувати обчислювальні блоки та блоки вводу/виводу, забезпечуючи більше ядер без створення одного величезного кристала." }
         };
 
-        // Отримуємо елементи DOM
         const slider = document.querySelector('.timeline-slider');
         const freqValue = document.querySelectorAll('.telemetry-value')[0];
         const transValue = document.querySelectorAll('.telemetry-value')[1];
@@ -127,16 +127,13 @@
         const tdpValue = document.querySelectorAll('.spec-val')[1];
         const transcriptText = document.querySelector('.acc-text');
 
-        // Функція оновлення інтерфейсу
         function updateDashboard(year) {
             const availableYears = Object.keys(cpuData).map(Number);
             const closestYear = availableYears.reduce((prev, curr) => 
                 Math.abs(curr - year) < Math.abs(prev - year) ? curr : prev
             );
-
             const data = cpuData[closestYear];
 
-            // Оновлюємо значення на сторінці
             freqValue.innerHTML = `${data.freq} <span class="telemetry-sub">Boost</span>`;
             transValue.innerHTML = `${data.trans} <span class="telemetry-sub">Units</span>`;
             nodeValue.innerHTML = `${data.node} <span class="telemetry-sub">Node</span>`;
@@ -145,14 +142,175 @@
             transcriptText.textContent = `"${data.desc}"`;
         }
 
-        // Слухаємо зміни повзунка
         slider.addEventListener('input', (e) => {
             updateDashboard(e.target.value);
         });
 
-        // Ініціалізація стартових значень при завантаженні
         updateDashboard(slider.value);
+
+        // 2. Логіка анімації Canvas та кнопок Play/Pause
+        (() => {
+            const canvas = document.getElementById('cpuCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const playBtn = document.querySelector('.play-btn');
+            const pauseBtn = document.querySelector('.pause-btn');
+
+            let yearVal = Number(slider.value) || 2026;
+            let playing = false;
+            let tick = 0;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            slider.addEventListener('input', e => {
+                yearVal = Number(e.target.value);
+            });
+
+            if (playBtn) playBtn.addEventListener('click', () => {
+                if (yearVal >= 2026) yearVal = 1990;
+                playing = true;
+            });
+            if (pauseBtn) pauseBtn.addEventListener('click', () => { playing = false; });
+
+            function getEraSpec(y) {
+                if (y < 1999) return { title: 'Монолітний кристал (1 ядро)', node: '800–350 nm', chiplets: 1, density: 4, color: '#f59e0b' };
+                if (y < 2008) return { title: 'Багатоядерний перехід (2–4 ядра)', node: '130–65 nm', chiplets: 2, density: 7, color: '#38bdf8' };
+                if (y < 2017) return { title: 'Кільцева шина Ring Bus (8 ядер)', node: '32–14 nm', chiplets: 4, density: 11, color: '#818cf8' };
+                return { title: 'Модульна чиплетна архітектура', node: '7–3 nm', chiplets: 5, density: 16, color: '#2dd4bf' };
+            }
+
+            function draw() {
+                tick += 0.04;
+                if (playing) {
+                    yearVal += 0.1;
+                    if (yearVal >= 2026) { yearVal = 2026; playing = false; }
+                    slider.value = Math.round(yearVal);
+                    updateDashboard(slider.value);
+                }
+
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                ctx.clearRect(0, 0, w, h);
+
+                const currentYear = Number(slider.value);
+                const spec = getEraSpec(currentYear);
+                const cx = w / 2;
+                const cy = h / 2 + 10;
+                const pkgSize = Math.min(w * 0.50, 210);
+
+                // PCB підкладка
+                ctx.fillStyle = '#0f172a';
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(cx - pkgSize / 2, cy - pkgSize / 2, pkgSize, pkgSize, 14);
+                ctx.fill();
+                ctx.stroke();
+
+                // Золоті контакти
+                ctx.fillStyle = '#eab308';
+                const pins = 14;
+                for (let i = 1; i < pins; i++) {
+                    const offset = -pkgSize / 2 + (pkgSize / pins) * i;
+                    ctx.fillRect(cx + offset - 2, cy - pkgSize / 2 - 5, 4, 5);
+                    ctx.fillRect(cx + offset - 2, cy + pkgSize / 2, 4, 5);
+                    ctx.fillRect(cx - pkgSize / 2 - 5, cy + offset - 2, 5, 4);
+                    ctx.fillRect(cx + pkgSize / 2, cy + offset - 2, 5, 4);
+                }
+
+                // Кристали всередині
+                const inner = pkgSize * 0.68;
+                if (spec.chiplets === 1) {
+                    drawDie(cx - inner / 2, cy - inner / 2, inner, inner, spec.density, spec.color, 'CPU CORE');
+                } else if (spec.chiplets === 2) {
+                    const gap = 8;
+                    const dw = (inner - gap) / 2;
+                    drawDie(cx - inner / 2, cy - inner / 2, dw, inner, spec.density, spec.color, 'CORE 0');
+                    drawDie(cx + gap / 2, cy - inner / 2, dw, inner, spec.density, spec.color, 'CORE 1');
+                } else if (spec.chiplets === 4) {
+                    const gap = 8;
+                    const dw = (inner - gap) / 2;
+                    for (let r = 0; r < 2; r++) {
+                        for (let c = 0; c < 2; c++) {
+                            drawDie(cx - inner / 2 + c * (dw + gap), cy - inner / 2 + r * (dw + gap), dw, dw, spec.density, spec.color, `C${r * 2 + c + 1}`);
+                        }
+                    }
+                } else {
+                    const ioW = inner * 0.34;
+                    drawDie(cx - ioW / 2, cy - inner / 2, ioW, inner, 8, '#f97316', 'I/O DIE');
+                    const ccdW = (inner - ioW - 16) / 2;
+                    const ccdH = (inner - 8) / 2;
+                    const positions = [
+                        [cx - inner / 2, cy - inner / 2],
+                        [cx - inner / 2, cy + 4],
+                        [cx + ioW / 2 + 8, cy - inner / 2],
+                        [cx + ioW / 2 + 8, cy + 4]
+                    ];
+                    positions.forEach(([x, y], idx) => {
+                        drawDie(x, y, ccdW, ccdH, spec.density, spec.color, `CCD ${idx + 1}`);
+                        ctx.strokeStyle = '#38bdf8';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([4, 4]);
+                        ctx.lineDashOffset = -tick * 15;
+                        ctx.beginPath();
+                        ctx.moveTo(x + ccdW / 2, y + ccdH / 2);
+                        ctx.lineTo(cx, y + ccdH / 2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    });
+                }
+
+                // Заголовок на Canvas
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '600 12px system-ui, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Архітектура: ${spec.title}`, 14, 22);
+
+                requestAnimationFrame(draw);
+            }
+
+            function drawDie(x, y, w, h, grid, color, label) {
+                ctx.fillStyle = '#1e293b';
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h, 6);
+                ctx.fill();
+                ctx.stroke();
+
+                const cols = Math.max(3, Math.floor(grid * (w / 120)));
+                const rows = Math.max(3, Math.floor(grid * (h / 120)));
+                const cellW = (w - 10) / cols;
+                const cellH = (h - 10) / rows;
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const pulse = 0.25 + 0.55 * Math.abs(Math.sin(tick * 2 + r * 0.7 + c * 1.1));
+                        ctx.fillStyle = color;
+                        ctx.globalAlpha = pulse;
+                        ctx.fillRect(x + 5 + c * cellW + 1, y + 5 + r * cellH + 1, Math.max(1, cellW - 2), Math.max(1, cellH - 2));
+                    }
+                }
+                ctx.globalAlpha = 1;
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 10px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, x + w / 2, y + h / 2 + 3);
+            }
+
+            draw();
+        })();
     </script>
 
+    <script src="audio-engine.js"></script>
 </body>
 </html>

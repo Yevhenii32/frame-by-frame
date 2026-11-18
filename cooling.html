@@ -46,9 +46,9 @@
                 <div class="subtitle">Порівняння теплових та звукових характеристик</div>
             </div>
 
-            <!-- Вікно для анімації розподілу тепла -->
-            <div class="animation-container" id="heat-animation" style="width: 100%; aspect-ratio: 16/9; background-color: #0f172a; border: 2px solid #ef4444; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: border-color 0.5s ease;">
-                <span style="color: #64748b;">Тут буде анімація розподілу тепла</span>
+            <!-- Вікно для Canvas-анімації розподілу тепла -->
+            <div class="animation-container" id="heat-animation" style="width: 100%; aspect-ratio: 16/9; background-color: #0f172a; border: 2px solid #ef4444; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: border-color 0.5s ease;">
+                <canvas id="coolingCanvas" style="width:100%; height:100%; display:block; border-radius:8px;"></canvas>
             </div>
 
             <!-- Елементи управління (перемикання систем) -->
@@ -65,7 +65,7 @@
         <!-- Права панель: Телеметрія та Доступність -->
         <div class="right-panel" style="width: 350px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
             
-            <!-- Дані температури (дублювання цифрами для доступності) -->
+            <!-- Дані температури -->
             <div class="telemetry-box" style="background-color: #1e293b; padding: 25px; border-radius: 8px; border-left: 4px solid #ef4444;" id="temp-box">
                 <div style="color: #94a3b8; font-size: 14px; margin-bottom: 10px;">Робоча температура:</div>
                 <div id="temp-value" style="font-size: 48px; font-weight: bold; color: #ef4444;">85°C</div>
@@ -76,7 +76,7 @@
             <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
                 <div class="acc-header" style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт та статус:</div>
                 
-                <!-- Повідомлення про помилку аудіо (приховане за замовчуванням) -->
+                <!-- Повідомлення про помилку аудіо -->
                 <div id="audio-error-msg" style="display: none; background-color: #7f1d1d; color: #fca5a5; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; border: 1px solid #b91c1c;">
                     Аудіо недоступне. Прочитайте текстовий опис температурних змін.
                 </div>
@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <!-- Завершення сесії (Логічний місток до головної сторінки) -->
+            <!-- Кнопка повернення -->
             <button onclick="window.location.href='index.html'" style="margin-top: auto; padding: 15px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
                 Завершити вивчення
             </button>
@@ -98,7 +98,7 @@
     <audio id="audio-old" src="assets/audio/old-cooler.ogg" loop preload="auto"></audio>
     <audio id="audio-new" src="assets/audio/water-cooling.ogg" loop preload="auto"></audio>
 
-    <!-- Скрипт логіки перемикання станів -->
+    <!-- Комплексний скрипт Canvas-анімації та перемикання станів -->
     <script>
         const btnOld = document.getElementById('btn-old');
         const btnNew = document.getElementById('btn-new');
@@ -113,7 +113,7 @@
         const heatAnimation = document.getElementById('heat-animation');
         const accText = document.getElementById('acc-text');
 
-        // Дані для зміни станів
+        // Дані для зміни станів дашборду
         const states = {
             old: {
                 temp: "85°C",
@@ -131,11 +131,14 @@
             }
         };
 
-        // Функція перемикання стану
+        // Глобальний стан режиму охолодження ('old' або 'new')
+        let currentMode = 'old';
+
         function switchCooling(type) {
+            currentMode = type;
             const data = states[type];
 
-            // Оновлюємо UI
+            // Оновлюємо UI телеметрії
             tempValue.textContent = data.temp;
             tempValue.style.color = data.color;
             tempStatus.textContent = data.status;
@@ -143,11 +146,11 @@
             heatAnimation.style.borderColor = data.color;
             accText.textContent = data.text;
 
-            // Змінюємо вигляд кнопок
+            // Змінюємо підсвічування активних кнопок
             btnOld.style.backgroundColor = type === 'old' ? data.btnColor : "#334155";
             btnNew.style.backgroundColor = type === 'new' ? data.btnColor : "#334155";
 
-            // Керуємо звуком
+            // Керуємо відтворенням аудіо
             try {
                 if (type === 'old') {
                     audioNew.pause();
@@ -164,17 +167,149 @@
             }
         }
 
-        // Обробка помилок аудіо
         function handleAudioError() {
             errorMsg.style.display = "block";
         }
 
-        // Слухачі подій
         btnOld.addEventListener('click', () => switchCooling('old'));
         btnNew.addEventListener('click', () => switchCooling('new'));
 
         audioOld.addEventListener('error', handleAudioError);
         audioNew.addEventListener('error', handleAudioError);
+
+        // Canvas-анімація охолодження
+        (() => {
+            const canvas = document.getElementById('coolingCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let angle = 0;
+            let particles = Array.from({ length: 36 }, (_, i) => ({
+                t: i / 36,
+                x: (Math.random() - 0.5) * 90,
+                speed: 0.004 + Math.random() * 0.004
+            }));
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function draw() {
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                ctx.clearRect(0, 0, w, h);
+                const cx = w / 2;
+                const baseY = h - 45;
+
+                const isHot = currentMode === 'old';
+
+                // Кристал CPU знизу
+                ctx.fillStyle = isHot ? '#ef4444' : '#0ea5e9';
+                ctx.beginPath();
+                ctx.roundRect(cx - 70, baseY, 140, 24, 6);
+                ctx.fill();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 12px system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(isHot ? 'CPU: 85°C (Критичний нагрів)' : 'CPU: 42°C (Оптимально)', cx, baseY + 16);
+
+                if (isHot) {
+                    // Алюмінієвий радіатор 1998 року
+                    ctx.fillStyle = '#64748b';
+                    ctx.fillRect(cx - 65, baseY - 14, 130, 14);
+                    for (let i = -60; i <= 54; i += 14) {
+                        ctx.fillStyle = '#94a3b8';
+                        ctx.fillRect(cx + i, baseY - 85, 6, 71);
+                    }
+
+                    // Малий вентилятор зверху
+                    angle += 0.28;
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(cx - 65, baseY - 108, 130, 20);
+                    ctx.fillStyle = '#f87171';
+                    const bladeW = Math.abs(Math.cos(angle)) * 55;
+                    ctx.fillRect(cx - bladeW, baseY - 102, bladeW * 2, 8);
+
+                    // Повільні червоні хвилі застою тепла
+                    particles.forEach(p => {
+                        p.t += p.speed * 0.7;
+                        if (p.t > 1) p.t = 0;
+                        const py = baseY - 20 - p.t * 160;
+                        const px = cx + p.x + Math.sin(p.t * 10) * 12;
+                        ctx.fillStyle = `rgba(239, 68, 68, ${1 - p.t})`;
+                        ctx.beginPath();
+                        ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                } else {
+                    // Водоблок на CPU
+                    ctx.fillStyle = '#0284c7';
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(cx - 60, baseY - 34, 120, 34, 8);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Великий верхній радіатор СРО
+                    ctx.fillStyle = '#1e293b';
+                    ctx.strokeStyle = '#475569';
+                    ctx.fillRect(cx - 140, 35, 280, 32);
+                    ctx.strokeRect(cx - 140, 35, 280, 32);
+
+                    // Трубки контуру
+                    ctx.lineWidth = 10;
+                    ctx.strokeStyle = 'rgba(249, 115, 22, 0.35)';
+                    ctx.beginPath();
+                    ctx.moveTo(cx - 35, baseY - 34);
+                    ctx.bezierCurveTo(cx - 110, baseY - 90, cx - 110, 110, cx - 110, 67);
+                    ctx.stroke();
+
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+                    ctx.beginPath();
+                    ctx.moveTo(cx + 110, 67);
+                    ctx.bezierCurveTo(cx + 110, 110, cx + 110, baseY - 90, cx + 35, baseY - 34);
+                    ctx.stroke();
+
+                    // Циркуляція частинок холодоагенту
+                    particles.forEach(p => {
+                        p.t += p.speed * 1.8;
+                        if (p.t > 1) p.t = 0;
+                        let px, py, col;
+                        if (p.t < 0.4) {
+                            const k = p.t / 0.4;
+                            px = cx - 35 - k * 75;
+                            py = (baseY - 34) - k * (baseY - 101);
+                            col = '#fb923c';
+                        } else if (p.t < 0.6) {
+                            const k = (p.t - 0.4) / 0.2;
+                            px = cx - 110 + k * 220;
+                            py = 51;
+                            col = '#38bdf8';
+                        } else {
+                            const k = (p.t - 0.6) / 0.4;
+                            px = cx + 110 - k * 75;
+                            py = 67 + k * (baseY - 101);
+                            col = '#22d3ee';
+                        }
+                        ctx.fillStyle = col;
+                        ctx.beginPath();
+                        ctx.arc(px, py, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+        })();
     </script>
 </body>
 </html>
