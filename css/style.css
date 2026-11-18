@@ -1,4 +1,3 @@
-
 * {
     box-sizing: border-box;
 }
@@ -10,53 +9,77 @@ body {
     background-color: #0f1115;
     color: #e0e0e0;
     display: flex;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* Доступність: видимий фокус для керування з клавіатури */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 3px;
 }
 
 /* Бічна панель */
 .sidebar {
-    flex: 0 0 280px;
-    width: 280px;
-    background-color: #16181d;
-    border-right: 1px solid #2a2d35;
+    width: 260px;
+    background-color: #0f172a;
+    border-right: 1px solid #1e293b;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .logo {
     font-size: 24px;
     font-weight: bold;
     color: #ffffff;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .menu-category {
+    color: #64748b;
     font-size: 12px;
     text-transform: uppercase;
-    color: #6c7280;
-    margin-bottom: 10px;
     letter-spacing: 1px;
+    margin: 15px 0 5px 0;
+}
+
+.menu-link {
+    text-decoration: none;
+    color: #94a3b8;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .menu-item {
-    padding: 12px 15px;
-    margin-bottom: 5px;
-    background-color: #1e2128;
-    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s;
-    border: 1px solid transparent;
 }
 
-.menu-item:hover {
-    background-color: #272a33;
-    border-color: #3b82f6;
+.menu-link:hover {
+    color: #ffffff;
+    background-color: #1e293b;
+}
+
+.menu-link.active {
+    color: #ffffff;
+    background-color: #1d4ed8;
+    font-weight: 600;
+}
+
+.menu-link.active .menu-item {
+    color: #ffffff;
 }
 
 /* Головна робоча зона */
@@ -85,12 +108,24 @@ body {
 
 .audio-toggle {
     white-space: nowrap;
+    background-color: #1e293b;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    font-size: 14px;
+    user-select: none;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.audio-toggle:hover {
+    border-color: #3b82f6;
+    background-color: #273244;
 }
 
 /* Карта материнської плати */
 .motherboard-container {
     flex: 1;
-    min-height: 0;
+    min-height: 480px;
     min-width: 0;
     width: 100%;
     margin-top: 20px;
@@ -105,21 +140,25 @@ body {
     border: 1px dashed #3b404d;
     border-radius: 12px;
     overflow: hidden;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
 }
 
-/* Спільний стиль інтерактивних зон */
+/* Ефект Zoom-in при переході на компонент */
+.motherboard-container.zooming {
+    transform: scale(2.2);
+    opacity: 0.15;
+}
+
+/* Інтерактивні зони плати */
 .interactive-zone {
     position: absolute;
     display: block;
     border: 2px solid;
     border-radius: 8px;
     cursor: pointer;
-    transition:
-        background-color 0.25s ease,
-        box-shadow 0.25s ease;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* CPU — процесор */
 .slot-cpu {
     top: 42%;
     left: 56%;
@@ -128,14 +167,26 @@ body {
     border-color: #3b82f6;
     background-color: rgba(59, 130, 246, 0.18);
 }
-
-/* Ефект наведення */
-.slot-cpu:hover {
+.slot-cpu:hover,
+.slot-cpu:focus-visible {
     background-color: rgba(59, 130, 246, 0.38);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }
 
-/* SSD — зона накопичувача */
+.slot-cooling {
+    top: 24%;
+    left: 56%;
+    width: 8%;
+    height: 11%;
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.18);
+}
+.slot-cooling:hover,
+.slot-cooling:focus-visible {
+    background-color: rgba(239, 68, 68, 0.38);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
 .slot-storage {
     top: 26%;
     left: 29%;
@@ -144,13 +195,12 @@ body {
     border-color: #10b981;
     background-color: rgba(16, 185, 129, 0.18);
 }
-
-.slot-storage:hover {
+.slot-storage:hover,
+.slot-storage:focus-visible {
     background-color: rgba(16, 185, 129, 0.35);
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
 }
 
-/* GPU — слот відеокарти */
 .slot-gpu {
     top: 63%;
     left: 29%;
@@ -159,13 +209,13 @@ body {
     border-color: #3b82f6;
     background-color: rgba(59, 130, 246, 0.18);
 }
-
-.slot-gpu:hover {
+.slot-gpu:hover,
+.slot-gpu:focus-visible {
     background-color: rgba(59, 130, 246, 0.38);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }
 
-/* RAM — оперативна пам'ять */
+.slot-ram,
 .slot-other {
     top: 63%;
     left: 50%;
@@ -174,92 +224,111 @@ body {
     border-color: #f97316;
     background-color: rgba(249, 115, 22, 0.18);
 }
-
+.slot-ram:hover,
+.slot-ram:focus-visible,
 .slot-other:hover {
     background-color: rgba(249, 115, 22, 0.35);
     box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
 }
 
-/* Підказки */
+/* Спливаючі підказки (Tooltip) */
 .tooltip {
     position: absolute;
-    bottom: 110%;
+    bottom: 115%;
     left: 50%;
-    transform: translateX(-50%);
-
-    padding: 8px 12px;
-    background-color: #272a33;
+    transform: translateX(-50%) translateY(8px);
+    background-color: rgba(15, 23, 42, 0.95);
     color: #ffffff;
-    border: 1px solid #3b82f6;
+    padding: 8px 14px;
     border-radius: 6px;
-
-    font-size: 14px;
+    font-size: 13px;
     white-space: nowrap;
-
+    pointer-events: none;
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.25s;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid #3b82f6;
     z-index: 10;
 }
 
-.interactive-zone:hover .tooltip {
+.interactive-zone:hover .tooltip,
+.interactive-zone:focus-visible .tooltip {
     opacity: 1;
     visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
 
-/* Інші елементи інтерфейсу */
-.placeholder-text {
-    color: #6c7280;
-    font-size: 18px;
-    margin-bottom: 30px;
-    z-index: 1;
+/* Пульсуючий індикатор завантаження мікросхеми (Design Document) */
+.chip-loader {
+    position: absolute;
+    inset: 0;
+    background: #0b0f19;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5;
+    transition: opacity 0.35s ease;
 }
 
-.back-button {
-    color: #3b82f6;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    transition: color 0.3s;
+.chip-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
-.back-button:hover {
-    color: #60a5fa;
+.chip-pulse {
+    width: 46px;
+    height: 46px;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    position: relative;
+    animation: chipPulse 1.2s infinite ease-in-out;
 }
 
+@keyframes chipPulse {
+    0%, 100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px 4px rgba(59, 130, 246, 0.25);
+    }
+}
+
+/* Телеметрія */
 .telemetry-block {
-    margin-bottom: 25px;
+    background-color: #1e293b;
     padding: 15px;
-    background: rgba(30, 33, 40, 0.5);
-    border-left: 3px solid #f97316;
-    border-radius: 4px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border-left: 4px solid #3b82f6;
 }
-
 .telemetry-label {
-    font-size: 11px;
-    color: #6c7280;
-    text-transform: uppercase;
+    color: #94a3b8;
+    font-size: 13px;
     margin-bottom: 5px;
 }
-
 .telemetry-value {
     font-size: 24px;
     font-weight: bold;
-    color: #ffffff;
+    color: #10b981;
 }
-
 .telemetry-sub {
     font-size: 12px;
-    color: #9ca3af;
+    color: #64748b;
     font-weight: normal;
 }
 
+/* Сторінка CPU */
 .cpu-dashboard {
-    flex-grow: 1;
+    flex: 1;
     display: flex;
+    gap: 24px;
     padding: 20px;
-    gap: 20px;
+    color: #f8fafc;
 }
 
 .center-panel {
@@ -267,52 +336,58 @@ body {
     min-width: 0;
     display: flex;
     flex-direction: column;
+    gap: 16px;
+}
+
+.right-panel {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .subtitle {
-    color: #9ca3af;
+    color: #94a3b8;
     font-size: 14px;
 }
 
 .animation-container {
-    flex-grow: 1;
-    background-color: #16181d;
-    border: 1px solid #2a2d35;
+    position: relative;
+    width: 100%;
+    background-color: #0b0f19;
+    border: 1px solid #334155;
     border-radius: 12px;
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 0 50px rgba(59, 130, 246, 0.05);
+    overflow: hidden;
 }
 
 .timeline-container {
-    background-color: #16181d;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #2a2d35;
+    background-color: #1e293b;
+    padding: 18px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .controls {
     display: flex;
+    align-items: center;
     gap: 10px;
-    margin-bottom: 15px;
 }
 
 .controls button {
-    background: transparent;
-    border: 1px solid #3b82f6;
-    color: #3b82f6;
-    padding: 8px 15px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    transition: all 0.3s;
 }
 
 .controls button:hover {
-    background: #3b82f6;
-    color: #ffffff;
+    background-color: #2563eb;
 }
 
 .timeline-slider {
@@ -324,205 +399,23 @@ body {
 .timeline-labels {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
-    color: #6c7280;
+    color: #94a3b8;
     font-size: 12px;
 }
 
-/* Права панель */
-.right-panel {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.info-card {
-    background-color: #16181d;
+.info-card,
+.accessibility-box {
+    background-color: #1e293b;
     padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #2a2d35;
+    border-radius: 8px;
 }
 
 .info-text {
-    color: #9ca3af;
+    color: #94a3b8;
     font-size: 14px;
     line-height: 1.5;
 }
 
-.specs-grid {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.spec-label {
-    font-size: 11px;
-    color: #6c7280;
-    text-transform: uppercase;
-}
-
-.spec-val {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-.accessibility-box {
-    background-color: rgba(39, 42, 51, 0.5);
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px dashed #6c7280;
-    margin-top: auto;
-}
-
-.acc-header {
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.acc-header::before {
-    content: "👁";
-    margin-right: 8px;
-}
-
-.acc-text {
-    color: #9ca3af;
-    font-size: 13px;
-    font-style: italic;
-    line-height: 1.6;
-}
-
-/* Адаптація для вузького екрана */
-@media (max-width: 900px) {
-    .sidebar {
-        flex-basis: 220px;
-        width: 220px;
-        padding: 15px;
-    }
-
-    .main-content {
-        padding: 20px;
-    }
-
-    .header h2 {
-        font-size: 18px;
-    }
-}
-
-
-/* --- СТИЛІ ДЛЯ СПЛИВАЮЧИХ ПІДКАЗОК (TOOLTIP) --- */
-.tooltip {
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px); 
-    background-color: rgba(15, 23, 42, 0.95); /* Темно-синій, майже непрозорий фон */
-    color: #ffffff;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-family: sans-serif;
-    font-size: 14px;
-    white-space: nowrap; /* Щоб текст не розбивався на кілька рядків */
-    pointer-events: none; /* Щоб курсор "не чіплявся" за підказку, коли вона з'являється */
-    
-    /* Приховуємо підказку за замовчуванням */
-    opacity: 0;
-    visibility: hidden;
-    
-    /* Плавна анімація появи */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    /* Додаємо легку тінь та рамку для об'єму */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 10; /* Гарантуємо, що підказка буде поверх усіх інших зон */
-}
-
-/* --- МАГІЯ ПОЯВИ ПРИ НАВЕДЕННІ --- */
-.interactive-zone:hover .tooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0); 
-}
-
-/* Основна сітка сторінки CPU */
-.cpu-dashboard {
-    display: flex;
-    gap: 30px;
-    padding: 20px;
-    margin-top: 20px;
-    color: #f8fafc;
-}
-
-/* Налаштування колонок */
-.sidebar { width: 250px; flex-shrink: 0; }
-.center-panel { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
-.right-panel { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
-
-/* Блоки телеметрії (зліва) */
-.telemetry-block {
-    background-color: #1e293b;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border-left: 4px solid #3b82f6;
-}
-.telemetry-label { color: #94a3b8; font-size: 14px; margin-bottom: 5px; }
-.telemetry-value { font-size: 24px; font-weight: bold; color: #10b981; }
-.telemetry-sub { font-size: 12px; color: #64748b; font-weight: normal; }
-
-/* Центральна панель та анімація */
-.header h2 { margin: 0; font-size: 24px; }
-.subtitle { color: #94a3b8; font-size: 14px; }
-.animation-container {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Таймлайн (повзунок) */
-.timeline-container {
-    background-color: #1e293b;
-    padding: 20px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.controls { display: flex; gap: 10px; }
-.controls button {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-.timeline-slider { width: 100%; cursor: pointer; }
-.timeline-labels {
-    display: flex;
-    justify-content: space-between;
-    color: #64748b;
-    font-size: 12px;
-}
-
-/* Права панель (Інфо та Транскрипт) */
-.info-card, .accessibility-box {
-    background-color: #1e293b;
-    padding: 20px;
-    border-radius: 8px;
-}
 .specs-grid {
     display: flex;
     justify-content: space-between;
@@ -530,94 +423,43 @@ body {
     padding-top: 15px;
     border-top: 1px solid #334155;
 }
-.spec-label { color: #94a3b8; font-size: 12px; }
-.spec-val { font-size: 18px; font-weight: bold; }
-.acc-header { color: #cbd5e1; font-weight: bold; margin-bottom: 10px; }
-.acc-text { color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic; }
 
-
-/* --- СТИЛІ БОКОВОГО МЕНЮ (SIDEBAR) --- */
-.sidebar {
-    width: 260px;
-    background-color: #0f172a;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.menu-category {
-    color: #64748b;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 15px 0 5px 0;
-}
-
-/* Обгортка посилання */
-.menu-link {
-    text-decoration: none;
+.spec-label {
     color: #94a3b8;
-    display: block;
-    width: 100%;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    font-size: 12px;
 }
 
-/* Сам пункт меню */
-.menu-item {
-    padding: 10px 14px;
+.spec-val {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.acc-header {
+    color: #cbd5e1;
+    font-weight: bold;
+    margin-bottom: 10px;
     font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
 }
 
-/* Ефекти при наведенні */
-.menu-link:hover {
-    color: #ffffff;
-    background-color: #1e293b;
+.acc-text {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.5;
+    font-style: italic;
 }
 
-/* Активний пункт меню (поточна сторінка) */
-.menu-link.active {
-    color: #ffffff;
-    background-color: #1d4ed8;
-    font-weight: 600;
-}
-
-.menu-link.active .menu-item {
-    color: #ffffff;
-}
-
-/* Cooling — система охолодження */
-.slot-cooling {
-    top: 24%;
-    left: 56%;
-    width: 8%;
-    height: 11%;
-    border-color: #ef4444;
-    background-color: rgba(239, 68, 68, 0.18);
-}
-
-.slot-cooling:hover {
-    background-color: rgba(239, 68, 68, 0.38);
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-}
-
-/* Додай .slot-ram через кому: */
-.slot-ram,
-.slot-other {
-    top: 63%;
-    left: 50%;
-    width: 21%;
-    height: 10%;
-    border-color: #f97316;
-    background-color: rgba(249, 115, 22, 0.18);
-}
-
-.slot-ram:hover,
-.slot-other:hover {
-    background-color: rgba(249, 115, 22, 0.35);
-    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+@media (max-width: 960px) {
+    body {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+    }
+    .cpu-dashboard {
+        flex-direction: column;
+    }
+    .right-panel {
+        width: 100%;
+    }
 }

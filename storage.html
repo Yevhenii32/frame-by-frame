@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Накопичувачі (SSD/HDD) - Frame by Frame</title>
+    <title>Накопичувачі (SSD/HDD) — Frame by Frame</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         .storage-dashboard { 
@@ -13,8 +13,6 @@
             color: #f8fafc; 
             flex-grow: 1; 
         }
-        
-        /* Стилі для візуалізації носія */
         .drive-visualization { 
             position: relative; 
             width: 100%; 
@@ -29,8 +27,6 @@
             overflow: hidden; 
             padding: 15px;
         }
-        
-        /* Прогрес-бар копіювання */
         .progress-container {
             width: 80%; 
             height: 18px; 
@@ -43,12 +39,10 @@
         .progress-bar {
             height: 100%; 
             width: 0%; 
-            background-color: #3b82f6; 
+            background-color: #f59e0b; 
             transition: width 0.1s linear;
         }
-
-        /* Перемикач типу накопичувача */
-        .drive-selector { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .drive-selector { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; }
         .drive-btn {
             padding: 12px 24px; 
             border: none; 
@@ -61,7 +55,6 @@
         }
         .drive-btn.active-hdd { background-color: #f59e0b; color: #fff; }
         .drive-btn.active-ssd { background-color: #10b981; color: #fff; }
-
         .action-btn {
             padding: 12px 30px; 
             background-color: #3b82f6; 
@@ -80,7 +73,6 @@
 </head>
 <body>
 
-    <!-- Уніфіковане бокове меню -->
     <div class="sidebar">
         <div class="logo">
             <span style="color: #3b82f6;">O</span> Frame by Frame
@@ -108,24 +100,24 @@
         </a>
     </div>
 
-    <!-- Основний дашборд накопичувачів -->
     <div class="storage-dashboard">
         
-        <!-- Ліва панель: Інтерактив -->
         <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
             <div class="header">
-                <h2 style="margin: 0; font-size: 24px;">Еволюція зберігання даних</h2>
-                <div class="subtitle" style="color: #94a3b8;">Від механіки до чистого кремнію</div>
+                <h2>Еволюція зберігання даних</h2>
+                <div class="subtitle">Від механіки до чистого кремнію</div>
             </div>
 
-            <!-- Вибір диска -->
             <div class="drive-selector">
-                <button id="btn-hdd" class="drive-btn active-hdd">Механічний HDD (7200 RPM)</button>
-                <button id="btn-ssd" class="drive-btn">M.2 NVMe SSD (PCIe 4.0)</button>
+                <button type="button" id="btn-hdd" class="drive-btn active-hdd">Механічний HDD (7200 RPM)</button>
+                <button type="button" id="btn-ssd" class="drive-btn">M.2 NVMe SSD (PCIe 4.0)</button>
             </div>
 
-            <!-- Зона Canvas-анімації та тесту -->
             <div class="drive-visualization">
+                <div class="chip-loader" id="storage-loader">
+                    <div class="chip-pulse"></div>
+                    <span style="font-size: 12px; color: #94a3b8;">Підготовка носія...</span>
+                </div>
                 <canvas id="storageCanvas" style="width: 100%; height: 190px; display: block; border-radius: 6px;"></canvas>
                 
                 <div class="progress-container" id="prog-container">
@@ -135,14 +127,13 @@
                     Готово до тесту (Копіювання 10 GB)
                 </div>
 
-                <button id="start-transfer" class="action-btn">▶ Запустити бенчмарк</button>
+                <button type="button" id="start-transfer" class="action-btn">▶ Запустити бенчмарк (Копіювання 10 GB)</button>
             </div>
         </div>
 
-        <!-- Права панель: Телеметрія та доступність -->
         <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
             
-            <div class="info-card" style="background-color: #1e293b; padding: 20px; border-radius: 8px; border-top: 4px solid #f59e0b;" id="telemetry-card">
+            <div class="info-card" style="border-top: 4px solid #f59e0b;" id="telemetry-card">
                 <h3 style="margin-top: 0;" id="tech-title">Магнітний запис</h3>
                 
                 <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
@@ -155,26 +146,21 @@
                 </div>
             </div>
 
-            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
-                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт стану:</div>
-                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
+            <div class="accessibility-box">
+                <div class="acc-header">Текстовий транскрипт стану:</div>
+                <div id="acc-text" class="acc-text">
                     "Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."
                 </div>
             </div>
 
-            <!-- Кнопка повернення -->
-            <button onclick="window.location.href='index.html'" style="margin-top: auto; padding: 12px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
+            <button type="button" onclick="window.location.href='index.html'" style="margin-top: auto; padding: 12px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
                 Головна плата
             </button>
         </div>
 
     </div>
 
-    <!-- Аудіо для звукового дизайну -->
-    <audio id="audio-hdd" src="assets/audio/hdd-scratch.ogg" loop></audio>
-    <audio id="audio-ssd" src="assets/audio/ssd-digital.ogg" loop></audio>
-
-    <!-- Скрипт логіки управління та Canvas-візуалізації -->
+    <script src="audio-engine.js"></script>
     <script>
         const btnHdd = document.getElementById('btn-hdd');
         const btnSsd = document.getElementById('btn-ssd');
@@ -188,15 +174,11 @@
         const latencyVal = document.getElementById('latency-val');
         const telemetryCard = document.getElementById('telemetry-card');
         const accText = document.getElementById('acc-text');
-        
-        const audioHdd = document.getElementById('audio-hdd');
-        const audioSsd = document.getElementById('audio-ssd');
 
         let isSsdActive = false;
         let isTransferring = false;
         let progress = 0;
 
-        // Перемикання на HDD
         btnHdd.addEventListener('click', () => {
             if (isTransferring) return;
             isSsdActive = false;
@@ -218,7 +200,6 @@
             accText.textContent = '"Стан: Механічний жорсткий диск. Звук: характерне потріскування зчитувальної голки та гул шпинделя. Дані передаються повільно через фізичні обмеження механіки."';
         });
 
-        // Перемикання на SSD
         btnSsd.addEventListener('click', () => {
             if (isTransferring) return;
             isSsdActive = true;
@@ -240,7 +221,6 @@
             accText.textContent = '"Стан: NVMe SSD. Звук: абсолютна тиша (відсутні рухомі частини). Дані блискавично маршрутизуються через контролер пам\'яті без механічних затримок."';
         });
 
-        // Логіка бенчмарку
         startBtn.addEventListener('click', () => {
             if (isTransferring) return;
             isTransferring = true;
@@ -250,21 +230,8 @@
             btnHdd.disabled = true;
             btnSsd.disabled = true;
             
-            const duration = isSsdActive ? 600 : 7500; // Час симуляції
+            const duration = isSsdActive ? 600 : 7500;
             const speedText = isSsdActive ? "7400 MB/s" : "120 MB/s";
-            
-            try {
-                if (isSsdActive) {
-                    audioHdd.pause();
-                    audioSsd.currentTime = 0; 
-                    audioSsd.play().catch(e => {});
-                } else {
-                    audioSsd.pause();
-                    audioHdd.currentTime = 0; 
-                    audioHdd.play().catch(e => {});
-                }
-            } catch(e) {}
-
             let start = null;
             
             function animateBenchmark(timestamp) {
@@ -284,16 +251,12 @@
                     btnHdd.disabled = false;
                     btnSsd.disabled = false;
                     transferStatus.textContent = `Готово! 10 GB успішно скопійовано.`;
-                    
-                    audioHdd.pause();
-                    audioSsd.pause();
                 }
             }
             
             requestAnimationFrame(animateBenchmark);
         });
 
-        // Двигунок Canvas-анімації HDD / NVMe SSD
         (() => {
             const canvas = document.getElementById('storageCanvas');
             if (!canvas) return;
@@ -301,6 +264,7 @@
 
             let diskAngle = 0;
             let armAngle = 0.35;
+            let lastClickTime = 0;
 
             function resize() {
                 const rect = canvas.getBoundingClientRect();
@@ -310,6 +274,7 @@
             }
             window.addEventListener('resize', resize);
             resize();
+            setTimeout(() => document.getElementById('storage-loader')?.classList.add('hidden'), 250);
 
             function draw(now) {
                 const w = canvas.clientWidth;
@@ -317,7 +282,6 @@
                 ctx.clearRect(0, 0, w, h);
 
                 if (!isSsdActive) {
-                    // Анімація HDD: обертання пластини та рух зчитувальної голки
                     diskAngle += isTransferring ? 0.22 : 0.03;
                     const cx = w * 0.45;
                     const cy = h * 0.5;
@@ -331,7 +295,6 @@
                     ctx.fill();
                     ctx.stroke();
 
-                    // Магнітні доріжки
                     ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
                     [22, 38, 54].forEach(tr => {
                         ctx.beginPath();
@@ -339,16 +302,18 @@
                         ctx.stroke();
                     });
 
-                    // Індикатор обертання пластини
                     ctx.strokeStyle = '#f59e0b';
                     ctx.beginPath();
                     ctx.moveTo(cx, cy);
                     ctx.lineTo(cx + Math.cos(diskAngle) * r, cy + Math.sin(diskAngle) * r);
                     ctx.stroke();
 
-                    // Зчитувальна голка
                     if (isTransferring) {
                         armAngle = 0.25 + Math.abs(Math.sin(now * 0.018)) * 0.45;
+                        if (now - lastClickTime > 95) {
+                            if (typeof SoundEngine !== 'undefined') SoundEngine.playHddClick();
+                            lastClickTime = now;
+                        }
                     }
                     const pivotX = cx + 85;
                     const pivotY = cy + 40;
@@ -368,7 +333,6 @@
                     ctx.fill();
 
                 } else {
-                    // Анімація NVMe SSD: плата з чіпами NAND, що пульсують при копіюванні
                     const startX = w * 0.18;
                     const y = h * 0.28;
                     const cardW = w * 0.64;
@@ -382,7 +346,6 @@
                     ctx.fill();
                     ctx.stroke();
 
-                    // Контролер + 4 чіпи NAND
                     const chipW = (cardW - 55) / 5;
                     for (let i = 0; i < 5; i++) {
                         const cx = startX + 10 + i * (chipW + 8);
@@ -405,6 +368,5 @@
             requestAnimationFrame(draw);
         })();
     </script>
-    <script src="audio-engine.js"></script>
 </body>
 </html>

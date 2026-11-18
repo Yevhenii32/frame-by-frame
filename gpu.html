@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Відеокарта (GPU) - Frame by Frame</title>
+    <title>Відеокарта (GPU) — Frame by Frame</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Стилі для сторінки GPU */
         .gpu-dashboard { 
             display: flex; 
             gap: 30px; 
@@ -35,8 +34,6 @@
             align-items: center; 
             gap: 20px; 
         }
-        
-        /* Стиль для перемикача RTX */
         .switch { 
             position: relative; 
             display: inline-block; 
@@ -69,7 +66,6 @@
 </head>
 <body>
 
-    <!-- Уніфіковане бокове меню -->
     <div class="sidebar">
         <div class="logo">
             <span style="color: #3b82f6;">O</span> Frame by Frame
@@ -97,34 +93,35 @@
         </a>
 
         <div class="menu-category" style="margin-top: 20px;">Телеметрія GPU</div>
-        <div class="telemetry-block" style="background-color: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #10b981;">
-            <div style="color: #94a3b8; font-size: 14px;">Відеопам'ять (VRAM)</div>
-            <div id="vram-val" style="font-size: 24px; font-weight: bold; color: #10b981;">24 GB <span style="font-size: 12px; color: #64748b;">GDDR6X</span></div>
+        <div class="telemetry-block" style="border-left: 4px solid #10b981;">
+            <div class="telemetry-label">Відеопам'ять (VRAM)</div>
+            <div id="vram-val" class="telemetry-value">24 GB <span class="telemetry-sub">GDDR6X</span></div>
         </div>
-        <div class="telemetry-block" style="background-color: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #3b82f6;">
-            <div style="color: #94a3b8; font-size: 14px;">CUDA Ядра</div>
-            <div id="cuda-val" style="font-size: 24px; font-weight: bold; color: #3b82f6;">16384</div>
+        <div class="telemetry-block" style="border-left: 4px solid #3b82f6;">
+            <div class="telemetry-label">CUDA Ядра</div>
+            <div id="cuda-val" class="telemetry-value" style="color: #3b82f6;">16384</div>
         </div>
     </div>
 
-    <!-- Основна панель дашборду GPU -->
     <div class="gpu-dashboard">
         
         <div class="center-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
             <div class="header">
-                <h2 style="margin: 0; font-size: 24px;">Графічний процесор (GPU)</h2>
-                <div class="subtitle" style="color: #94a3b8;">Генерація світів: Кадр за кадром</div>
+                <h2>Графічний процесор (GPU)</h2>
+                <div class="subtitle">Генерація світів: Кадр за кадром</div>
             </div>
 
-            <!-- Вікно для інтерактивної Canvas-анімації порівняння графіки -->
             <div class="render-window" id="graphics-window">
+                <div class="chip-loader" id="gpu-loader">
+                    <div class="chip-pulse"></div>
+                    <span style="font-size: 12px; color: #94a3b8;">Компіляція шейдерів...</span>
+                </div>
                 <canvas id="gpuCanvas" style="width: 100%; height: 100%; display: block; border-radius: 8px;"></canvas>
             </div>
 
-            <!-- Інтерактивний блок перемикання -->
             <div class="rtx-toggle-container">
                 <span style="font-weight: bold; color: #cbd5e1;">Базова растеризація</span>
-                <label class="switch">
+                <label class="switch" tabindex="0" role="switch" aria-checked="false" aria-label="Увімкнути трасування променів RTX ON">
                     <input type="checkbox" id="rtx-toggle">
                     <span class="slider"></span>
                 </label>
@@ -133,9 +130,9 @@
         </div>
 
         <div class="right-panel" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
-            <div class="info-card" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
+            <div class="info-card">
                 <h3 style="margin-top: 0;">Обчислення світла</h3>
-                <p style="color: #94a3b8; font-size: 14px; line-height: 1.5;">Сучасні відеокарти не просто малюють текстури, вони фізично вираховують поведінку кожного променя світла, відбиття та тіні у реальному часі.</p>
+                <p class="info-text">Сучасні відеокарти не просто малюють текстури, вони фізично вираховують поведінку кожного променя світла, відбиття та тіні у реальному часі.</p>
                 
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
                     <div style="color: #94a3b8; font-size: 12px;">Продуктивність (TFLOPS)</div>
@@ -143,9 +140,9 @@
                 </div>
             </div>
 
-            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт стану:</div>
-                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
+            <div class="accessibility-box" style="border-left: 4px solid #3b82f6;">
+                <div class="acc-header">Текстовий транскрипт стану:</div>
+                <div id="acc-text" class="acc-text">
                     "Режим растеризації: Тіні статичні, відбиття на поверхнях імітуються програмно. Навантаження на GPU середнє."
                 </div>
             </div>
@@ -153,15 +150,15 @@
 
     </div>
 
-    <!-- Комплексний інтерактивний скрипт (Тумблер + Canvas Рендеринг) -->
     <script>
         const rtxToggle = document.getElementById('rtx-toggle');
+        const switchLabel = document.querySelector('.switch');
         const accText = document.getElementById('acc-text');
         const tflopsVal = document.getElementById('tflops-val');
         const graphicsWindow = document.getElementById('graphics-window');
 
-        // Оноврення телеметрії та транскрипту при перемиканні тумблера
         rtxToggle.addEventListener('change', (e) => {
+            switchLabel.setAttribute('aria-checked', String(e.target.checked));
             if (e.target.checked) {
                 accText.textContent = '"Режим трасування променів: Світло фізично коректно відбивається від дзеркальної поверхні. З\'являються м\'які тіні та вторинні відблиски. Навантаження на GPU максимальне."';
                 tflopsVal.textContent = "120.4 (RT Cores)";
@@ -175,7 +172,14 @@
             }
         });
 
-        // Двигунок Canvas-анімації трасування променів
+        switchLabel.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                rtxToggle.checked = !rtxToggle.checked;
+                rtxToggle.dispatchEvent(new Event('change'));
+            }
+        });
+
         (() => {
             const canvas = document.getElementById('gpuCanvas');
             if (!canvas) return;
@@ -191,8 +195,8 @@
             }
             window.addEventListener('resize', resize);
             resize();
+            setTimeout(() => document.getElementById('gpu-loader')?.classList.add('hidden'), 250);
 
-            // Клік по Canvas також може перемикати тумблер RTX для інтерактивності
             canvas.addEventListener('click', () => {
                 rtxToggle.checked = !rtxToggle.checked;
                 rtxToggle.dispatchEvent(new Event('change'));
@@ -212,13 +216,11 @@
                 const floorY = h - 35;
                 const mirrorX = w * 0.78;
 
-                // Підлога та дзеркальна стіна справа
                 ctx.fillStyle = '#1e293b';
                 ctx.fillRect(30, floorY, w - 60, 8);
                 ctx.fillStyle = rtxOn ? '#38bdf8' : '#475569';
                 ctx.fillRect(mirrorX, 40, 8, floorY - 40);
 
-                // Джерело світла
                 ctx.fillStyle = '#fbbf24';
                 ctx.beginPath();
                 ctx.arc(lightX, lightY, 10, 0, Math.PI * 2);
@@ -228,13 +230,11 @@
                 ctx.fillText('Джерело світла', lightX - 35, lightY - 15);
 
                 if (!rtxOn) {
-                    // Режим базової растеризації: пласка тінь без відбиттів
                     ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
                     ctx.beginPath();
                     ctx.ellipse(sphereX + 25, floorY, 45, 6, 0, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Проста полігональна сітка-проекція
                     ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
                     ctx.setLineDash([5, 5]);
                     ctx.beginPath();
@@ -245,7 +245,6 @@
                     ctx.stroke();
                     ctx.setLineDash([]);
 
-                    // Сфера без відблиску від дзеркала
                     ctx.fillStyle = '#3b82f6';
                     ctx.beginPath();
                     ctx.arc(sphereX, sphereY, 32, 0, Math.PI * 2);
@@ -255,7 +254,6 @@
                     ctx.font = '12px system-ui, sans-serif';
                     ctx.fillText('Відбиття у дзеркалі відсутнє (тільки Z-буфер)', mirrorX - 250, 65);
                 } else {
-                    // Режим RTX ON: фізичні промені, відбиття від дзеркала та м'яка тінь
                     const grad = ctx.createRadialGradient(sphereX + 30, floorY, 5, sphereX + 30, floorY, 60);
                     grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
                     grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
@@ -264,7 +262,6 @@
                     ctx.ellipse(sphereX + 30, floorY, 60, 9, 0, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Анімовані траєкторії променів
                     const rays = [
                         [[lightX, lightY], [sphereX - 18, sphereY - 25], [mirrorX, sphereY - 45], [w * 0.92, sphereY - 20]],
                         [[lightX, lightY], [sphereX + 18, sphereY + 10], [mirrorX, sphereY + 18], [sphereX + 32, sphereY + 10]],
@@ -283,7 +280,6 @@
                         ctx.setLineDash([]);
                     });
 
-                    // Сфера з реальним освітленням та вторинним відблиском
                     const sGrad = ctx.createRadialGradient(sphereX - 10, sphereY - 10, 4, sphereX, sphereY, 34);
                     sGrad.addColorStop(0, '#6ee7b7');
                     sGrad.addColorStop(0.6, '#2563eb');
@@ -293,7 +289,6 @@
                     ctx.arc(sphereX, sphereY, 32, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Відбиття сфери у дзеркальній поверхні
                     ctx.fillStyle = 'rgba(52, 211, 153, 0.35)';
                     ctx.beginPath();
                     ctx.arc(mirrorX + 24, sphereY, 24, Math.PI * 0.5, Math.PI * 1.5);
@@ -310,5 +305,6 @@
             draw();
         })();
     </script>
+    <script src="audio-engine.js"></script>
 </body>
 </html>

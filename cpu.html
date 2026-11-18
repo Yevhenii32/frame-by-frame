@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Еволюція процесора - Frame by Frame</title>
+    <title>Еволюція процесора — Frame by Frame</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- Уніфіковане бокове меню -->
     <div class="sidebar">
         <div class="logo">
             <span style="color: #3b82f6;">O</span> Frame by Frame
@@ -53,26 +52,34 @@
         </div>
     </div>
 
-    <!-- Основний контент дашборду -->
     <div class="cpu-dashboard">
 
         <div class="center-panel">
             <div class="header">
-                <h2>The Engine of Modern Computing</h2>
-                <div class="subtitle">Еволюція процесорів (1990 - 2026)</div>
+                <div>
+                    <h2>Рушій сучасних обчислень</h2>
+                    <div class="subtitle">Еволюція процесорів (1990 — 2026)</div>
+                </div>
+                <div id="duration-badge" style="background: #1e293b; border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; font-size: 13px; color: #38bdf8; font-family: monospace;">
+                    Тривалість: 00:06 (00:06 / 00:06)
+                </div>
             </div>
 
-            <!-- Інтерактивний Canvas-віджет на місці звичайного текстового контейнера -->
-            <div class="animation-container" style="background: #0b0f19; padding: 12px; border-radius: 12px; border: 1px solid #1e293b;">
-                <canvas id="cpuCanvas" style="width:100%; height:320px; display:block; border-radius:8px;"></canvas>
+            <div class="animation-container" style="padding: 12px;">
+                <div class="chip-loader" id="cpu-loader">
+                    <div class="chip-pulse"></div>
+                    <span style="font-size: 12px; color: #94a3b8;">Ініціалізація розрізу кристала...</span>
+                </div>
+                <canvas id="cpuCanvas" style="width:100%; height:310px; display:block; border-radius:8px;"></canvas>
             </div>
 
             <div class="timeline-container">
                 <div class="controls">
-                    <button class="play-btn">▶ Play</button>
-                    <button class="pause-btn">⏸ Pause</button>
+                    <button type="button" class="play-btn">▶ Play</button>
+                    <button type="button" class="pause-btn">⏸ Pause</button>
+                    <span style="margin-left: auto; font-size: 13px; color: #94a3b8;">Поточний рік: <strong id="current-year-label" style="color: #f8fafc;">2026</strong></span>
                 </div>
-                <input type="range" min="1990" max="2026" value="2026" class="timeline-slider">
+                <input type="range" min="1990" max="2026" value="2026" aria-label="Таймлайн еволюції процесорів" class="timeline-slider">
                 <div class="timeline-labels">
                     <span>1990</span>
                     <span>1999</span>
@@ -85,8 +92,8 @@
 
         <div class="right-panel">
             <div class="info-card">
-                <h3>Modern Chiplet Architecture</h3>
-                <p class="info-text">Спеціалізовані кремнієві блоки масштабують продуктивність, покращуючи ефективність та гнучкість дизайну.</p>
+                <h3 id="arch-title" style="margin-top: 0;">Сучасна чиплетна архітектура</h3>
+                <p id="arch-summary" class="info-text">Спеціалізовані кремнієві блоки масштабують продуктивність, покращуючи ефективність та гнучкість дизайну.</p>
 
                 <div class="specs-grid">
                     <div class="spec-item">
@@ -104,19 +111,32 @@
                 <div class="acc-header">Текстовий транскрипт</div>
                 <div class="acc-text">"У 2026 році модульні чиплети дозволяють проєктувальникам комбінувати обчислювальні блоки та блоки вводу/виводу, забезпечуючи більше ядер без створення одного величезного кристала."</div>
             </div>
+
+            <!-- Мікрозапитання для перевірки знань (Сцена 02 сценарію) -->
+            <div class="info-card" style="border-top: 3px solid #38bdf8;">
+                <div style="font-size: 13px; font-weight: bold; color: #38bdf8; margin-bottom: 8px;">Перевірка знань</div>
+                <div style="font-size: 13px; color: #e2e8f0; margin-bottom: 10px;">Чому сучасні процесори перейшли від одного великого кристала до модульних чиплетів?</div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <button type="button" class="quiz-opt" data-correct="false" style="text-align: left; padding: 8px 10px; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        Щоб збільшити техпроцес до 800 нм
+                    </button>
+                    <button type="button" class="quiz-opt" data-correct="true" style="text-align: left; padding: 8px 10px; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        Щоб масштабувати кількість ядер і знизити брак виробництва
+                    </button>
+                </div>
+                <div id="quiz-feedback" style="margin-top: 8px; font-size: 12px; display: none;"></div>
+            </div>
         </div>
 
     </div>
 
-    <!-- Об'єднаний скрипт телеметрії та Canvas-анімації -->
     <script>
-        // 1. База даних еволюції по роках
         const cpuData = {
-            1990: { freq: "0.03", trans: "1.2M", node: "800", cores: "1 / 1T", tdp: "5 W", desc: "Епоха ранніх 32-бітних процесорів. Архітектура фокусується на базових обчисленнях без складної багатозадачності." },
-            1999: { freq: "0.50", trans: "9.5M", node: "250", cores: "1 / 1T", tdp: "28 W", desc: "Поява мультимедійних інструкцій та стрімке зростання тактових частот. Процесори отримують інтегровану кеш-пам'ять L2." },
-            2008: { freq: "2.66", trans: "731M", node: "45", cores: "4 / 4T", tdp: "95 W", desc: "Перехід до багатоядерності. Замість нарощування частоти виробники фокусуються на паралельних обчисленнях." },
-            2017: { freq: "3.60", trans: "4.8B", node: "14", cores: "8 / 16T", tdp: "95 W", desc: "Повернення конкуренції на ринку приносить стрибок кількості ядер. Розвиток технологій багатопотоковості." },
-            2026: { freq: "5.70", trans: "26.0B", node: "3", cores: "16 / 32T", tdp: "170 W", desc: "У 2026 році модульні чиплети дозволяють проєктувальникам комбінувати обчислювальні блоки та блоки вводу/виводу, забезпечуючи більше ядер без створення одного величезного кристала." }
+            1990: { title: "Монолітний кристал (1 ядро)", freq: "0.03", trans: "1.2M", node: "800", cores: "1 / 1T", tdp: "5 W", desc: "Епоха ранніх 32-бітних процесорів. Архітектура фокусується на базових обчисленнях без складної багатозадачності." },
+            1999: { title: "Інтегрований кеш L2", freq: "0.50", trans: "9.5M", node: "250", cores: "1 / 1T", tdp: "28 W", desc: "Поява мультимедійних інструкцій та стрімке зростання тактових частот. Процесори отримують інтегровану кеш-пам'ять L2." },
+            2008: { title: "Багатоядерна архітектура", freq: "2.66", trans: "731M", node: "45", cores: "4 / 4T", tdp: "95 W", desc: "Перехід до багатоядерності. Замість нарощування частоти виробники фокусуються на паралельних обчисленнях." },
+            2017: { title: "Високопотокові багатоядерні CPU", freq: "3.60", trans: "4.8B", node: "14", cores: "8 / 16T", tdp: "95 W", desc: "Повернення конкуренції на ринку приносить стрибок кількості ядер. Розвиток технологій багатопотоковості." },
+            2026: { title: "Сучасна чиплетна архітектура", freq: "5.70", trans: "26.0B", node: "3", cores: "16 / 32T", tdp: "170 W", desc: "У 2026 році модульні чиплети дозволяють проєктувальникам комбінувати обчислювальні блоки та блоки вводу/виводу, забезпечуючи більше ядер без створення одного величезного кристала." }
         };
 
         const slider = document.querySelector('.timeline-slider');
@@ -126,14 +146,24 @@
         const coresValue = document.querySelectorAll('.spec-val')[0];
         const tdpValue = document.querySelectorAll('.spec-val')[1];
         const transcriptText = document.querySelector('.acc-text');
+        const archTitle = document.getElementById('arch-title');
+        const currentYearLabel = document.getElementById('current-year-label');
+        const durationBadge = document.getElementById('duration-badge');
 
         function updateDashboard(year) {
+            const numYear = Math.round(Number(year));
+            currentYearLabel.textContent = numYear;
+
+            const sec = Math.round(((numYear - 1990) / 36) * 6);
+            durationBadge.textContent = `Тривалість: 00:06 (00:0${sec} / 00:06)`;
+
             const availableYears = Object.keys(cpuData).map(Number);
-            const closestYear = availableYears.reduce((prev, curr) => 
-                Math.abs(curr - year) < Math.abs(prev - year) ? curr : prev
+            const closestYear = availableYears.reduce((prev, curr) =>
+                Math.abs(curr - numYear) < Math.abs(prev - numYear) ? curr : prev
             );
             const data = cpuData[closestYear];
 
+            archTitle.textContent = data.title;
             freqValue.innerHTML = `${data.freq} <span class="telemetry-sub">Boost</span>`;
             transValue.innerHTML = `${data.trans} <span class="telemetry-sub">Units</span>`;
             nodeValue.innerHTML = `${data.node} <span class="telemetry-sub">Node</span>`;
@@ -145,10 +175,28 @@
         slider.addEventListener('input', (e) => {
             updateDashboard(e.target.value);
         });
-
         updateDashboard(slider.value);
 
-        // 2. Логіка анімації Canvas та кнопок Play/Pause
+        // Логіка мікрозапитання
+        document.querySelectorAll('.quiz-opt').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const isCorrect = btn.dataset.correct === 'true';
+                const fb = document.getElementById('quiz-feedback');
+                fb.style.display = 'block';
+                if (isCorrect) {
+                    btn.style.borderColor = '#10b981';
+                    btn.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+                    fb.style.color = '#10b981';
+                    fb.textContent = 'Правильно! Чиплети дозволяють комбінувати менші кристали з високим виходом придатних чипів.';
+                } else {
+                    btn.style.borderColor = '#ef4444';
+                    fb.style.color = '#fca5a5';
+                    fb.textContent = 'Не зовсім. Навпаки, техпроцес зменшився до 3 нм, а поділ на чиплети спростив масштабування ядер.';
+                }
+            });
+        });
+
+        // Анімація Canvas
         (() => {
             const canvas = document.getElementById('cpuCanvas');
             if (!canvas) return;
@@ -169,6 +217,7 @@
             }
             window.addEventListener('resize', resize);
             resize();
+            setTimeout(() => document.getElementById('cpu-loader')?.classList.add('hidden'), 250);
 
             slider.addEventListener('input', e => {
                 yearVal = Number(e.target.value);
@@ -206,7 +255,6 @@
                 const cy = h / 2 + 10;
                 const pkgSize = Math.min(w * 0.50, 210);
 
-                // PCB підкладка
                 ctx.fillStyle = '#0f172a';
                 ctx.strokeStyle = '#334155';
                 ctx.lineWidth = 2;
@@ -215,7 +263,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // Золоті контакти
                 ctx.fillStyle = '#eab308';
                 const pins = 14;
                 for (let i = 1; i < pins; i++) {
@@ -226,7 +273,6 @@
                     ctx.fillRect(cx + pkgSize / 2, cy + offset - 2, 5, 4);
                 }
 
-                // Кристали всередині
                 const inner = pkgSize * 0.68;
                 if (spec.chiplets === 1) {
                     drawDie(cx - inner / 2, cy - inner / 2, inner, inner, spec.density, spec.color, 'CPU CORE');
@@ -240,7 +286,15 @@
                     const dw = (inner - gap) / 2;
                     for (let r = 0; r < 2; r++) {
                         for (let c = 0; c < 2; c++) {
-                            drawDie(cx - inner / 2 + c * (dw + gap), cy - inner / 2 + r * (dw + gap), dw, dw, spec.density, spec.color, `C${r * 2 + c + 1}`);
+                            drawDie(
+                                cx - inner / 2 + c * (dw + gap),
+                                cy - inner / 2 + r * (dw + gap),
+                                dw,
+                                dw,
+                                spec.density,
+                                spec.color,
+                                `C${r * 2 + c + 1}`
+                            );
                         }
                     }
                 } else {
@@ -268,7 +322,6 @@
                     });
                 }
 
-                // Заголовок на Canvas
                 ctx.fillStyle = '#e2e8f0';
                 ctx.font = '600 12px system-ui, sans-serif';
                 ctx.textAlign = 'left';
@@ -296,7 +349,12 @@
                         const pulse = 0.25 + 0.55 * Math.abs(Math.sin(tick * 2 + r * 0.7 + c * 1.1));
                         ctx.fillStyle = color;
                         ctx.globalAlpha = pulse;
-                        ctx.fillRect(x + 5 + c * cellW + 1, y + 5 + r * cellH + 1, Math.max(1, cellW - 2), Math.max(1, cellH - 2));
+                        ctx.fillRect(
+                            x + 5 + c * cellW + 1,
+                            y + 5 + r * cellH + 1,
+                            Math.max(1, cellW - 2),
+                            Math.max(1, cellH - 2)
+                        );
                     }
                 }
                 ctx.globalAlpha = 1;
@@ -310,7 +368,6 @@
             draw();
         })();
     </script>
-
     <script src="audio-engine.js"></script>
 </body>
 </html>
