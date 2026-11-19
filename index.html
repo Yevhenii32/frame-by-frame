@@ -1,83 +1,150 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frame by Frame — Інтерактивний довідник</title>
+    <title>Frame by Frame — Будова комп'ютера</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo">
-            <span style="color: #3b82f6;">O</span> Frame by Frame
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <span class="brand-mark">[ ]</span>
+            <span class="brand-name">Frame <span>by</span> Frame</span>
+        </a>
+
+        <div class="sidebar-caption">ІНТЕРАКТИВНИЙ ДОВІДНИК</div>
+
+        <nav class="chapter-nav" aria-label="Розділи проєкту">
+            <div class="menu-category">РОЗДІЛИ / 06</div>
+
+            <a href="index.html" class="menu-link active" aria-current="page">
+                <span class="chapter-number">01</span>
+                <span class="menu-item">Материнська плата</span>
+            </a>
+
+            <a href="cpu.html" class="menu-link">
+                <span class="chapter-number">02</span>
+                <span class="menu-item">Процесор</span>
+            </a>
+
+            <a href="cooling.html" class="menu-link">
+                <span class="chapter-number">03</span>
+                <span class="menu-item">Охолодження</span>
+            </a>
+
+            <a href="gpu.html" class="menu-link">
+                <span class="chapter-number">04</span>
+                <span class="menu-item">Відеокарта</span>
+            </a>
+
+            <a href="ram.html" class="menu-link">
+                <span class="chapter-number">05</span>
+                <span class="menu-item">Оперативна пам'ять</span>
+            </a>
+
+            <a href="storage.html" class="menu-link">
+                <span class="chapter-number">06</span>
+                <span class="menu-item">Накопичувачі</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="sidebar-footer-line"></span>
+            <span>FRAME BY FRAME</span>
+            <span>Мультимедійний проєкт</span>
         </div>
+    </aside>
 
-        <div class="menu-category">Навігація</div>
+    <main class="main-content home-page">
 
-        <a href="index.html" class="menu-link active">
-            <div class="menu-item">Головна плата</div>
-        </a>
-        <a href="cpu.html" class="menu-link">
-            <div class="menu-item">Центральний процесор (CPU)</div>
-        </a>
-        <a href="cooling.html" class="menu-link">
-            <div class="menu-item">Система охолодження</div>
-        </a>
-        <a href="gpu.html" class="menu-link">
-            <div class="menu-item">Відеокарта (GPU)</div>
-        </a>
-        <a href="ram.html" class="menu-link">
-            <div class="menu-item">Оперативна пам'ять (RAM)</div>
-        </a>
-        <a href="storage.html" class="menu-link">
-            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
-        </a>
-    </div>
-
-    <div class="main-content">
-        <div class="header">
-            <h2>Інтерактивна карта материнської плати</h2>
-            <span style="font-size: 13px; color: #94a3b8;">Наведіть або натисніть на вузол плати для переходу</span>
-        </div>
-
-        <div class="motherboard-container" id="mb-container">
-            <a href="cpu.html" class="interactive-zone slot-cpu"
-               data-title="Сокет CPU (LGA / AM5)"
-               data-desc="Центральний процесор: до 26 млрд транзисторів, 3 нм техпроцес. Клікніть для переходу до еволюції архітектур.">
-                <span class="hotspot-tag">CPU</span>
-            </a>
-
-            <a href="cooling.html" class="interactive-zone slot-cooling"
-               data-title="Зона VRM та система охолодження"
-               data-desc="Відведення тепла від процесора та ланцюгів живлення. Порівняння повітряного кулера (85°C) та СРО (42°C).">
-                <span class="hotspot-tag">Охолодження</span>
-            </a>
-
-            <a href="gpu.html" class="interactive-zone slot-gpu"
-               data-title="Слот PCIe 5.0 ×16 (Відеокарта)"
-               data-desc="Високошвидкісна шина для графічного прискорювача. Інтерактивне порівняння растеризації та Ray Tracing.">
-                <span class="hotspot-tag">GPU (PCIe)</span>
-            </a>
-
-            <a href="ram.html" class="interactive-zone slot-ram"
-               data-title="Слоти DDR5 SDRAM"
-               data-desc="Оперативна пам'ять із пропускною здатністю до 51.2 GB/s. Симуляція енергозалежності та заповнення комірок.">
-                <span class="hotspot-tag">RAM (DDR5)</span>
-            </a>
-
-            <a href="storage.html" class="interactive-zone slot-storage"
-               data-title="Інтерфейс M.2 NVMe / SATA"
-               data-desc="Постійна пам'ять. Бенчмарк швидкості читання та затримок між механічним HDD і твердотільним SSD.">
-                <span class="hotspot-tag">SSD / HDD</span>
-            </a>
-
-            <div class="component-hud" id="component-hud">
-                <div class="component-hud-title" id="hud-title">Архітектура X990</div>
-                <div class="component-hud-desc" id="hud-desc">Оберіть будь-який пульсуючий індикатор на материнській платі, щоб відкрити інтерактивну симуляцію компонента.</div>
+        <header class="home-header">
+            <div>
+                <div class="eyebrow">РОЗДІЛ 01 / ОСНОВА СИСТЕМИ</div>
+                <h1>Усе починається<br>з материнської плати.</h1>
+                <p class="home-intro">
+                    Процесор, пам'ять, відеокарта, накопичувачі —
+                    усі компоненти працюють разом.
+                    Оберіть вузол на платі, щоб дослідити його ближче.
+                </p>
             </div>
-        </div>
-    </div>
+
+            <div class="chapter-indicator">
+                <span class="chapter-indicator-current">01</span>
+                <span class="chapter-indicator-total">/ 06</span>
+            </div>
+        </header>
+
+        <section class="board-section" aria-label="Інтерактивна материнська плата">
+            <div class="board-toolbar">
+                <span class="board-toolbar-title">
+                    <span class="live-dot"></span>
+                    ІНТЕРАКТИВНА СХЕМА
+                </span>
+                <span class="board-toolbar-hint">
+                    Наведіть на точку або натисніть для переходу
+                </span>
+            </div>
+
+            <div class="motherboard-container" id="mb-container">
+
+                <a href="cpu.html" class="interactive-zone slot-cpu"
+                   aria-label="Перейти до розділу про процесор"
+                   data-title="Процесор (CPU)"
+                   data-desc="Головний обчислювальний вузол комп'ютера. Тут можна простежити, як змінювалися процесори та їхні архітектури.">
+                    <span class="hotspot-tag">CPU</span>
+                </a>
+
+                <a href="cooling.html" class="interactive-zone slot-cooling"
+                   aria-label="Перейти до розділу про охолодження"
+                   data-title="Система охолодження"
+                   data-desc="Повітряний кулер чи рідинне охолодження? Порівняйте, як обидві системи відводять тепло від процесора.">
+                    <span class="hotspot-tag">Охолодження</span>
+                </a>
+
+                <a href="gpu.html" class="interactive-zone slot-gpu"
+                   aria-label="Перейти до розділу про відеокарту"
+                   data-title="Відеокарта (GPU)"
+                   data-desc="Графічний процесор відповідає за обробку зображення. Дослідіть різницю між растеризацією та трасуванням променів.">
+                    <span class="hotspot-tag">GPU</span>
+                </a>
+
+                <a href="ram.html" class="interactive-zone slot-ram"
+                   aria-label="Перейти до розділу про оперативну пам'ять"
+                   data-title="Оперативна пам'ять (RAM)"
+                   data-desc="Тимчасове сховище даних, з якими працює процесор. Порівняйте покоління DDR і принцип передавання інформації.">
+                    <span class="hotspot-tag">RAM</span>
+                </a>
+
+                <a href="storage.html" class="interactive-zone slot-storage"
+                   aria-label="Перейти до розділу про накопичувачі"
+                   data-title="Накопичувачі SSD та HDD"
+                   data-desc="Де зберігаються файли після вимкнення комп'ютера? Порівняйте механічний HDD і сучасний SSD.">
+                    <span class="hotspot-tag">SSD / HDD</span>
+                </a>
+
+                <div class="component-hud" id="component-hud" aria-live="polite">
+                    <div class="hud-overline">ПРО КОМПОНЕНТ</div>
+                    <div class="component-hud-title" id="hud-title">
+                        Материнська плата
+                    </div>
+                    <div class="component-hud-desc" id="hud-desc">
+                        П'ять активних точок ведуть до окремих
+                        інтерактивних розділів. Наведіть на будь-яку
+                        з них, щоб дізнатися більше.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="board-bottom">
+                <span>05 АКТИВНИХ ВУЗЛІВ</span>
+                <span>ОБЕРІТЬ КОМПОНЕНТ ДЛЯ ПРОДОВЖЕННЯ</span>
+            </div>
+        </section>
+    </main>
 
     <script src="audio-engine.js"></script>
     <script>
@@ -91,24 +158,34 @@
             const hudDesc = document.getElementById('hud-desc');
 
             document.querySelectorAll('.interactive-zone').forEach(zone => {
-                // Оновлення HUD-картки при наведенні або фокусі з клавіатури
                 const showInfo = () => {
                     hudTitle.textContent = zone.dataset.title;
                     hudDesc.textContent = zone.dataset.desc;
                 };
+
                 zone.addEventListener('mouseenter', showInfo);
                 zone.addEventListener('focus', showInfo);
 
-                // Плавний Zoom-in перехід при кліку
                 zone.addEventListener('click', (e) => {
                     e.preventDefault();
+
                     const targetUrl = zone.getAttribute('href');
                     const rect = mbContainer.getBoundingClientRect();
                     const zRect = zone.getBoundingClientRect();
-                    const originX = ((zRect.left + zRect.width / 2 - rect.left) / rect.width) * 100;
-                    const originY = ((zRect.top + zRect.height / 2 - rect.top) / rect.height) * 100;
 
-                    mbContainer.style.transformOrigin = `${originX}% ${originY}%`;
+                    const originX = (
+                        (zRect.left + zRect.width / 2 - rect.left)
+                        / rect.width
+                    ) * 100;
+
+                    const originY = (
+                        (zRect.top + zRect.height / 2 - rect.top)
+                        / rect.height
+                    ) * 100;
+
+                    mbContainer.style.transformOrigin =
+                        `${originX}% ${originY}%`;
+
                     mbContainer.classList.add('zooming');
 
                     setTimeout(() => {
@@ -118,6 +195,7 @@
             });
         });
     </script>
+
     <script src="tour-engine.js"></script>
 </body>
 </html>

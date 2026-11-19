@@ -8,85 +8,191 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo">
-            <span style="color: #3b82f6;">O</span> Frame by Frame
+<body>
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <span class="brand-mark">[ ]</span>
+            <span class="brand-name">Frame <span>by</span> Frame</span>
+        </a>
+
+        <div class="sidebar-caption">ІНТЕРАКТИВНИЙ ДОВІДНИК</div>
+
+        <nav class="chapter-nav" aria-label="Розділи проєкту">
+            <div class="menu-category">РОЗДІЛИ / 06</div>
+
+            <a href="index.html" class="menu-link">
+                <span class="chapter-number">01</span>
+                <span class="menu-item">Материнська плата</span>
+            </a>
+
+            <a href="cpu.html" class="menu-link">
+                <span class="chapter-number">02</span>
+                <span class="menu-item">Процесор</span>
+            </a>
+
+            <a href="cooling.html" class="menu-link active" aria-current="page">
+                <span class="chapter-number">03</span>
+                <span class="menu-item">Охолодження</span>
+            </a>
+
+            <a href="gpu.html" class="menu-link">
+                <span class="chapter-number">04</span>
+                <span class="menu-item">Відеокарта</span>
+            </a>
+
+            <a href="ram.html" class="menu-link">
+                <span class="chapter-number">05</span>
+                <span class="menu-item">Оперативна пам'ять</span>
+            </a>
+
+            <a href="storage.html" class="menu-link">
+                <span class="chapter-number">06</span>
+                <span class="menu-item">Накопичувачі</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="sidebar-footer-line"></span>
+            <span>FRAME BY FRAME</span>
+            <span>Мультимедійний проєкт</span>
+        </div>
+    </aside>
+
+    <main class="cooling-dashboard cooling-page">
+        <div class="left-panel">
+
+            <header class="cooling-header">
+                <div class="eyebrow">РОЗДІЛ 03 / КОНТРОЛЬ ТЕМПЕРАТУРИ</div>
+                <h1>Як комп'ютер відводить тепло</h1>
+                <p class="cooling-lead">
+                    Процесор виділяє тепло під час роботи.
+                    Порівняйте два способи його відведення:
+                    класичний повітряний кулер і систему
+                    рідинного охолодження.
+                </p>
+            </header>
+
+            <section class="cooling-workspace">
+                <div class="cooling-section-heading">
+                    <span>01 / ТЕПЛОВА МОДЕЛЬ</span>
+                    <span>АНІМАЦІЯ В РЕАЛЬНОМУ ЧАСІ</span>
+                </div>
+
+                <div class="animation-container cooling-visual"
+                     id="heat-animation">
+
+                    <div class="chip-loader" id="cooling-loader">
+                        <div class="chip-pulse"></div>
+                        <span class="loader-caption">
+                            Завантаження теплової моделі...
+                        </span>
+                    </div>
+
+                    <canvas id="coolingCanvas"
+                            style="width:100%; height:100%; display:block;">
+                    </canvas>
+                </div>
+
+                <div class="cooling-visual-footer">
+                    <span>CPU / ДЖЕРЕЛО ТЕПЛА</span>
+                    <span>УМОВНА МОДЕЛЬ ТЕПЛООБМІНУ</span>
+                </div>
+
+                <div class="cooling-section-heading">
+                    <span>02 / ОБЕРІТЬ СИСТЕМУ</span>
+                    <span>ПОРІВНЯННЯ ДВОХ РЕЖИМІВ</span>
+                </div>
+
+                <div class="controls-panel cooling-controls">
+                    <button type="button"
+                            id="btn-old"
+                            class="cooling-btn active-btn">
+                        <span class="cooling-option-number">01</span>
+                        <span class="cooling-option-content">
+                            <strong>Повітряне охолодження</strong>
+                            <small>Компактний кулер · 1998</small>
+                        </span>
+                    </button>
+
+                    <button type="button"
+                            id="btn-new"
+                            class="cooling-btn">
+                        <span class="cooling-option-number">02</span>
+                        <span class="cooling-option-content">
+                            <strong>Рідинне охолодження</strong>
+                            <small>Водоблок і радіатор · 2026</small>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="cooling-explanation">
+                    <span>ЩО ПОРІВНЮЄМО</span>
+                    <p>
+                        Зверніть увагу на шлях відведення тепла,
+                        швидкість руху частинок і зміну температури
+                        процесора під час перемикання режимів.
+                    </p>
+                </div>
+            </section>
         </div>
 
-        <div class="menu-category">Навігація</div>
+        <aside class="right-panel cooling-side-panel">
 
-        <a href="index.html" class="menu-link">
-            <div class="menu-item">Головна плата</div>
-        </a>
-        <a href="cpu.html" class="menu-link">
-            <div class="menu-item">Центральний процесор (CPU)</div>
-        </a>
-        <a href="cooling.html" class="menu-link active">
-            <div class="menu-item">Система охолодження</div>
-        </a>
-        <a href="gpu.html" class="menu-link">
-            <div class="menu-item">Відеокарта (GPU)</div>
-        </a>
-        <a href="ram.html" class="menu-link">
-            <div class="menu-item">Оперативна пам'ять (RAM)</div>
-        </a>
-        <a href="storage.html" class="menu-link">
-            <div class="menu-item">Накопичувачі (SSD/HDD)</div>
-        </a>
-    </div>
+            <section class="telemetry-box cooling-temperature"
+                     id="temp-box">
+                <div class="panel-kicker">ТЕМПЕРАТУРА ПРОЦЕСОРА</div>
 
-    <div class="cooling-dashboard" style="display: flex; gap: 30px; padding: 20px; color: #f8fafc; flex-grow: 1;">
-        
-        <div class="left-panel" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
-            <div class="header">
-                <h2>Еволюція систем охолодження</h2>
-                <div class="subtitle">Порівняння теплових та звукових характеристик</div>
-            </div>
-
-            <div class="animation-container" id="heat-animation" style="width: 100%; aspect-ratio: 16/9; background-color: #0f172a; border: 2px solid #ef4444; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: border-color 0.5s ease;">
-                <div class="chip-loader" id="cooling-loader">
-                    <div class="chip-pulse"></div>
-                    <span style="font-size: 12px; color: #94a3b8;">Завантаження теплової моделі...</span>
-                </div>
-                <canvas id="coolingCanvas" style="width:100%; height:100%; display:block; border-radius:8px;"></canvas>
-            </div>
-
-            <div class="controls-panel" style="background-color: #1e293b; padding: 20px; border-radius: 8px; display: flex; gap: 15px; justify-content: center;">
-                <button type="button" id="btn-old" class="cooling-btn active-btn" style="padding: 12px 24px; background-color: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
-                    Вентилятор (1998 рік)
-                </button>
-                <button type="button" id="btn-new" class="cooling-btn" style="padding: 12px 24px; background-color: #334155; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
-                    Водяне охолодження (2026 рік)
-                </button>
-            </div>
-        </div>
-
-        <div class="right-panel" style="width: 350px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
-            
-            <div class="telemetry-box" style="background-color: #1e293b; padding: 25px; border-radius: 8px; border-left: 4px solid #ef4444;" id="temp-box">
-                <div style="color: #94a3b8; font-size: 14px; margin-bottom: 10px;">Робоча температура:</div>
-                <div id="temp-value" style="font-size: 48px; font-weight: bold; color: #ef4444;">85°C</div>
-                <div id="temp-status" style="font-size: 16px; color: #cbd5e1; margin-top: 5px;">Критичне нагрівання. Високий рівень шуму.</div>
-            </div>
-
-            <div class="accessibility-box" style="background-color: #1e293b; padding: 20px; border-radius: 8px;">
-                <div class="acc-header" style="color: #cbd5e1; font-weight: bold; margin-bottom: 10px;">Текстовий транскрипт та статус:</div>
-                
-                <div id="audio-error-msg" style="display: none; background-color: #7f1d1d; color: #fca5a5; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; border: 1px solid #b91c1c;">
-                    Аудіо недоступне. Прочитайте текстовий опис температурних змін.
+                <div class="cooling-temperature-reading">
+                    <div id="temp-value">85°C</div>
+                    <span>CPU TEMP</span>
                 </div>
 
-                <div id="acc-text" style="color: #94a3b8; font-size: 14px; line-height: 1.5; font-style: italic;">
-                    "Старий алюмінієвий радіатор з маленьким кулером ледве справляється з відведенням тепла. Звук: гучний, високочастотний гул вентилятора на максимальних обертах (близько 5000 RPM)."
+                <div class="cooling-temp-scale">
+                    <div class="cooling-temp-scale-fill"></div>
                 </div>
-            </div>
 
-            <button type="button" onclick="window.location.href='index.html'" style="margin-top: auto; padding: 15px; background-color: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold;">
-                Завершити вивчення
-            </button>
+                <div id="temp-status" class="cooling-temp-status"
+                     aria-live="polite">
+                    Критичне нагрівання. Високий рівень шуму.
+                </div>
 
-        </div>
-    </div>
+                <div class="cooling-metric-note">
+                    Демонстраційна температура для вибраного сценарію
+                </div>
+            </section>
+
+            <section class="accessibility-box cooling-description">
+                <div class="panel-kicker">ЩО ВІДБУВАЄТЬСЯ?</div>
+
+                <div id="audio-error-msg" class="cooling-audio-error"
+                     style="display:none;" role="status">
+                    Аудіо недоступне. Прочитайте текстовий
+                    опис температурних змін.
+                </div>
+
+                <div id="acc-text" class="acc-text" aria-live="polite">
+                    Старий алюмінієвий радіатор із маленьким кулером
+                    ледве справляється з відведенням тепла.
+                    Звук: гучний високочастотний гул вентилятора
+                    на максимальних обертах.
+                </div>
+            </section>
+
+            <section class="cooling-fact">
+                <div class="panel-kicker">ВАЖЛИВО ЗНАТИ</div>
+                <p>
+                    Ефективність охолодження залежить не лише від типу
+                    системи, а й від її конструкції, тепловиділення
+                    процесора та вентиляції корпусу.
+                </p>
+            </section>
+
+            <a href="index.html" class="cooling-back-link">
+                <span>←</span>
+                Повернутися до материнської плати
+            </a>
+        </aside>
+    </main>
 
     <script src="audio-engine.js"></script>
     <script>
@@ -99,6 +205,7 @@
         const tempBox = document.getElementById('temp-box');
         const heatAnimation = document.getElementById('heat-animation');
         const accText = document.getElementById('acc-text');
+        const tempScale = document.querySelector('.cooling-temp-scale-fill');
 
         const states = {
             old: {
@@ -129,9 +236,17 @@
             tempBox.style.borderLeftColor = data.color;
             heatAnimation.style.borderColor = data.color;
             accText.textContent = data.text;
+            // Синхронізація температурної шкали
+            tempScale.style.width = type === 'old' ? '85%' : '42%';
+            tempScale.style.backgroundColor = data.color;
 
+            // Підсвічування вибраної системи
+            btnOld.classList.toggle('active-btn', type === 'old');
+            btnNew.classList.toggle('active-btn', type === 'new');
+
+            btnOld.style.borderColor = type === 'old' ? data.color : '#2b3544';
+            btnNew.style.borderColor = type === 'new' ? data.color : '#2b3544';
             btnOld.style.backgroundColor = type === 'old' ? data.btnColor : "#334155";
-            btnNew.style.backgroundColor = type === 'new' ? data.btnColor : "#334155";
 
             if (typeof SoundEngine !== 'undefined') {
                 const audioOk = SoundEngine.playCooling(type);
