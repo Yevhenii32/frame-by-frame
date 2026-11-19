@@ -271,7 +271,7 @@
         }
 
         rtxToggle.addEventListener('change', (e) => {
-            targetRatio = e.target.checked ? 0.88 : 0.12;
+            targetRatio = e.target.checked ? 0.12 : 0.88;
             updateTelemetryUI(e.target.checked);
         });
 
@@ -279,7 +279,7 @@
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 const nextState = !rtxToggle.checked;
-                targetRatio = nextState ? 0.88 : 0.12;
+                targetRatio = nextState ? 0.12 : 0.88;
                 updateTelemetryUI(nextState);
             }
         });
@@ -307,7 +307,7 @@
                 const raw = (clientX - rect.left) / rect.width;
                 splitRatio = Math.max(0.05, Math.min(0.95, raw));
                 targetRatio = splitRatio;
-                updateTelemetryUI(splitRatio > 0.5);
+                updateTelemetryUI(splitRatio < 0.5);
             }
 
             canvas.addEventListener('pointerdown', (e) => {
@@ -523,5 +523,7 @@
     </script>
     <script src="audio-engine.js"></script>
     <script src="tour-engine.js"></script>
+    <script src="background-engine.js" defer></script>
+    <script src="pcb-pulse.js" defer></script>
 </body>
 </html>
