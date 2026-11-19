@@ -385,6 +385,9 @@
             btnSsd.disabled = true;
             
             const duration = isSsdActive ? 600 : 7500;
+            if (!isSsdActive) {
+            SoundEngine.startHdd();
+            }
             const speedText = isSsdActive ? "7400 MB/s" : "120 MB/s";
             let start = null;
             
@@ -404,7 +407,9 @@
                     startBtn.disabled = false;
                     btnHdd.disabled = false;
                     btnSsd.disabled = false;
+                    SoundEngine.stopHdd(); 
                     transferStatus.textContent = `Готово! 10 GB успішно скопійовано.`;
+                   
                 }
             }
             

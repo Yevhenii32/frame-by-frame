@@ -1,201 +1,437 @@
+
 const SoundEngine = (() => {
     let ctx = null;
     let masterGain = null;
-    let ambientOsc = null;
-    let coolingOsc = null;
-    let coolingGain = null;
+
+    // Зберігаємо сумісність зі старим налаштуванням.
+    const legacyMuted = localStorage.getItem('fbf_muted') === 'true';
+
+    let musicMuted = localStorage.getItem('fbf_music_muted') === null
+        ? legacyMuted
+        : localStorage.getItem('fbf_music_muted') === 'true';
+
+    let effectsMuted = localStorage.getItem('fbf_effects_muted') === null
+        ? legacyMuted
+        : localStorage.getItem('fbf_effects_muted') === 'true';
+
     let lastCoolingType = null;
-    let isMuted = localStorage.getItem('fbf_muted') === 'true';
+    let hddActive = false;
+    let ambientReady = false;
+    let ambientPending = false;
+
+    const VOLUME = {
+        ambient: 0.08,
+        ambientDuck: 0.01,
+        cooling: 0.20,
+        hdd: 0.50
+    };
+
+    const sounds = {
+        ambient: new Audio('assets/audio/ambient.mp3'),
+        cooling: new Audio('assets/audio/fan-old.mp3'),
+        hdd: new Audio('assets/audio/hdd.mp3')
+    };
+
+    const fades = {};
+
+    Object.values(sounds).forEach(audio => {
+        audio.loop = true;
+        audio.preload = 'auto';
+        audio.volume = 0;
+    });
+
+    const POSITION_KEY = 'fbf_ambient_position';
 
     function init() {
         if (!ctx) {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            const AudioCtx =
+                window.AudioContext || window.webkitAudioContext;
+
             if (!AudioCtx) return false;
+
             ctx = new AudioCtx();
             masterGain = ctx.createGain();
-            masterGain.gain.value = isMuted ? 0 : 1;
+            masterGain.gain.value = effectsMuted ? 0 : 1;
             masterGain.connect(ctx.destination);
         }
-        if (ctx && ctx.state === 'suspended' && !isMuted) {
+
+        if (ctx.state === 'suspended' && !effectsMuted) {
             ctx.resume().catch(() => {});
         }
-        return Boolean(ctx);
+
+        return true;
     }
 
-    function stopCooling() {
-        if (coolingOsc) {
-            try { coolingOsc.stop(); } catch (e) {}
-            coolingOsc = null;
-            coolingGain = null;
-        }
-    }
+    function fade(name, target, duration = 500, pauseAfter = false) {
+        const audio = sounds[name];
+        if (!audio) return;
 
-    function setMuted(muteState) {
-        isMuted = Boolean(muteState);
-        localStorage.setItem('fbf_muted', String(isMuted));
-
-        if (masterGain && ctx) {
-            masterGain.gain.setValueAtTime(isMuted ? 0 : 1, ctx.currentTime);
+        if (fades[name] !== undefined) {
+            cancelAnimationFrame(fades[name]);
+            delete fades[name];
         }
-        if (isMuted) {
-            if (ambientOsc) {
-                try { ambientOsc.stop(); } catch (e) {}
-                ambientOsc = null;
+
+        const startVolume = audio.volume;
+        const startTime = performance.now();
+
+        function step(now) {
+            const progress = Math.min(
+                (now - startTime) / Math.max(duration, 1),
+                1
+            );
+
+            audio.volume = Math.max(0, Math.min(1,
+                startVolume + (target - startVolume) * progress
+            ));
+
+            if (progress < 1) {
+                fades[name] = requestAnimationFrame(step);
+            } else {
+                delete fades[name];
+
+                if (pauseAfter && target === 0) {
+                    audio.pause();
+                    if (name !== 'ambient') {
+                        audio.currentTime = 0;
+                    }
+                }
             }
-            stopCooling();
-        } else if (lastCoolingType) {
-            playCooling(lastCoolingType);
         }
 
-        window.dispatchEvent(new CustomEvent('fbf-mute-changed', { detail: { muted: isMuted } }));
-        return isMuted;
+        fades[name] = requestAnimationFrame(step);
     }
 
-    function toggleMute() {
-        init();
-        const state = setMuted(!isMuted);
-        if (!state) playClick();
-        return state;
+    function stopImmediately(name) {
+        const audio = sounds[name];
+
+        if (fades[name] !== undefined) {
+            cancelAnimationFrame(fades[name]);
+            delete fades[name];
+        }
+
+        audio.pause();
+        audio.volume = 0;
+
+        if (name !== 'ambient') {
+            audio.currentTime = 0;
+        }
     }
 
-    function getMuted() {
-        return isMuted;
+    function playFile(name) {
+        const audio = sounds[name];
+
+        if (!audio.paused) {
+            return Promise.resolve();
+        }
+
+        return audio.play();
+    }
+
+    function updateAmbientVolume() {
+        if (musicMuted || sounds.ambient.paused) return;
+
+        const effectActive =
+            !effectsMuted &&
+            (lastCoolingType === 'old' || hddActive);
+
+        fade(
+            'ambient',
+            effectActive ? VOLUME.ambientDuck : VOLUME.ambient,
+            600
+        );
     }
 
     function playAmbient() {
-        if (isMuted) return;
-        init();
-        if (!ctx || ambientOsc) return;
+        if (musicMuted || ambientPending) return;
 
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(58, ctx.currentTime);
+        if (!sounds.ambient.paused) {
+            ambientReady = true;
+            updateAmbientVolume();
+            return;
+        }
 
-        gain.gain.setValueAtTime(0.001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.025, ctx.currentTime + 1.2);
+        ambientPending = true;
 
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-        ambientOsc = osc;
-    }
+        playFile('ambient')
+            .then(() => {
+                ambientPending = false;
 
-    function playClick() {
-        if (isMuted) return;
-        init();
-        if (!ctx) return;
+                // Користувач міг вимкнути фон під час запуску.
+                if (musicMuted) {
+                    stopImmediately('ambient');
+                    return;
+                }
 
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(620, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.045);
+                ambientReady = true;
+                updateAmbientVolume();
+            })
+            .catch(error => {
+                ambientPending = false;
+                ambientReady = false;
 
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
-
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.05);
-    }
-
-    function playHddClick() {
-        if (isMuted) return;
-        init();
-        if (!ctx) return;
-
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(1400 + Math.random() * 500, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.022);
-
-        gain.gain.setValueAtTime(0.045, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.022);
-
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.025);
-    }
-
-    function playPowerDown() {
-        if (isMuted) return;
-        init();
-        if (!ctx) return;
-
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(240, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(38, ctx.currentTime + 0.55);
-
-        gain.gain.setValueAtTime(0.1, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
-
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.56);
+                // Autoplay може бути заблокований браузером.
+                console.debug('Ambient waiting for interaction:', error);
+            });
     }
 
     function playCooling(type) {
         lastCoolingType = type;
-        if (isMuted) {
-            stopCooling();
-            return true;
-        }
-        if (!init() || !ctx) return false;
 
-        stopCooling();
-
-        const osc = ctx.createOscillator();
-        const filter = ctx.createBiquadFilter();
-        const gain = ctx.createGain();
-
-        if (type === 'old') {
-            // Гучний високочастотний гул старого кулера (5000 RPM)
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(165, ctx.currentTime);
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(620, ctx.currentTime);
-            gain.gain.setValueAtTime(0.075, ctx.currentTime);
+        if (type === 'old' && !effectsMuted) {
+            playFile('cooling')
+                .then(() => {
+                    if (lastCoolingType === 'old' && !effectsMuted) {
+                        fade('cooling', VOLUME.cooling, 1300);
+                    } else {
+                        stopImmediately('cooling');
+                    }
+                })
+                .catch(error => console.debug(error));
         } else {
-            // Тихе м'яке шурхотіння помпи та СРО
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(68, ctx.currentTime);
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(180, ctx.currentTime);
-            gain.gain.setValueAtTime(0.028, ctx.currentTime);
+            fade('cooling', 0, 600, true);
         }
 
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-
-        coolingOsc = osc;
-        coolingGain = gain;
+        updateAmbientVolume();
         return true;
     }
 
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('button, a') && !e.target.closest('#global-mute-btn')) {
+    function stopCooling() {
+        lastCoolingType = null;
+        fade('cooling', 0, 500, true);
+        updateAmbientVolume();
+    }
+
+    function startHdd() {
+        hddActive = true;
+
+        if (!effectsMuted) {
+            sounds.hdd.currentTime = 0;
+
+            playFile('hdd')
+                .then(() => {
+                    if (hddActive && !effectsMuted) {
+                        fade('hdd', VOLUME.hdd, 400);
+                    } else {
+                        stopImmediately('hdd');
+                    }
+                })
+                .catch(error => console.debug(error));
+        }
+
+        updateAmbientVolume();
+    }
+
+    function stopHdd() {
+        hddActive = false;
+        fade('hdd', 0, 400, true);
+        updateAmbientVolume();
+    }
+
+    function setMusicMuted(muted) {
+        musicMuted = Boolean(muted);
+        localStorage.setItem('fbf_music_muted', String(musicMuted));
+
+        if (musicMuted) {
+            stopImmediately('ambient');
+            ambientReady = false;
+        } else {
+            playAmbient();
+        }
+
+        notify();
+        return musicMuted;
+    }
+
+    function setEffectsMuted(muted) {
+        effectsMuted = Boolean(muted);
+        localStorage.setItem('fbf_effects_muted', String(effectsMuted));
+
+        if (masterGain && ctx) {
+            masterGain.gain.setValueAtTime(
+                effectsMuted ? 0 : 1,
+                ctx.currentTime
+            );
+        }
+
+        if (effectsMuted) {
+            stopImmediately('cooling');
+            stopImmediately('hdd');
+        } else {
+            init();
+
+            if (lastCoolingType === 'old') {
+                playCooling('old');
+            }
+
+            if (hddActive) {
+                startHdd();
+            }
+        }
+
+        updateAmbientVolume();
+        notify();
+        return effectsMuted;
+    }
+
+    function notify() {
+        window.dispatchEvent(new CustomEvent('fbf-mute-changed', {
+            detail: {
+                musicMuted,
+                effectsMuted,
+                muted: musicMuted && effectsMuted
+            }
+        }));
+    }
+
+    function toggleMusic() {
+        return setMusicMuted(!musicMuted);
+    }
+
+    function toggleEffects() {
+        return setEffectsMuted(!effectsMuted);
+    }
+
+    function getMusicMuted() {
+        return musicMuted;
+    }
+
+    function getEffectsMuted() {
+        return effectsMuted;
+    }
+
+    // Старий API залишено для сумісності.
+    function getMuted() {
+        return musicMuted && effectsMuted;
+    }
+
+    function setMuted(muted) {
+        setMusicMuted(muted);
+        setEffectsMuted(muted);
+        return getMuted();
+    }
+
+    function toggleMute() {
+        return setMuted(!getMuted());
+    }
+
+    function playTone(type, startFreq, endFreq, volume, duration) {
+        if (effectsMuted || !init()) return;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+            endFreq,
+            ctx.currentTime + duration
+        );
+
+        gain.gain.setValueAtTime(volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            ctx.currentTime + duration
+        );
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start();
+        osc.stop(ctx.currentTime + duration + 0.01);
+    }
+
+    function playClick() {
+        playTone('triangle', 620, 180, 0.08, 0.045);
+    }
+
+    function playHddClick() {
+        // Реальний HDD-запис замінює синтезовані клацання.
+    }
+
+    function playPowerDown() {
+        playTone('sawtooth', 240, 38, 0.1, 0.55);
+    }
+
+    // Позиція ambient між HTML-сторінками.
+    function savePosition() {
+        if (Number.isFinite(sounds.ambient.currentTime)) {
+            sessionStorage.setItem(
+                POSITION_KEY,
+                String(sounds.ambient.currentTime)
+            );
+        }
+    }
+
+    sounds.ambient.addEventListener('loadedmetadata', () => {
+        const position = Number(
+            sessionStorage.getItem(POSITION_KEY)
+        );
+
+        if (
+            Number.isFinite(position) &&
+            position >= 0 &&
+            position < sounds.ambient.duration
+        ) {
+            sounds.ambient.currentTime = position;
+        }
+    });
+
+    sounds.ambient.addEventListener('timeupdate', savePosition);
+    window.addEventListener('pagehide', savePosition);
+
+    // Пробуємо відновити фон під час відкриття сторінки.
+    // Якщо браузер заборонить autoplay, чекаємо взаємодії.
+    playAmbient();
+
+    function unlockAudio() {
+        if (!musicMuted && sounds.ambient.paused) {
+            playAmbient();
+        }
+    }
+
+    document.addEventListener('pointerdown', unlockAudio);
+
+    document.addEventListener('keydown', event => {
+        if (!event.repeat && (
+            event.key === 'Enter' ||
+            event.key === ' '
+        )) {
+            unlockAudio();
+        }
+    });
+
+    document.addEventListener('click', event => {
+        const target = event.target;
+
+        if (
+            target instanceof Element &&
+            target.closest('button, a') &&
+            !target.closest(
+                '#global-mute-btn, #music-mute-btn, #effects-mute-btn'
+            )
+        ) {
             playClick();
         }
     });
 
     return {
         init,
+        getMuted,
         setMuted,
         toggleMute,
-        getMuted,
+        getMusicMuted,
+        getEffectsMuted,
+        setMusicMuted,
+        setEffectsMuted,
+        toggleMusic,
+        toggleEffects,
         playAmbient,
+        playCooling,
+        stopCooling,
+        startHdd,
+        stopHdd,
         playClick,
         playHddClick,
-        playPowerDown,
-        playCooling
+        playPowerDown
     };
 })();

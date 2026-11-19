@@ -661,11 +661,21 @@ const TourEngine = (() => {
                 </div>
 
                 <div class="scenario-actions">
-                    <button type="button"
-                            id="global-mute-btn"
-                            class="scenario-mute-btn">
-                        🔊 Звук: Увімк.
-                    </button>
+
+                <button type="button"
+                        id="music-mute-btn"
+                        class="scenario-mute-btn"
+                        aria-label="Увімкнути або вимкнути фонову музику">
+                    🎵 Фон: Увімк.
+                </button>
+
+                <button type="button"
+                        id="effects-mute-btn"
+                        class="scenario-mute-btn"
+                        aria-label="Увімкнути або вимкнути звукові ефекти">
+                    🔊 Ефекти: Увімк.
+                </button>
+
 
                     <a href="${currentScene.next}"
                        class="scenario-next-btn">
@@ -684,64 +694,62 @@ const TourEngine = (() => {
                 container.classList.add('has-scenario-bar');
             }
 
-            // Глобальне керування звуком
+            // Незалежне керування фоном і звуковими ефектами.
 
-            const muteBtn = bar.querySelector('#global-mute-btn');
+            const musicBtn = bar.querySelector('#music-mute-btn');
+            const effectsBtn = bar.querySelector('#effects-mute-btn');
 
-            if (muteBtn) {
-                function updateMuteButton() {
-                    const isMuted =
-                        typeof SoundEngine !== 'undefined'
-                            ? SoundEngine.getMuted()
-                            : localStorage.getItem('fbf_muted') === 'true';
+            function updateAudioButtons() {
+                if (typeof SoundEngine === 'undefined') return;
 
-                    muteBtn.textContent = isMuted
-                        ? '🔇 Звук: Вимк.'
-                        : '🔊 Звук: Увімк.';
+                const musicMuted = SoundEngine.getMusicMuted();
+                const effectsMuted = SoundEngine.getEffectsMuted();
 
-                    muteBtn.style.borderColor = isMuted
-                        ? '#8b4444'
-                        : '#344153';
+                musicBtn.textContent = musicMuted
+                    ? '🎵 Фон: Вимк.'
+                    : '🎵 Фон: Увімк.';
 
-                    muteBtn.style.color = isMuted
-                        ? '#e6a3a3'
-                        : '#cbd5e1';
+                effectsBtn.textContent = effectsMuted
+                    ? '🔇 Ефекти: Вимк.'
+                    : '🔊 Ефекти: Увімк.';
 
-                    muteBtn.setAttribute(
-                        'aria-pressed',
-                        String(isMuted)
-                    );
-                }
+                musicBtn.setAttribute('aria-pressed', String(!musicMuted));
+                effectsBtn.setAttribute('aria-pressed', String(!effectsMuted));
 
-                updateMuteButton();
+                musicBtn.style.borderColor = musicMuted
+                    ? '#8b4444'
+                    : '#4779b3';
 
-                muteBtn.addEventListener('click', () => {
-                    if (typeof SoundEngine !== 'undefined') {
-                        SoundEngine.toggleMute();
-                    } else {
-                        const next =
-                            localStorage.getItem('fbf_muted') !== 'true';
+                effectsBtn.style.borderColor = effectsMuted
+                    ? '#8b4444'
+                    : '#4779b3';
 
-                        localStorage.setItem(
-                            'fbf_muted',
-                            String(next)
-                        );
+                musicBtn.style.color = musicMuted
+                    ? '#e6a3a3'
+                    : '#cbd5e1';
 
-                        window.dispatchEvent(
-                            new CustomEvent('fbf-mute-changed', {
-                                detail: { muted: next }
-                            })
-                        );
-                    }
-
-                    updateMuteButton();
-                });
-
-                window.addEventListener(
-                    'fbf-mute-changed',
-                    updateMuteButton
-                );
+                effectsBtn.style.color = effectsMuted
+                    ? '#e6a3a3'
+                    : '#cbd5e1';
             }
+
+            musicBtn.addEventListener('click', () => {
+                SoundEngine.toggleMusic();
+                updateAudioButtons();
+            });
+
+            effectsBtn.addEventListener('click', () => {
+                SoundEngine.toggleEffects();
+                updateAudioButtons();
+            });
+
+            window.addEventListener(
+                'fbf-mute-changed',
+                updateAudioButtons
+            );
+
+            updateAudioButtons();
+
         }
 
         // Паспорт проєкту
