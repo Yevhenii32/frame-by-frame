@@ -66,15 +66,6 @@
             font-size: 16px;
             color: #f8fafc;
         }
-        .video-transcript {
-            background: #1e293b;
-            border-left: 3px solid #3b82f6;
-            border-radius: 6px;
-            padding: 12px 14px;
-            font-size: 13px;
-            line-height: 1.55;
-            color: #94a3b8;
-        }
     </style>
 </head>
 <body>
@@ -159,10 +150,7 @@
                         Наведіть на точку або натисніть для переходу
                     </span>
                     <button id="open-video-btn" type="button" class="hud-action-btn hud-action-btn--accent">
-                        ▶ Відеоогляд (01:19)
-                    </button>
-                    <button id="sound-toggle-btn" type="button" class="hud-action-btn">
-                        🔊 Звук: Увімк.
+                        ▶ Відеоогляд (18:56)
                     </button>
                 </div>
             </div>
@@ -230,19 +218,23 @@
         <div class="video-modal-card">
             <div class="video-modal-header">
                 <h2 id="video-modal-title" class="video-modal-title">
-                    Еволюція ПК: від перших процесорів до сучасних систем (01:19)
+                    Еволюція ПК: від перших процесорів до сучасних систем (18:56)
                 </h2>
                 <button id="close-video-btn" type="button" class="hud-action-btn">
                     ✕ Закрити
                 </button>
             </div>
 
-            <video id="intro-video" controls preload="metadata" style="width: 100%; border-radius: 8px; background: #020617; max-height: 440px;">
-                <source src="assets/video/pc-evolution.mp4" type="video/mp4">
-                Ваш браузер не підтримує відтворення MP4-відео.
-            </video>
-
-        
+            <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #020617;">
+                <iframe
+                    id="intro-video-frame"
+                    data-src="https://www.youtube.com/embed/2vtrCZf4S_Y?autoplay=1&rel=0"
+                    title="Evolution of PCs"
+                    style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
         </div>
     </div>
 
@@ -251,30 +243,30 @@
         (() => {
             function openVideoModal() {
                 const modal = document.getElementById('video-modal');
-                const video = document.getElementById('intro-video');
+                const frame = document.getElementById('intro-video-frame');
                 if (!modal) return;
 
                 try {
-                    if (typeof SoundEngine !== 'undefined') SoundEngine.stopAll();
+                    if (typeof SoundEngine !== 'undefined' && typeof SoundEngine.stopAll === 'function') {
+                        SoundEngine.stopAll();
+                    }
                 } catch (err) {}
 
+                if (frame && frame.dataset.src) {
+                    frame.src = frame.dataset.src;
+                }
                 modal.style.display = 'flex';
-                if (video) video.play().catch(() => {});
             }
 
             function closeVideoModal() {
                 const modal = document.getElementById('video-modal');
-                const video = document.getElementById('intro-video');
+                const frame = document.getElementById('intro-video-frame');
                 if (!modal) return;
 
-                if (video) video.pause();
+                if (frame) {
+                    frame.src = '';
+                }
                 modal.style.display = 'none';
-
-                try {
-                    if (typeof SoundEngine !== 'undefined' && !SoundEngine.getMuted()) {
-                        SoundEngine.playAmbient();
-                    }
-                } catch (err) {}
             }
 
             document.addEventListener('click', (e) => {
@@ -289,14 +281,6 @@
                     e.preventDefault();
                     closeVideoModal();
                 }
-
-                if (e.target.closest('#sound-toggle-btn') && typeof SoundEngine !== 'undefined') {
-                    e.stopPropagation();
-                    SoundEngine.setMuted(!SoundEngine.getMuted());
-                    if (!SoundEngine.getMuted()) SoundEngine.playAmbient();
-                    const btn = document.getElementById('sound-toggle-btn');
-                    if (btn) btn.textContent = SoundEngine.getMuted() ? '🔇 Звук: Вимк.' : '🔊 Звук: Увімк.';
-                }
             });
 
             document.addEventListener('keydown', (e) => {
@@ -308,17 +292,6 @@
         })();
 
         document.addEventListener('DOMContentLoaded', () => {
-            const soundBtn = document.getElementById('sound-toggle-btn');
-            if (soundBtn && typeof SoundEngine !== 'undefined') {
-                soundBtn.textContent = SoundEngine.getMuted() ? '🔇 Звук: Вимк.' : '🔊 Звук: Увімк.';
-            }
-
-            document.body.addEventListener('click', () => {
-                if (typeof SoundEngine !== 'undefined' && !SoundEngine.getMuted()) {
-                    SoundEngine.playAmbient();
-                }
-            }, { once: true });
-
             const mbContainer = document.getElementById('mb-container');
             const hudTitle = document.getElementById('hud-title');
             const hudDesc = document.getElementById('hud-desc');
