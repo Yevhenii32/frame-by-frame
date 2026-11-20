@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frame by Frame — Будова комп'ютера</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
     <style>
         .toolbar-actions {
             display: flex;
@@ -241,14 +242,17 @@
     <script src="audio-engine.js"></script>
     <script>
         (() => {
+            let wasMusicPlaying = false;
+
             function openVideoModal() {
                 const modal = document.getElementById('video-modal');
                 const frame = document.getElementById('intro-video-frame');
                 if (!modal) return;
 
                 try {
-                    if (typeof SoundEngine !== 'undefined' && typeof SoundEngine.stopAll === 'function') {
-                        SoundEngine.stopAll();
+                    if (typeof SoundEngine !== 'undefined' && !SoundEngine.getMusicMuted()) {
+                        wasMusicPlaying = true;
+                        SoundEngine.setMusicMuted(true);
                     }
                 } catch (err) {}
 
@@ -267,6 +271,13 @@
                     frame.src = '';
                 }
                 modal.style.display = 'none';
+
+                try {
+                    if (wasMusicPlaying && typeof SoundEngine !== 'undefined') {
+                        SoundEngine.setMusicMuted(false);
+                        wasMusicPlaying = false;
+                    }
+                } catch (err) {}
             }
 
             document.addEventListener('click', (e) => {
@@ -328,5 +339,6 @@
     <script src="tour-engine.js"></script>
     <script src="background-engine.js" defer></script>
     <script src="pcb-pulse.js" defer></script>
+    <script src="mobile-nav.js" defer></script>
 </body>
 </html>

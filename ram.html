@@ -301,6 +301,11 @@
                     Реальна швидкість залежить від конфігурації пам'яті.
                 </p>
             </div>
+
+            <a href="index.html" class="chapter-back-link">
+                <span>←</span>
+                Повернутися до материнської плати
+            </a>
         </aside>
     </main>
 
@@ -401,7 +406,7 @@
                 accText.textContent = '"Живлення вимкнено. Усі дані з оперативної пам\'яті миттєво стерто (енергозалежність). Комірки очищено до 0 ГБ."';
                 if (typeof SoundEngine !== 'undefined') SoundEngine.playPowerDown();
             } else {
-                powerToggle.textContent = "Симулювати знеструмлення (Power Off)";
+                powerToggle.textContent = "Вимкнути живлення";
                 powerToggle.className = "power-btn";
                 busVis.style.opacity = "1";
                 packets.forEach(packet => packet.style.display = "block");

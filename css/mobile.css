@@ -1,4 +1,3 @@
-
 /* Frame by Frame — mobile layout */
 
 .mobile-topbar,
@@ -26,7 +25,7 @@
 
 @media (max-width: 960px) {
     html {
-        scroll-padding-top: 76px;
+        scroll-padding-top: 72px;
     }
 
     body {
@@ -40,13 +39,13 @@
         position: sticky;
         top: 0;
         z-index: 1000;
-        height: 64px;
-        min-height: 64px;
+        height: 60px;
+        min-height: 60px;
         width: 100%;
-        padding: 8px max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
+        padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
         display: flex;
         align-items: center;
-        gap: 13px;
+        gap: 10px;
         background: rgba(15, 23, 36, 0.96);
         border-bottom: 1px solid #30435c;
         box-shadow: 0 5px 24px rgba(0, 0, 0, 0.22);
@@ -61,9 +60,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
         color: #e9edf4;
         background: #192438;
         border: 1px solid #36516d;
@@ -75,19 +74,21 @@
 
     .mobile-menu-toggle svg,
     .mobile-menu-close svg {
-        width: 23px;
-        height: 23px;
+        width: 22px;
+        height: 22px;
     }
 
     .mobile-menu-toggle:focus-visible,
-    .mobile-menu-close:focus-visible {
+    .mobile-menu-close:focus-visible,
+    .mobile-topbar-btn:focus-visible {
         outline: 2px solid #93c5fd;
-        outline-offset: 3px;
+        outline-offset: 2px;
     }
 
     .mobile-topbar-copy {
         display: flex;
         flex-direction: column;
+        flex: 1 1 auto;
         min-width: 0;
         gap: 2px;
     }
@@ -95,9 +96,12 @@
     .mobile-topbar-name {
         color: #f8fafc;
         font-weight: 700;
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.2;
         letter-spacing: -0.25px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .mobile-topbar-section {
@@ -106,6 +110,112 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    .mobile-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    .mobile-topbar-btn {
+        appearance: none;
+        -webkit-appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        padding: 0;
+        background: #192438;
+        border: 1px solid #36516d;
+        border-radius: 7px;
+        color: #e9edf4;
+        font-size: 14px;
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .mobile-topbar-btn svg {
+        width: 17px;
+        height: 17px;
+        display: block;
+    }
+
+    .mobile-topbar-btn:hover,
+    .mobile-topbar-btn:active {
+        background: #233247;
+        border-color: #4d91e8;
+    }
+
+    .mobile-topbar-btn.is-muted {
+        background: #24171c;
+        border-color: #9e4747;
+        color: #fca5a5;
+    }
+
+    .mobile-topbar-btn.is-muted:hover,
+    .mobile-topbar-btn.is-muted:active {
+        background: #2f1d24;
+        border-color: #c25959;
+    }
+
+    .mobile-topbar-next {
+        background: #315d91;
+        border-color: #4779b3;
+        color: #f1f5f9;
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .mobile-topbar-next:hover,
+    .mobile-topbar-next:active {
+        background: #3b70aa;
+    }
+
+    /* Компактний напис сцени без великого блока та кнопок на мобільних */
+    body .scenario-bar {
+        display: block;
+        width: 100%;
+        margin: 0 0 12px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+    }
+
+    body .has-scenario-bar > .scenario-bar {
+        margin-bottom: -6px;
+    }
+
+    body .scenario-bar .scenario-info {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 10px;
+    }
+
+    body .scenario-bar .scenario-title {
+        color: #8190a5;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    body .scenario-bar .scenario-actions {
+        display: none;
+    }
+
+    body .has-scenario-bar > .center-panel,
+    body .has-scenario-bar > .left-panel,
+    body .has-scenario-bar > .right-panel {
+        flex: none;
+        width: 100%;
     }
 
     /* Mobile sidebar */
@@ -191,7 +301,7 @@
     .storage-page {
         flex-direction: column;
         min-height: 0;
-        padding: 28px 24px;
+        padding: 24px 24px;
         gap: 20px;
     }
 
@@ -250,7 +360,7 @@
     .cooling-page,
     .storage-page,
     .main-content:not(.home-page) {
-        padding: 22px 15px 32px;
+        padding: 18px 15px 32px;
     }
 
     .home-header,
@@ -599,11 +709,27 @@
 
 @media (max-width: 380px) {
     .mobile-topbar {
-        gap: 10px;
+        gap: 7px;
     }
 
     .mobile-topbar-name {
-        font-size: 15px;
+        font-size: 14px;
+    }
+
+    .mobile-topbar-actions {
+        gap: 4px;
+    }
+
+    .mobile-topbar-btn {
+        width: 33px;
+        height: 33px;
+        min-width: 33px;
+        font-size: 13px;
+    }
+
+    .mobile-topbar-btn svg {
+        width: 15px;
+        height: 15px;
     }
 
     .specs-grid {

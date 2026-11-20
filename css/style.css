@@ -2,7 +2,7 @@
    Frame by Frame — Base & Theme Tokens
    ===================================== */
 
-:root {
+   :root {
     --bg-main: #0d1016;
     --bg-sidebar: #111722;
     --bg-canvas: #101722;
@@ -489,7 +489,8 @@ input:focus-visible,
     margin-top: 0;
 }
 
-/* Посилання повернення в сайдбар-колонці */
+/* Посилання повернення в правій колонці */
+.chapter-back-link,
 .cooling-back-link,
 .storage-back-link {
     display: flex;
@@ -503,6 +504,7 @@ input:focus-visible,
     border-top: 1px solid var(--border);
 }
 
+.chapter-back-link:hover,
 .cooling-back-link:hover,
 .storage-back-link:hover {
     color: var(--text-primary);
@@ -1793,6 +1795,7 @@ input:focus-visible,
     .ram-note,
     .gpu-observation,
     .cooling-fact,
+    .chapter-back-link,
     .cooling-back-link,
     .storage-fact,
     .storage-back-link {
