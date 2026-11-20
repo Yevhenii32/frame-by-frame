@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frame by Frame — Будова комп'ютера</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
     <style>
         .toolbar-actions {
             display: flex;
@@ -155,42 +156,45 @@
                 </div>
             </div>
 
-            <div class="motherboard-container" id="mb-container">
+            <div class="board-stage">
+                <div class="motherboard-container" id="mb-container">
 
-                <a href="cpu.html" class="interactive-zone slot-cpu"
-                   aria-label="Перейти до розділу про процесор"
-                   data-title="Процесор (CPU)"
-                   data-desc="Головний обчислювальний вузол комп'ютера. Тут можна простежити, як змінювалися процесори та їхні архітектури.">
-                    <span class="hotspot-tag">CPU</span>
-                </a>
+                    <a href="cpu.html" class="interactive-zone slot-cpu"
+                       aria-label="Перейти до розділу про процесор"
+                       data-title="Процесор (CPU)"
+                       data-desc="Головний обчислювальний вузол комп'ютера. Тут можна простежити, як змінювалися процесори та їхні архітектури.">
+                        <span class="hotspot-tag">CPU</span>
+                    </a>
 
-                <a href="cooling.html" class="interactive-zone slot-cooling"
-                   aria-label="Перейти до розділу про охолодження"
-                   data-title="Система охолодження"
-                   data-desc="Повітряний кулер чи рідинне охолодження? Порівняйте, як обидві системи відводять тепло від процесора.">
-                    <span class="hotspot-tag">Охолодження</span>
-                </a>
+                    <a href="cooling.html" class="interactive-zone slot-cooling"
+                       aria-label="Перейти до розділу про охолодження"
+                       data-title="Система охолодження"
+                       data-desc="Повітряний кулер чи рідинне охолодження? Порівняйте, як обидві системи відводять тепло від процесора.">
+                        <span class="hotspot-tag">Охолодження</span>
+                    </a>
 
-                <a href="gpu.html" class="interactive-zone slot-gpu"
-                   aria-label="Перейти до розділу про відеокарту"
-                   data-title="Відеокарта (GPU)"
-                   data-desc="Графічний процесор відповідає за обробку зображення. Дослідіть різницю між растеризацією та трасуванням променів.">
-                    <span class="hotspot-tag">GPU</span>
-                </a>
+                    <a href="gpu.html" class="interactive-zone slot-gpu"
+                       aria-label="Перейти до розділу про відеокарту"
+                       data-title="Відеокарта (GPU)"
+                       data-desc="Графічний процесор відповідає за обробку зображення. Дослідіть різницю між растеризацією та трасуванням променів.">
+                        <span class="hotspot-tag">GPU</span>
+                    </a>
 
-                <a href="ram.html" class="interactive-zone slot-ram"
-                   aria-label="Перейти до розділу про оперативну пам'ять"
-                   data-title="Оперативна пам'ять (RAM)"
-                   data-desc="Тимчасове сховище даних, з якими працює процесор. Порівняйте покоління DDR і принцип передавання інформації.">
-                    <span class="hotspot-tag">RAM</span>
-                </a>
+                    <a href="ram.html" class="interactive-zone slot-ram"
+                       aria-label="Перейти до розділу про оперативну пам'ять"
+                       data-title="Оперативна пам'ять (RAM)"
+                       data-desc="Тимчасове сховище даних, з якими працює процесор. Порівняйте покоління DDR і принцип передавання інформації.">
+                        <span class="hotspot-tag">RAM</span>
+                    </a>
 
-                <a href="storage.html" class="interactive-zone slot-storage"
-                   aria-label="Перейти до розділу про накопичувачі"
-                   data-title="Накопичувачі SSD та HDD"
-                   data-desc="Де зберігаються файли після вимкнення комп'ютера? Порівняйте механічний HDD і сучасний SSD.">
-                    <span class="hotspot-tag">SSD / HDD</span>
-                </a>
+                    <a href="storage.html" class="interactive-zone slot-storage"
+                       aria-label="Перейти до розділу про накопичувачі"
+                       data-title="Накопичувачі SSD та HDD"
+                       data-desc="Де зберігаються файли після вимкнення комп'ютера? Порівняйте механічний HDD і сучасний SSD.">
+                        <span class="hotspot-tag">SSD / HDD</span>
+                    </a>
+
+                </div>
 
                 <div class="component-hud" id="component-hud" aria-live="polite">
                     <div class="hud-overline">ПРО КОМПОНЕНТ</div>
@@ -199,11 +203,10 @@
                     </div>
                     <div class="component-hud-desc" id="hud-desc">
                         П'ять активних точок ведуть до окремих
-                        інтерактивних розділів. Наведіть на будь-яку
+                        інтерактивних розділів. Наведіть або натисніть на будь-яку
                         з них, щоб дізнатися більше.
                     </div>
                 </div>
-
             </div>
 
             <div class="board-bottom">
@@ -241,14 +244,17 @@
     <script src="audio-engine.js"></script>
     <script>
         (() => {
+            let wasMusicPlaying = false;
+
             function openVideoModal() {
                 const modal = document.getElementById('video-modal');
                 const frame = document.getElementById('intro-video-frame');
                 if (!modal) return;
 
                 try {
-                    if (typeof SoundEngine !== 'undefined' && typeof SoundEngine.stopAll === 'function') {
-                        SoundEngine.stopAll();
+                    if (typeof SoundEngine !== 'undefined' && !SoundEngine.getMusicMuted()) {
+                        wasMusicPlaying = true;
+                        SoundEngine.setMusicMuted(true);
                     }
                 } catch (err) {}
 
@@ -267,6 +273,13 @@
                     frame.src = '';
                 }
                 modal.style.display = 'none';
+
+                try {
+                    if (wasMusicPlaying && typeof SoundEngine !== 'undefined') {
+                        SoundEngine.setMusicMuted(false);
+                        wasMusicPlaying = false;
+                    }
+                } catch (err) {}
             }
 
             document.addEventListener('click', (e) => {
@@ -296,6 +309,10 @@
             const hudTitle = document.getElementById('hud-title');
             const hudDesc = document.getElementById('hud-desc');
 
+            window.addEventListener('pageshow', () => {
+                mbContainer?.classList.remove('zooming');
+            });
+
             document.querySelectorAll('.interactive-zone').forEach(zone => {
                 const showInfo = () => {
                     if (hudTitle) hudTitle.textContent = zone.dataset.title || '';
@@ -307,6 +324,7 @@
 
                 zone.addEventListener('click', (e) => {
                     e.preventDefault();
+                    showInfo();
                     const targetUrl = zone.getAttribute('href');
                     const rect = mbContainer.getBoundingClientRect();
                     const zRect = zone.getBoundingClientRect();
@@ -328,5 +346,6 @@
     <script src="tour-engine.js"></script>
     <script src="background-engine.js" defer></script>
     <script src="pcb-pulse.js" defer></script>
+    <script src="mobile-nav.js" defer></script>
 </body>
 </html>

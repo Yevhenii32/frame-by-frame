@@ -2,7 +2,7 @@
    Frame by Frame — Base & Theme Tokens
    ===================================== */
 
-:root {
+   :root {
     --bg-main: #0d1016;
     --bg-sidebar: #111722;
     --bg-canvas: #101722;
@@ -489,7 +489,8 @@ input:focus-visible,
     margin-top: 0;
 }
 
-/* Посилання повернення в сайдбар-колонці */
+/* Посилання повернення в правій колонці */
+.chapter-back-link,
 .cooling-back-link,
 .storage-back-link {
     display: flex;
@@ -503,6 +504,7 @@ input:focus-visible,
     border-top: 1px solid var(--border);
 }
 
+.chapter-back-link:hover,
 .cooling-back-link:hover,
 .storage-back-link:hover {
     color: var(--text-primary);
@@ -687,6 +689,13 @@ input:focus-visible,
     height: 7px;
     border-radius: 50%;
     background: #27b894;
+}
+.board-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 .motherboard-container {
@@ -1793,6 +1802,7 @@ input:focus-visible,
     .ram-note,
     .gpu-observation,
     .cooling-fact,
+    .chapter-back-link,
     .cooling-back-link,
     .storage-fact,
     .storage-back-link {
@@ -2276,4 +2286,31 @@ input:focus-visible,
     .pcb-pulse-layer {
         display: none;
     }
+}
+
+/* =========================================
+   SCENARIO BAR AUDIO ICONS (DESKTOP)
+   ========================================= */
+
+   .scenario-bar .scenario-actions button[data-audio-role] {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.scenario-bar .scenario-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.scenario-bar .scenario-btn-icon svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+}
+
+.scenario-bar .scenario-actions button[data-audio-role].is-muted .scenario-btn-icon {
+    color: #fca5a5;
 }

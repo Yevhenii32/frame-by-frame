@@ -1,0 +1,711 @@
+/* Frame by Frame — mobile layout */
+
+.mobile-topbar,
+.mobile-menu-close,
+.mobile-backdrop {
+    display: none;
+}
+
+.cpu-page,
+.gpu-page,
+.ram-page,
+.cooling-page,
+.storage-page,
+.home-page,
+.center-panel,
+.left-panel,
+.right-panel,
+.animation-container,
+.render-window,
+.bus-visualization,
+.drive-visualization {
+    min-width: 0;
+}
+
+@media (max-width: 960px) {
+    html {
+        scroll-padding-top: 72px;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .mobile-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        height: 60px;
+        min-height: 60px;
+        width: 100%;
+        padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(15, 23, 36, 0.96);
+        border-bottom: 1px solid #30435c;
+        box-shadow: 0 5px 24px rgba(0, 0, 0, 0.22);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+    }
+
+    .mobile-menu-toggle,
+    .mobile-menu-close {
+        appearance: none;
+        -webkit-appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        color: #e9edf4;
+        background: #192438;
+        border: 1px solid #36516d;
+        border-radius: 8px;
+        font: inherit;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .mobile-menu-toggle svg,
+    .mobile-menu-close svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .mobile-menu-toggle:focus-visible,
+    .mobile-menu-close:focus-visible,
+    .mobile-topbar-btn:focus-visible {
+        outline: 2px solid #93c5fd;
+        outline-offset: 2px;
+    }
+
+    .mobile-topbar-copy {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 2px;
+    }
+
+    .mobile-topbar-name {
+        color: #f8fafc;
+        font-weight: 700;
+        font-size: 15px;
+        line-height: 1.2;
+        letter-spacing: -0.25px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobile-topbar-section {
+        color: #a5b8d0;
+        font-size: 11px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobile-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    .mobile-topbar-btn {
+        appearance: none;
+        -webkit-appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        padding: 0;
+        background: #192438;
+        border: 1px solid #36516d;
+        border-radius: 7px;
+        color: #e9edf4;
+        font-size: 14px;
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .mobile-topbar-btn svg {
+        width: 17px;
+        height: 17px;
+        display: block;
+    }
+
+    .mobile-topbar-btn:hover,
+    .mobile-topbar-btn:active {
+        background: #233247;
+        border-color: #4d91e8;
+    }
+
+    .mobile-topbar-btn.is-muted {
+        background: #24171c;
+        border-color: #9e4747;
+        color: #fca5a5;
+    }
+
+    .mobile-topbar-btn.is-muted:hover,
+    .mobile-topbar-btn.is-muted:active {
+        background: #2f1d24;
+        border-color: #c25959;
+    }
+
+    .mobile-topbar-next {
+        background: #315d91;
+        border-color: #4779b3;
+        color: #f1f5f9;
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .mobile-topbar-next:hover,
+    .mobile-topbar-next:active {
+        background: #3b70aa;
+    }
+
+    /* Компактний напис сцени без великого блока та кнопок на мобільних */
+    body .scenario-bar {
+        display: block;
+        width: 100%;
+        margin: 0 0 12px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+    }
+
+    body .has-scenario-bar > .scenario-bar {
+        margin-bottom: -6px;
+    }
+
+    body .scenario-bar .scenario-info {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 10px;
+    }
+
+    body .scenario-bar .scenario-title {
+        color: #8190a5;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    body .scenario-bar .scenario-actions {
+        display: none;
+    }
+
+    body .has-scenario-bar > .center-panel,
+    body .has-scenario-bar > .left-panel,
+    body .has-scenario-bar > .right-panel {
+        flex: none;
+        width: 100%;
+    }
+
+    /* Mobile sidebar */
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1002;
+        width: min(340px, calc(100vw - 40px));
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        padding: 72px 18px max(20px, env(safe-area-inset-bottom));
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-right: 1px solid #45678e;
+        border-bottom: 0;
+        visibility: hidden;
+        transform: translateX(-105%);
+        transition: transform .25s ease, visibility .25s ease;
+        overscroll-behavior: contain;
+        box-shadow: 15px 0 50px rgba(0, 0, 0, 0.3);
+    }
+
+    body.mobile-menu-open .sidebar {
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar .mobile-menu-close {
+        position: absolute;
+        z-index: 4;
+        right: 17px;
+        top: 14px;
+    }
+
+    .sidebar .sidebar-caption {
+        margin-bottom: 15px;
+    }
+
+    .sidebar .chapter-nav,
+    .sidebar .menu-link {
+        width: 100%;
+    }
+
+    .sidebar .menu-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .sidebar .menu-item {
+        line-height: 1.35;
+    }
+
+    .sidebar .cpu-telemetry,
+    .sidebar .gpu-telemetry {
+        margin-top: 16px;
+    }
+
+    .mobile-backdrop:not([hidden]) {
+        position: fixed;
+        inset: 0;
+        z-index: 1001;
+        display: block;
+        background: rgba(1, 7, 16, 0.7);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+    }
+
+    body.mobile-menu-open {
+        overflow: hidden;
+    }
+
+    /* Main pages */
+
+    .cpu-dashboard,
+    .cpu-page,
+    .gpu-page,
+    .ram-page,
+    .cooling-page,
+    .storage-page {
+        flex-direction: column;
+        min-height: 0;
+        padding: 24px 24px;
+        gap: 20px;
+    }
+
+    .right-panel,
+    .ram-page .ram-side-panel,
+    .gpu-page .gpu-side-panel,
+    .cooling-page .cooling-side-panel,
+    .storage-page .storage-side-panel,
+    .cpu-page .right-panel {
+        width: 100%;
+        flex: none;
+        padding-top: 0;
+    }
+
+    .main-content,
+    .home-page {
+        width: 100%;
+        min-height: 0;
+    }
+
+    .main-content:not(.home-page) {
+        padding: 24px;
+    }
+
+    canvas,
+    video,
+    iframe,
+    img {
+        max-width: 100%;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        touch-action: pan-y;
+        accent-color: #6ca9f2;
+    }
+
+    button,
+    .menu-link,
+    .interactive-zone {
+        touch-action: manipulation;
+    }
+}
+
+/* Phone layout */
+
+@media (max-width: 700px) {
+    .main-content,
+    .home-page,
+    .cpu-dashboard,
+    .cpu-page,
+    .gpu-page,
+    .ram-page,
+    .cooling-page,
+    .storage-page,
+    .main-content:not(.home-page) {
+        padding: 18px 15px 32px;
+    }
+
+    .home-header,
+    .header,
+    .cpu-header,
+    .ram-header,
+    .gpu-header,
+    .cooling-header,
+    .storage-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .home-header,
+    .header {
+        margin-bottom: 18px;
+    }
+
+    .home-header h1,
+    .cpu-header h1,
+    .gpu-header h1,
+    .ram-header h1,
+    .cooling-header h1,
+    .storage-header h1,
+    .header h2 {
+        font-size: clamp(25px, 7.4vw, 33px);
+        line-height: 1.17;
+        letter-spacing: -0.8px;
+        overflow-wrap: break-word;
+    }
+
+    .home-intro,
+    .cpu-lead,
+    .ram-lead,
+    .gpu-lead,
+    .cooling-lead,
+    .storage-lead {
+        font-size: 14px;
+        line-height: 1.65;
+        margin-top: 11px;
+    }
+
+    .center-panel,
+    .cooling-page .left-panel,
+    .right-panel,
+    .ram-page .ram-side-panel,
+    .gpu-page .gpu-side-panel,
+    .cooling-page .cooling-side-panel,
+    .storage-page .storage-side-panel {
+        width: 100%;
+        min-width: 0;
+        gap: 15px;
+    }
+
+    .right-panel,
+    .ram-page .ram-side-panel,
+    .gpu-page .gpu-side-panel,
+    .cooling-page .cooling-side-panel,
+    .storage-page .storage-side-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-card,
+    .accessibility-box,
+    .timeline-container,
+    .cooling-page .cooling-temperature,
+    .cooling-page .cooling-description {
+        padding: 15px;
+    }
+
+    .ram-section-heading,
+    .gpu-section-heading,
+    .cooling-section-heading,
+    .storage-section-heading,
+    .cpu-stage-label,
+    .board-toolbar,
+    .board-bottom {
+        flex-wrap: wrap;
+        line-height: 1.4;
+    }
+
+    .ram-section-heading span:last-child,
+    .gpu-section-heading span:last-child,
+    .cooling-section-heading span:last-child,
+    .storage-section-heading span:last-child {
+        display: none;
+    }
+
+    /* Motherboard & Hotspots */
+
+    .board-stage {
+        gap: 12px;
+        flex: none;
+    }
+
+    .motherboard-container,
+    .home-page .motherboard-container {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        flex: none;
+        aspect-ratio: 4 / 3;
+        background-size: contain;
+        background-position: center;
+    }
+
+    .motherboard-container .interactive-zone {
+        width: 22px;
+        height: 22px;
+    }
+
+    .motherboard-container .interactive-zone::before {
+        width: 8px;
+        height: 8px;
+    }
+
+    .motherboard-container .interactive-zone::after {
+        inset: -5px;
+    }
+
+    .motherboard-container .hotspot-tag {
+        left: 27px;
+        padding: 3px 6px;
+        font-size: 9.5px;
+        letter-spacing: 0.2px;
+    }
+
+    .home-page .component-hud {
+        position: static;
+        width: 100%;
+        left: auto;
+        bottom: auto;
+        padding: 15px;
+        pointer-events: auto;
+    }
+
+    /* Buttons and controls */
+
+    .controls,
+    .cpu-page .controls {
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .controls button,
+    .play-btn,
+    .pause-btn,
+    .quiz-opt,
+    .gen-btn,
+    .power-btn,
+    .cooling-btn,
+    .drive-btn,
+    .action-btn {
+        min-height: 44px;
+        max-width: 100%;
+    }
+
+    .cpu-page .controls button {
+        flex: 1 1 120px;
+    }
+
+    .year-readout {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* CPU */
+
+    .cpu-page #cpuCanvas {
+        display: block;
+        height: clamp(220px, 62vw, 300px) !important;
+    }
+
+    /* GPU */
+
+    .gpu-page .render-window,
+    .cooling-page .cooling-visual {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        min-height: 220px;
+        max-height: 390px;
+    }
+
+    .gpu-page #gpuCanvas,
+    .cooling-page #coolingCanvas {
+        max-width: 100%;
+    }
+
+    .gpu-page .gpu-canvas-hint {
+        gap: 10px;
+        font-size: 10px;
+    }
+
+    .gpu-page .rtx-toggle-container {
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .gpu-page .switch {
+        flex-shrink: 0;
+    }
+
+    /* RAM */
+
+    .ram-page .gen-selector {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .ram-page .gen-selector .gen-btn {
+        min-width: 0;
+        padding: 10px 5px;
+        font-size: 12px;
+        white-space: normal;
+    }
+
+    .ram-page .bus-visualization {
+        min-width: 0;
+        aspect-ratio: auto;
+        min-height: 280px;
+        padding: 16px 11px;
+    }
+
+    .ram-page .memory-cells {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 3px;
+    }
+
+    .ram-page .mem-cell {
+        min-width: 0;
+        height: 28px;
+        font-size: 8px;
+    }
+
+    /* RAM, cooling and storage */
+
+    .ram-actions,
+    .cooling-page .cooling-controls,
+    .storage-page .drive-selector,
+    .storage-comparison {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cooling-page .cooling-controls .cooling-btn,
+    .storage-page .drive-selector .drive-btn {
+        width: 100%;
+        padding: 14px;
+    }
+
+    /* Storage */
+
+    .storage-page .drive-visualization {
+        min-width: 0;
+        aspect-ratio: auto;
+        min-height: 310px;
+        padding: 14px;
+    }
+
+    .storage-page #storageCanvas {
+        height: 180px !important;
+    }
+
+    .storage-transfer-heading {
+        flex-wrap: wrap;
+    }
+
+    /* Video modal */
+
+    .video-modal-backdrop {
+        padding: 10px;
+    }
+
+    .video-modal-card {
+        max-height: calc(100vh - 20px);
+        max-height: calc(100dvh - 20px);
+        overflow-y: auto;
+        padding: 14px;
+    }
+
+    .video-modal-card video,
+    .video-modal-card iframe {
+        display: block;
+        width: 100%;
+        max-height: 60dvh;
+    }
+}
+
+/* Small phones */
+
+@media (max-width: 380px) {
+    .mobile-topbar {
+        gap: 7px;
+    }
+
+    .mobile-topbar-name {
+        font-size: 14px;
+    }
+
+    .mobile-topbar-actions {
+        gap: 4px;
+    }
+
+    .mobile-topbar-btn {
+        width: 33px;
+        height: 33px;
+        min-width: 33px;
+        font-size: 13px;
+    }
+
+    .mobile-topbar-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .motherboard-container .hotspot-tag {
+        left: 25px;
+        padding: 2px 5px;
+        font-size: 9px;
+    }
+
+    .specs-grid {
+        gap: 10px;
+    }
+
+    .timeline-labels {
+        font-size: 10px;
+    }
+
+    .ram-page .bus-labels {
+        gap: 8px;
+    }
+
+    .ram-page .bus-labels > span {
+        font-size: 12px;
+    }
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar {
+        transition: none;
+    }
+}
