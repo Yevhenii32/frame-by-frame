@@ -2287,3 +2287,30 @@ input:focus-visible,
         display: none;
     }
 }
+
+/* =========================================
+   SCENARIO BAR AUDIO ICONS (DESKTOP)
+   ========================================= */
+
+   .scenario-bar .scenario-actions button[data-audio-role] {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.scenario-bar .scenario-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.scenario-bar .scenario-btn-icon svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+}
+
+.scenario-bar .scenario-actions button[data-audio-role].is-muted .scenario-btn-icon {
+    color: #fca5a5;
+}

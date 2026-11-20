@@ -1,6 +1,6 @@
 /**
  * Frame by Frame
- * Mobile navigation and topbar controls
+ * Mobile navigation, topbar & desktop audio icons
  */
 
 (() => {
@@ -36,6 +36,64 @@
         <line x1="17" y1="9" x2="23" y2="15"/>
       </svg>
     `
+  };
+
+  const LEADING_EMOJI_RE = /^[🎵🎶🔊🔉🔈🔇]+\s*/u;
+  const ANY_EMOJI_RE = /[🎵🎶🔊🔉🔈🔇]/u;
+
+  const enhanceDesktopAudioButtons = () => {
+    const actions = document.querySelector('.scenario-bar .scenario-actions');
+    if (!actions) return;
+
+    actions.querySelectorAll('button').forEach(btn => {
+      const rawText = (btn.textContent || '').trim();
+      const isMusic =
+        btn.dataset.audioRole === 'music' ||
+        /музик/i.test(rawText) ||
+        /[🎵🎶]/u.test(rawText);
+      const isEffects =
+        btn.dataset.audioRole === 'effects' ||
+        /ефект/i.test(rawText) ||
+        /[🔊🔉🔈🔇]/u.test(rawText);
+
+      if (!isMusic && !isEffects) return;
+
+      const role = isMusic ? 'music' : 'effects';
+      btn.dataset.audioRole = role;
+
+      const isMuted =
+        typeof SoundEngine !== 'undefined'
+          ? role === 'music'
+            ? SoundEngine.getMusicMuted()
+            : SoundEngine.getEffectsMuted()
+          : /вимк/i.test(rawText) || /🔇/u.test(rawText);
+
+      const state = isMuted ? 'off' : 'on';
+      const cleanText = rawText.replace(LEADING_EMOJI_RE, '').trim();
+      const hasEmoji = ANY_EMOJI_RE.test(rawText);
+
+      if (
+        !hasEmoji &&
+        btn.querySelector('.scenario-btn-icon') &&
+        btn.dataset.iconState === state
+      ) {
+        return;
+      }
+
+      btn.dataset.iconState = state;
+      btn.classList.toggle('is-muted', isMuted);
+
+      const svg =
+        role === 'music'
+          ? isMuted
+            ? ICONS.musicOff
+            : ICONS.musicOn
+          : isMuted
+            ? ICONS.effectsOff
+            : ICONS.effectsOn;
+
+      btn.innerHTML = `<span class="scenario-btn-icon">${svg}</span><span class="scenario-btn-label">${cleanText}</span>`;
+    });
   };
 
   const init = () => {
@@ -130,33 +188,40 @@
     const musicBtn = bar.querySelector('[data-audio="music"]');
     const effectsBtn = bar.querySelector('[data-audio="effects"]');
 
-    const syncTopbarAudio = () => {
-      if (typeof SoundEngine === 'undefined') return;
-      const musicMuted = SoundEngine.getMusicMuted();
-      const effectsMuted = SoundEngine.getEffectsMuted();
+    const syncAllAudio = () => {
+      if (typeof SoundEngine !== 'undefined') {
+        const musicMuted = SoundEngine.getMusicMuted();
+        const effectsMuted = SoundEngine.getEffectsMuted();
 
-      musicBtn.innerHTML = musicMuted ? ICONS.musicOff : ICONS.musicOn;
-      musicBtn.classList.toggle('is-muted', musicMuted);
-      musicBtn.setAttribute('aria-pressed', String(!musicMuted));
-      musicBtn.setAttribute(
-        'aria-label',
-        musicMuted ? 'Увімкнути фонову музику' : 'Вимкнути фонову музику'
-      );
+        musicBtn.innerHTML = musicMuted ? ICONS.musicOff : ICONS.musicOn;
+        musicBtn.classList.toggle('is-muted', musicMuted);
+        musicBtn.setAttribute('aria-pressed', String(!musicMuted));
+        musicBtn.setAttribute(
+          'aria-label',
+          musicMuted ? 'Увімкнути фонову музику' : 'Вимкнути фонову музику'
+        );
 
-      effectsBtn.innerHTML = effectsMuted ? ICONS.effectsOff : ICONS.effectsOn;
-      effectsBtn.classList.toggle('is-muted', effectsMuted);
-      effectsBtn.setAttribute('aria-pressed', String(!effectsMuted));
-      effectsBtn.setAttribute(
-        'aria-label',
-        effectsMuted ? 'Увімкнути звукові ефекти' : 'Вимкнути звукові ефекти'
-      );
+        effectsBtn.innerHTML = effectsMuted
+          ? ICONS.effectsOff
+          : ICONS.effectsOn;
+        effectsBtn.classList.toggle('is-muted', effectsMuted);
+        effectsBtn.setAttribute('aria-pressed', String(!effectsMuted));
+        effectsBtn.setAttribute(
+          'aria-label',
+          effectsMuted
+            ? 'Увімкнути звукові ефекти'
+            : 'Вимкнути звукові ефекти'
+        );
+      }
+
+      enhanceDesktopAudioButtons();
     };
 
     musicBtn.addEventListener('click', (event) => {
       event.stopPropagation();
       if (typeof SoundEngine !== 'undefined') {
         SoundEngine.toggleMusic();
-        syncTopbarAudio();
+        syncAllAudio();
       }
     });
 
@@ -164,12 +229,21 @@
       event.stopPropagation();
       if (typeof SoundEngine !== 'undefined') {
         SoundEngine.toggleEffects();
-        syncTopbarAudio();
+        syncAllAudio();
       }
     });
 
-    window.addEventListener('fbf-mute-changed', syncTopbarAudio);
-    syncTopbarAudio();
+    const observer = new MutationObserver(() => {
+      enhanceDesktopAudioButtons();
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+
+    window.addEventListener('fbf-mute-changed', syncAllAudio);
+    syncAllAudio();
 
     const toggle = bar.querySelector('.mobile-menu-toggle');
     toggle.setAttribute('aria-controls', sidebar.id);
