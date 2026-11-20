@@ -464,7 +464,7 @@
         min-height: 0;
         max-height: none;
         flex: none;
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 1 / 1;
         background-size: contain;
         background-position: center;
     }
@@ -484,7 +484,7 @@
     }
 
     .motherboard-container .hotspot-tag {
-        left: 27px;
+        left: 26px;
         padding: 3px 6px;
         font-size: 9.5px;
         letter-spacing: 0.2px;

@@ -698,6 +698,14 @@ input:focus-visible,
     min-height: 0;
 }
 
+.board-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
 .motherboard-container {
     flex: 1;
     min-height: 420px;
@@ -716,12 +724,19 @@ input:focus-visible,
     opacity: 0.15;
 }
 
+.board-hotspots-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+
 .board-bottom {
     margin-top: 12px;
     color: var(--text-dim);
 }
 
-/* Інтерактивні маячки */
+/* Інтерактивні маячки (координати прив'язані до самого зображення плати) */
 .interactive-zone {
     position: absolute;
     width: 28px;
@@ -736,6 +751,7 @@ input:focus-visible,
     justify-content: center;
     text-decoration: none;
     cursor: pointer;
+    pointer-events: auto;
     z-index: 6;
     transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
 }
@@ -764,29 +780,30 @@ input:focus-visible,
 }
 
 .interactive-zone:hover,
-.interactive-zone:focus-visible {
-    transform: translate(-50%, -50%) scale(1.2);
-    background: #2563eb;
+.interactive-zone:focus-visible,
+.interactive-zone.is-selected {
+    transform: translate(-50%, -50%) scale(1.22);
+    background: #1d4ed8;
     box-shadow: 0 0 22px rgba(56, 189, 248, 0.95);
     z-index: 12;
 }
 
-.slot-cpu { top: 47%; left: 60.5%; border-color: #38bdf8; }
+.slot-cpu { top: 47%; left: 68.5%; border-color: #38bdf8; }
 
-.slot-cooling { top: 29%; left: 60.5%; border-color: #f97316; }
+.slot-cooling { top: 29%; left: 68.5%; border-color: #f97316; }
 .slot-cooling::before { background: #f97316; }
 .slot-cooling::after { border-color: #f97316; }
 
-.slot-gpu { top: 45%; left: 44.5%; border-color: #a855f7; }
+.slot-gpu { top: 45%; left: 32.5%; border-color: #a855f7; }
 .slot-gpu::before { background: #a855f7; }
 .slot-gpu::after { border-color: #a855f7; }
 
 .slot-ram,
-.slot-other { top: 71.5%; left: 61%; border-color: #eab308; }
+.slot-other { top: 71.5%; left: 69.5%; border-color: #eab308; }
 .slot-ram::before, .slot-other::before { background: #eab308; }
 .slot-ram::after, .slot-other::after { border-color: #eab308; }
 
-.slot-storage { top: 32%; left: 38.5%; border-color: #10b981; }
+.slot-storage { top: 32%; left: 19.5%; border-color: #10b981; }
 .slot-storage::before { background: #10b981; }
 .slot-storage::after { border-color: #10b981; }
 
@@ -809,7 +826,8 @@ input:focus-visible,
 }
 
 .interactive-zone:hover .hotspot-tag,
-.interactive-zone:focus-visible .hotspot-tag {
+.interactive-zone:focus-visible .hotspot-tag,
+.interactive-zone.is-selected .hotspot-tag {
     background: #1e293b;
     border-color: var(--accent-light);
 }
@@ -849,6 +867,15 @@ input:focus-visible,
     font-size: 12px;
     color: #a3afc0;
     line-height: 1.65;
+}
+
+.hud-tap-hint {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-light);
 }
 
 /* =====================================

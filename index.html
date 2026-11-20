@@ -158,42 +158,44 @@
 
             <div class="board-stage">
                 <div class="motherboard-container" id="mb-container">
+                    <div class="board-hotspots-layer" id="board-hotspots-layer">
 
-                    <a href="cpu.html" class="interactive-zone slot-cpu"
-                       aria-label="Перейти до розділу про процесор"
-                       data-title="Процесор (CPU)"
-                       data-desc="Головний обчислювальний вузол комп'ютера. Тут можна простежити, як змінювалися процесори та їхні архітектури.">
-                        <span class="hotspot-tag">CPU</span>
-                    </a>
+                        <a href="cpu.html" class="interactive-zone slot-cpu"
+                           aria-label="Процесор (CPU)"
+                           data-title="Процесор (CPU)"
+                           data-desc="Головний обчислювальний вузол комп'ютера. Тут можна простежити, як змінювалися процесори та їхні архітектури.">
+                            <span class="hotspot-tag">CPU</span>
+                        </a>
 
-                    <a href="cooling.html" class="interactive-zone slot-cooling"
-                       aria-label="Перейти до розділу про охолодження"
-                       data-title="Система охолодження"
-                       data-desc="Повітряний кулер чи рідинне охолодження? Порівняйте, як обидві системи відводять тепло від процесора.">
-                        <span class="hotspot-tag">Охолодження</span>
-                    </a>
+                        <a href="cooling.html" class="interactive-zone slot-cooling"
+                           aria-label="Система охолодження"
+                           data-title="Система охолодження"
+                           data-desc="Повітряний кулер чи рідинне охолодження? Порівняйте, як обидві системи відводять тепло від процесора.">
+                            <span class="hotspot-tag">Охолодження</span>
+                        </a>
 
-                    <a href="gpu.html" class="interactive-zone slot-gpu"
-                       aria-label="Перейти до розділу про відеокарту"
-                       data-title="Відеокарта (GPU)"
-                       data-desc="Графічний процесор відповідає за обробку зображення. Дослідіть різницю між растеризацією та трасуванням променів.">
-                        <span class="hotspot-tag">GPU</span>
-                    </a>
+                        <a href="gpu.html" class="interactive-zone slot-gpu"
+                           aria-label="Відеокарта (GPU)"
+                           data-title="Відеокарта (GPU)"
+                           data-desc="Графічний процесор відповідає за обробку зображення. Дослідіть різницю між растеризацією та трасуванням променів.">
+                            <span class="hotspot-tag">GPU</span>
+                        </a>
 
-                    <a href="ram.html" class="interactive-zone slot-ram"
-                       aria-label="Перейти до розділу про оперативну пам'ять"
-                       data-title="Оперативна пам'ять (RAM)"
-                       data-desc="Тимчасове сховище даних, з якими працює процесор. Порівняйте покоління DDR і принцип передавання інформації.">
-                        <span class="hotspot-tag">RAM</span>
-                    </a>
+                        <a href="ram.html" class="interactive-zone slot-ram"
+                           aria-label="Оперативна пам'ять (RAM)"
+                           data-title="Оперативна пам'ять (RAM)"
+                           data-desc="Тимчасове сховище даних, з якими працює процесор. Порівняйте покоління DDR і принцип передавання інформації.">
+                            <span class="hotspot-tag">RAM</span>
+                        </a>
 
-                    <a href="storage.html" class="interactive-zone slot-storage"
-                       aria-label="Перейти до розділу про накопичувачі"
-                       data-title="Накопичувачі SSD та HDD"
-                       data-desc="Де зберігаються файли після вимкнення комп'ютера? Порівняйте механічний HDD і сучасний SSD.">
-                        <span class="hotspot-tag">SSD / HDD</span>
-                    </a>
+                        <a href="storage.html" class="interactive-zone slot-storage"
+                           aria-label="Накопичувачі SSD та HDD"
+                           data-title="Накопичувачі SSD та HDD"
+                           data-desc="Де зберігаються файли після вимкнення комп'ютера? Порівняйте механічний HDD і сучасний SSD.">
+                            <span class="hotspot-tag">SSD / HDD</span>
+                        </a>
 
+                    </div>
                 </div>
 
                 <div class="component-hud" id="component-hud" aria-live="polite">
@@ -203,8 +205,11 @@
                     </div>
                     <div class="component-hud-desc" id="hud-desc">
                         П'ять активних точок ведуть до окремих
-                        інтерактивних розділів. Наведіть або натисніть на будь-яку
-                        з них, щоб дізнатися більше.
+                        інтерактивних розділів. Натисніть на точку,
+                        щоб переглянути опис, і ще раз — для переходу.
+                    </div>
+                    <div class="hud-tap-hint" id="hud-tap-hint" hidden>
+                        Натисніть на обрану точку ще раз, щоб відкрити розділ →
                     </div>
                 </div>
             </div>
@@ -306,38 +311,106 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const mbContainer = document.getElementById('mb-container');
+            const hotspotsLayer = document.getElementById('board-hotspots-layer');
             const hudTitle = document.getElementById('hud-title');
             const hudDesc = document.getElementById('hud-desc');
+            const hudTapHint = document.getElementById('hud-tap-hint');
+            const zones = [...document.querySelectorAll('.interactive-zone')];
+            const twoTapQuery = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 960px)');
+
+            let selectedZone = null;
+            let natW = 1;
+            let natH = 1;
+
+            // Синхронізуємо шар точок точно за межами фонового зображення плати
+            function syncHotspotsLayer() {
+                if (!mbContainer || !hotspotsLayer) return;
+                const cw = mbContainer.clientWidth;
+                const ch = mbContainer.clientHeight;
+                if (!cw || !ch || !natW || !natH) return;
+
+                const scale = Math.min(cw / natW, ch / natH);
+                const w = natW * scale;
+                const h = natH * scale;
+                const left = (cw - w) / 2;
+                const top = (ch - h) / 2;
+
+                hotspotsLayer.style.width = `${w}px`;
+                hotspotsLayer.style.height = `${h}px`;
+                hotspotsLayer.style.left = `${left}px`;
+                hotspotsLayer.style.top = `${top}px`;
+            }
+
+            const bgProbe = new Image();
+            bgProbe.onload = () => {
+                natW = bgProbe.naturalWidth || 1;
+                natH = bgProbe.naturalHeight || 1;
+                syncHotspotsLayer();
+            };
+            bgProbe.src = 'assets/img/motherboard-bg.jpg';
+
+            if ('ResizeObserver' in window && mbContainer) {
+                new ResizeObserver(syncHotspotsLayer).observe(mbContainer);
+            }
+            window.addEventListener('resize', syncHotspotsLayer);
+            syncHotspotsLayer();
+
+            function selectZone(zone, showTapHint = false) {
+                zones.forEach(item => item.classList.toggle('is-selected', item === zone));
+                selectedZone = zone;
+
+                if (hudTitle) hudTitle.textContent = zone.dataset.title || '';
+                if (hudDesc) hudDesc.textContent = zone.dataset.desc || '';
+                if (hudTapHint) hudTapHint.hidden = !showTapHint;
+            }
+
+            function navigateToZone(zone) {
+                const targetUrl = zone.getAttribute('href');
+                const rect = mbContainer.getBoundingClientRect();
+                const zRect = zone.getBoundingClientRect();
+
+                const originX = (((zRect.left + zRect.width / 2) - rect.left) / rect.width) * 100;
+                const originY = (((zRect.top + zRect.height / 2) - rect.top) / rect.height) * 100;
+
+                mbContainer.style.transformOrigin = `${originX}% ${originY}%`;
+                mbContainer.classList.add('zooming');
+
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 380);
+            }
 
             window.addEventListener('pageshow', () => {
                 mbContainer?.classList.remove('zooming');
+                zones.forEach(item => item.classList.remove('is-selected'));
+                selectedZone = null;
+                if (hudTapHint) hudTapHint.hidden = true;
             });
 
-            document.querySelectorAll('.interactive-zone').forEach(zone => {
-                const showInfo = () => {
-                    if (hudTitle) hudTitle.textContent = zone.dataset.title || '';
-                    if (hudDesc) hudDesc.textContent = zone.dataset.desc || '';
-                };
+            zones.forEach(zone => {
+                zone.addEventListener('mouseenter', () => {
+                    if (!twoTapQuery.matches) {
+                        selectZone(zone, false);
+                    }
+                });
 
-                zone.addEventListener('mouseenter', showInfo);
-                zone.addEventListener('focus', showInfo);
+                zone.addEventListener('focus', () => {
+                    if (!twoTapQuery.matches) {
+                        selectZone(zone, false);
+                    }
+                });
 
                 zone.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showInfo();
-                    const targetUrl = zone.getAttribute('href');
-                    const rect = mbContainer.getBoundingClientRect();
-                    const zRect = zone.getBoundingClientRect();
 
-                    const originX = (((zRect.left + zRect.width / 2) - rect.left) / rect.width) * 100;
-                    const originY = (((zRect.top + zRect.height / 2) - rect.top) / rect.height) * 100;
+                    // На телефоні/планшеті: 1-й клік показує опис у нижньому вікні, 2-й клік по цій же точці — перехід
+                    if (twoTapQuery.matches && selectedZone !== zone) {
+                        selectZone(zone, true);
+                        return;
+                    }
 
-                    mbContainer.style.transformOrigin = `${originX}% ${originY}%`;
-                    mbContainer.classList.add('zooming');
-
-                    setTimeout(() => {
-                        window.location.href = targetUrl;
-                    }, 380);
+                    selectZone(zone, false);
+                    navigateToZone(zone);
                 });
             });
         });
