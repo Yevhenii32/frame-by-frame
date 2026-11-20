@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -6,6 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frame by Frame — Будова комп'ютера</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .hud-action-btn {
+            background: rgba(15, 23, 42, 0.85);
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 5px 11px;
+            font-size: 12px;
+            font-family: inherit;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+        }
+        .hud-action-btn:hover {
+            border-color: #3b82f6;
+            color: #ffffff;
+            background: #1e293b;
+        }
+        .hud-action-btn--accent {
+            border-color: rgba(59, 130, 246, 0.55);
+            color: #60a5fa;
+        }
+        .video-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 10, 18, 0.88);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .video-modal-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            max-width: 840px;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+        }
+        .video-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .video-modal-title {
+            margin: 0;
+            font-size: 16px;
+            color: #f8fafc;
+        }
+    </style>
 </head>
 <body>
 
@@ -83,9 +144,15 @@
                     <span class="live-dot"></span>
                     ІНТЕРАКТИВНА СХЕМА
                 </span>
-                <span class="board-toolbar-hint">
-                    Наведіть на точку або натисніть для переходу
-                </span>
+
+                <div class="toolbar-actions">
+                    <span class="board-toolbar-hint">
+                        Наведіть на точку або натисніть для переходу
+                    </span>
+                    <button id="open-video-btn" type="button" class="hud-action-btn hud-action-btn--accent">
+                        ▶ Відеоогляд (18:56)
+                    </button>
+                </div>
             </div>
 
             <div class="motherboard-container" id="mb-container">
@@ -146,21 +213,93 @@
         </section>
     </main>
 
+    <!-- Модальне вікно відеоогляду -->
+    <div id="video-modal" class="video-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+        <div class="video-modal-card">
+            <div class="video-modal-header">
+                <h2 id="video-modal-title" class="video-modal-title">
+                    Еволюція ПК: від перших процесорів до сучасних систем (18:56)
+                </h2>
+                <button id="close-video-btn" type="button" class="hud-action-btn">
+                    ✕ Закрити
+                </button>
+            </div>
+
+            <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #020617;">
+                <iframe
+                    id="intro-video-frame"
+                    data-src="https://www.youtube.com/embed/2vtrCZf4S_Y?autoplay=1&rel=0"
+                    title="Evolution of PCs"
+                    style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
     <script src="audio-engine.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.body.addEventListener('click', () => {
-                if (!SoundEngine.getMuted()) SoundEngine.playAmbient();
-            }, { once: true });
+        (() => {
+            function openVideoModal() {
+                const modal = document.getElementById('video-modal');
+                const frame = document.getElementById('intro-video-frame');
+                if (!modal) return;
 
+                try {
+                    if (typeof SoundEngine !== 'undefined' && typeof SoundEngine.stopAll === 'function') {
+                        SoundEngine.stopAll();
+                    }
+                } catch (err) {}
+
+                if (frame && frame.dataset.src) {
+                    frame.src = frame.dataset.src;
+                }
+                modal.style.display = 'flex';
+            }
+
+            function closeVideoModal() {
+                const modal = document.getElementById('video-modal');
+                const frame = document.getElementById('intro-video-frame');
+                if (!modal) return;
+
+                if (frame) {
+                    frame.src = '';
+                }
+                modal.style.display = 'none';
+            }
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#open-video-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openVideoModal();
+                    return;
+                }
+
+                if (e.target.closest('#close-video-btn') || e.target.id === 'video-modal') {
+                    e.preventDefault();
+                    closeVideoModal();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                const modal = document.getElementById('video-modal');
+                if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+                    closeVideoModal();
+                }
+            });
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
             const mbContainer = document.getElementById('mb-container');
             const hudTitle = document.getElementById('hud-title');
             const hudDesc = document.getElementById('hud-desc');
 
             document.querySelectorAll('.interactive-zone').forEach(zone => {
                 const showInfo = () => {
-                    hudTitle.textContent = zone.dataset.title;
-                    hudDesc.textContent = zone.dataset.desc;
+                    if (hudTitle) hudTitle.textContent = zone.dataset.title || '';
+                    if (hudDesc) hudDesc.textContent = zone.dataset.desc || '';
                 };
 
                 zone.addEventListener('mouseenter', showInfo);
@@ -168,24 +307,14 @@
 
                 zone.addEventListener('click', (e) => {
                     e.preventDefault();
-
                     const targetUrl = zone.getAttribute('href');
                     const rect = mbContainer.getBoundingClientRect();
                     const zRect = zone.getBoundingClientRect();
 
-                    const originX = (
-                        (zRect.left + zRect.width / 2 - rect.left)
-                        / rect.width
-                    ) * 100;
+                    const originX = (((zRect.left + zRect.width / 2) - rect.left) / rect.width) * 100;
+                    const originY = (((zRect.top + zRect.height / 2) - rect.top) / rect.height) * 100;
 
-                    const originY = (
-                        (zRect.top + zRect.height / 2 - rect.top)
-                        / rect.height
-                    ) * 100;
-
-                    mbContainer.style.transformOrigin =
-                        `${originX}% ${originY}%`;
-
+                    mbContainer.style.transformOrigin = `${originX}% ${originY}%`;
                     mbContainer.classList.add('zooming');
 
                     setTimeout(() => {
