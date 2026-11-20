@@ -2,8 +2,7 @@
 
 .mobile-topbar,
 .mobile-menu-close,
-.mobile-backdrop,
-.mobile-chapters {
+.mobile-backdrop {
     display: none;
 }
 
@@ -343,7 +342,7 @@
 
     button,
     .menu-link,
-    .mobile-chapter-link {
+    .interactive-zone {
         touch-action: manipulation;
     }
 }
@@ -451,7 +450,12 @@
         display: none;
     }
 
-    /* Motherboard */
+    /* Motherboard & Hotspots */
+
+    .board-stage {
+        gap: 12px;
+        flex: none;
+    }
 
     .motherboard-container,
     .home-page .motherboard-container {
@@ -465,91 +469,34 @@
         background-position: center;
     }
 
-    .motherboard-container .interactive-zone,
-    .motherboard-container .component-hud {
-        display: none;
+    .motherboard-container .interactive-zone {
+        width: 22px;
+        height: 22px;
     }
 
-    .mobile-chapters {
-        display: block;
-        margin-top: 16px;
+    .motherboard-container .interactive-zone::before {
+        width: 8px;
+        height: 8px;
     }
 
-    .mobile-chapters h2 {
-        color: #eef4fd;
-        font-size: 18px;
-        margin: 0 0 5px;
-        line-height: 1.35;
+    .motherboard-container .interactive-zone::after {
+        inset: -5px;
     }
 
-    .mobile-chapters p {
-        color: #a9b7c9;
-        font-size: 12px;
-        line-height: 1.55;
-        margin: 0 0 12px;
+    .motherboard-container .hotspot-tag {
+        left: 27px;
+        padding: 3px 6px;
+        font-size: 9.5px;
+        letter-spacing: 0.2px;
     }
 
-    .mobile-chapters-list {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 9px;
-    }
-
-    .mobile-chapter-link {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+    .home-page .component-hud {
+        position: static;
         width: 100%;
-        min-height: 63px;
-        padding: 12px 14px;
-        color: #e9f0fa;
-        text-decoration: none;
-        background: #171f2c;
-        border: 1px solid #34465e;
-        border-left: 3px solid #6ca9f2;
-        border-radius: 7px;
-        transition: background .2s, border-color .2s;
-    }
-
-    .mobile-chapter-link:active,
-    .mobile-chapter-link:hover {
-        background: #233247;
-        border-color: #6ca9f2;
-    }
-
-    .mobile-chapter-link:focus-visible {
-        outline: 2px solid #93c5fd;
-        outline-offset: 2px;
-    }
-
-    .mobile-chapter-info {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        min-width: 0;
-    }
-
-    .mobile-chapter-name {
-        font-size: 14px;
-        font-weight: 700;
-    }
-
-    .mobile-chapter-description {
-        color: #a5b6cb;
-        font-size: 11px;
-        line-height: 1.45;
-        overflow-wrap: anywhere;
-    }
-
-    .mobile-chapter-arrow {
-        flex-shrink: 0;
-        font-size: 20px;
-        color: #93c5fd;
-    }
-
-    .slot-cooling {
-        border-left-color: #f97316;
+        left: auto;
+        bottom: auto;
+        padding: 15px;
+        pointer-events: auto;
     }
 
     /* Buttons and controls */
@@ -732,6 +679,12 @@
         height: 15px;
     }
 
+    .motherboard-container .hotspot-tag {
+        left: 25px;
+        padding: 2px 5px;
+        font-size: 9px;
+    }
+
     .specs-grid {
         gap: 10px;
     }
@@ -752,8 +705,7 @@
 /* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
-    .sidebar,
-    .mobile-chapter-link {
+    .sidebar {
         transition: none;
     }
 }

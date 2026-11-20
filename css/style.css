@@ -690,6 +690,13 @@ input:focus-visible,
     border-radius: 50%;
     background: #27b894;
 }
+.board-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
 
 .motherboard-container {
     flex: 1;
