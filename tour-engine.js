@@ -758,175 +758,178 @@ const TourEngine = (() => {
         modal.id = 'team-modal';
         modal.className = 'modal-backdrop';
 
-        modal.innerHTML = `
-            <div class="modal-card"
-                 role="dialog"
-                 aria-modal="true"
-                 aria-labelledby="team-modal-title"
-                 tabindex="-1">
+modal.innerHTML = `
+    <div class="modal-card"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="team-modal-title"
+         tabindex="-1">
 
-                <div class="modal-top">
-                    <div>
-                        <div class="modal-eyebrow">
-                            FRAME BY FRAME / ПРО ПРОЄКТ
-                        </div>
-
-                        <h2 id="team-modal-title"
-                            class="modal-title">
-                            Паспорт проєкту
-                        </h2>
-                    </div>
-
-                    <button type="button"
-                            id="close-team-modal"
-                            class="modal-close"
-                            aria-label="Закрити паспорт">
-                        ×
-                    </button>
+        <div class="modal-top">
+            <div>
+                <div class="modal-eyebrow">
+                    FRAME BY FRAME / ПРО ПРОЄКТ
                 </div>
 
-                <p class="modal-description">
-                    <strong>Frame by Frame</strong> — інтерактивний
-                    мультимедійний довідник, присвячений будові
-                    комп'ютера та принципам роботи його компонентів.
-                    Проєкт поєднує текстові пояснення, графіку,
-                    Canvas-анімації, звуковий супровід і навчальні
-                    симуляції.
-                </p>
-
-                <div class="modal-section-label">
-                    01 / КОМАНДА ПРОЄКТУ
-                </div>
-
-                <div class="role-grid">
-                    <div class="role-box">
-                        <span class="role-number">УЧАСНИК 01</span>
-
-                        <div class="role-name">
-                            Євгеній Коваленко
-                        </div>
-
-                        <div class="role-title">
-                            Архітектура та програмна реалізація
-                        </div>
-
-                        <ul class="role-list">
-                            <li>Архітектура вебдодатка та верстка</li>
-                            <li>Інтерактивні симуляції JavaScript / Canvas</li>
-                            <li>Web Audio API та доступність інтерфейсу</li>
-                        </ul>
-                    </div>
-
-                    <div class="role-box">
-                        <span class="role-number">УЧАСНИК 02</span>
-
-                        <div class="role-name">
-                            Василь Апостолов
-                        </div>
-
-                        <div class="role-title">
-                            Візуальний дизайн і мультимедіа
-                        </div>
-
-                        <ul class="role-list">
-                            <li>Візуальний дизайн і графіка компонентів</li>
-                            <li>Моушн-анімація та відеомонтаж</li>
-                            <li>Звуковий супровід і саунд-дизайн</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="modal-section-label">
-                    02 / ТЕХНОЛОГІЇ
-                </div>
-
-                <div class="project-tech">
-                    <div class="tech-tags">
-                        <span class="tech-tag">HTML5</span>
-                        <span class="tech-tag">CSS3</span>
-                        <span class="tech-tag">JavaScript</span>
-                        <span class="tech-tag">Canvas API</span>
-                        <span class="tech-tag">Web Audio API</span>
-                        <span class="tech-tag">Responsive UI</span>
-                    </div>
-
-                    <p class="project-tech-note">
-                        Шість взаємопов'язаних сцен із навігацією,
-                        інтерактивними елементами, візуальними
-                        поясненнями та можливістю проходження
-                        за сценарієм.
-                    </p>
-                </div>
-
-                <div class="modal-section-label">
-                    03 / МУЛЬТИМЕДІЙНІ СКЛАДОВІ
-                </div>
-
-                <div class="multimedia-list">
-                    <div class="multimedia-item">
-                        <strong>Графіка</strong>
-                        <span>
-                            Карта материнської плати,
-                            схеми та візуалізації компонентів
-                        </span>
-                    </div>
-
-                    <div class="multimedia-item">
-                        <strong>Анімація</strong>
-                        <span>
-                            Еволюція CPU, охолодження,
-                            передавання даних і робота накопичувачів
-                        </span>
-                    </div>
-
-                    <div class="multimedia-item">
-                        <strong>Звук</strong>
-                        <span>
-                            Звукові ефекти охолодження,
-                            накопичувачів та керування звуком
-                        </span>
-                    </div>
-
-                    <div class="multimedia-item">
-                        <strong>Відео</strong>
-                        <span>
-                            Оглядові відеоматеріали
-                            мультимедійного проєкту
-                        </span>
-                    </div>
-
-                    <div class="multimedia-item">
-                        <strong>Текст</strong>
-                        <span>
-                            Характеристики, описи архітектур,
-                            пояснення та текстовий супровід
-                        </span>
-                    </div>
-
-                    <div class="multimedia-item">
-                        <strong>Інтерактивність</strong>
-                        <span>
-                            Таймлайн CPU, перемикач RTX,
-                            порівняння DDR та тест HDD/SSD
-                        </span>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button"
-                            id="reset-progress-btn"
-                            class="modal-secondary-btn">
-                        Скинути прогрес
-                    </button>
-
-                    <button type="button"
-                            id="start-tour-btn"
-                            class="modal-primary-btn">
-                        Почати огляд →
-                    </button>
-                </div>
+                <h2 id="team-modal-title"
+                    class="modal-title">
+                    Паспорт проєкту
+                </h2>
             </div>
-        `;
+
+            <button type="button"
+                    id="close-team-modal"
+                    class="modal-close"
+                    aria-label="Закрити паспорт">
+                ×
+            </button>
+        </div>
+
+        <p class="modal-description">
+            <strong>Frame by Frame</strong> — інтерактивний
+            мультимедійний довідник, присвячений будові
+            комп'ютера та принципам роботи його компонентів.
+            Проєкт поєднує текстові пояснення, графіку,
+            Canvas-анімації, звуковий супровід, відеоматеріали
+            та інтерактивні навчальні демонстрації.
+        </p>
+
+        <div class="modal-section-label">
+            01 / КОМАНДА ПРОЄКТУ
+        </div>
+
+        <div class="role-grid">
+            <div class="role-box">
+                <span class="role-number">УЧАСНИК 01</span>
+
+                <div class="role-name">
+                    Євгеній Коваленко
+                </div>
+
+                <div class="role-title">
+                    Архітектура та програмна реалізація
+                </div>
+
+                <ul class="role-list">
+                    <li>Архітектура вебдодатка та верстка</li>
+                    <li>Інтерактивні симуляції JavaScript / Canvas</li>
+                    <li>Реалізація звукової системи та керування інтерфейсом</li>
+                </ul>
+            </div>
+
+            <div class="role-box">
+                <span class="role-number">УЧАСНИК 02</span>
+
+                <div class="role-name">
+                    Василь Апостолов
+                </div>
+
+                <div class="role-title">
+                    Візуальний дизайн і мультимедіа
+                </div>
+
+                <ul class="role-list">
+                    <li>Візуальний дизайн і графіка компонентів</li>
+                    <li>Адаптація інтерфейсу для мобільних пристроїв</li>
+                    <li>Підбір та інтеграція тематичних відеоматеріалів</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="modal-section-label">
+            02 / ТЕХНОЛОГІЇ
+        </div>
+
+        <div class="project-tech">
+            <div class="tech-tags">
+                <span class="tech-tag">HTML5</span>
+                <span class="tech-tag">CSS3</span>
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">Canvas API</span>
+                <span class="tech-tag">Web Audio API</span>
+                <span class="tech-tag">Responsive UI</span>
+            </div>
+
+            <p class="project-tech-note">
+                Шість взаємопов'язаних розділів із навігацією,
+                інтерактивними елементами, візуальними
+                поясненнями та можливістю послідовного
+                проходження навчального сценарію.
+            </p>
+        </div>
+
+        <div class="modal-section-label">
+            03 / МУЛЬТИМЕДІЙНІ СКЛАДОВІ
+        </div>
+
+        <div class="multimedia-list">
+            <div class="multimedia-item">
+                <strong>Графіка</strong>
+                <span>
+                    Інтерактивна карта материнської плати,
+                    схеми та візуалізації компонентів
+                </span>
+            </div>
+
+            <div class="multimedia-item">
+                <strong>Анімація</strong>
+                <span>
+                    Еволюція процесорів, демонстрації охолодження,
+                    робота накопичувачів і фонові візуальні ефекти
+                </span>
+            </div>
+
+            <div class="multimedia-item">
+                <strong>Звук</strong>
+                <span>
+                    Атмосфера серверної, звуки кулера та HDD,
+                    супровід еволюції CPU, ефекти взаємодії
+                    й окреме керування фоном та ефектами
+                </span>
+            </div>
+
+            <div class="multimedia-item">
+                <strong>Відео</strong>
+                <span>
+                    Тематичні відеоматеріали про розвиток
+                    комп'ютерних технологій із можливістю
+                    перегляду через YouTube
+                </span>
+            </div>
+
+            <div class="multimedia-item">
+                <strong>Текст</strong>
+                <span>
+                    Характеристики компонентів, описи архітектур,
+                    пояснення принципів роботи та текстовий супровід
+                </span>
+            </div>
+
+            <div class="multimedia-item">
+                <strong>Інтерактивність</strong>
+                <span>
+                    Таймлайн CPU, порівняння растеризації
+                    та трасування променів, вибір поколінь DDR,
+                    демонстрації охолодження й порівняння HDD/SSD
+                </span>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button"
+                    id="reset-progress-btn"
+                    class="modal-secondary-btn">
+                Скинути прогрес
+            </button>
+
+            <button type="button"
+                    id="start-tour-btn"
+                    class="modal-primary-btn">
+                Почати огляд →
+            </button>
+        </div>
+    </div>
+`;
 
         document.body.appendChild(modal);
 
