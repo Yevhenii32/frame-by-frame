@@ -404,7 +404,7 @@
                 usedRam = 0;
                 updateMemoryUI();
                 accText.textContent = '"Живлення вимкнено. Усі дані з оперативної пам\'яті миттєво стерто (енергозалежність). Комірки очищено до 0 ГБ."';
-                if (typeof SoundEngфne !== 'undefined') SoundEngine.playPowerDown();
+                if (typeof SoundEngine !== 'undefined') SoundEngine.playPowerDown();
             } else {
                 powerToggle.textContent = "Вимкнути живлення";
                 powerToggle.className = "power-btn";
